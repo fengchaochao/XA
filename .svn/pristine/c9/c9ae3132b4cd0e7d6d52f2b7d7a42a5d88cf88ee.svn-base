@@ -1,0 +1,3 @@
+imageServer=http://10.101.0.140:8080
+upfileMaxSize=5M
+upfileSuffix=bmp,jpg,jepg,gif,png,txt,rar,zip,doc,docx,ini,conf,eml,xls,xlsx,vsd,ppt,pptx,pdf

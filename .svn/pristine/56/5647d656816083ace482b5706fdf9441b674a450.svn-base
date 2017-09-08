@@ -1,0 +1,36 @@
+ .form-group input[type="text"],.InputSame{width:220px;padding-right:6px;display:inline-block;}
+ #aa{width:160px;padding-right:6px;}
+  
+ .colorGroup .col-sm-3{position:relative;}
+ .colorGroup .col-sm-3{margin-bottom:10px;padding-left:0px;}
+ .colorGroup .form-control{padding-right:0px;}
+ .addColorNum,.colorGroup em{display:inline-block;cursor: pointer;}
+ .itemTit img{width:40px;height:40px}
+ .colorGroup em{position:absolute;top:0px;right:20px;width:15px;height:15px;font-style:normal;text-align:center;font-size:16px;z-index:1000;}
+ .addColorNum{font-size:20px;color:red;width: 30px;}
+ .showFileCssStyle{display:inline-block;}
+ .showFileCssStyle img{height:140px;width:140px;margin-right:5px;margin-bottom:5px;}
+ .showFileCssStyle .strong{display:none;}
+ .addChoose{font-size:11px;color:red;font-style:normal;}
+ .uploadify-button{background:none;}
+ 
+ /*覆盖掉bootstrap中的样式  */
+ .col-sm-2{width:115px;margin-right: -15px;margin-left:-20px;}
+  .col-sm-10{width: inherit;line-height:34px;}
+  .flRight{dispaly:inline-block;float:right;min-width:220px;}
+  .informateBox{padding:20px 0px;}
+  .informateBox .leftBox,.informateBox .rightBox{display:inline-block;width:49%;vertical-align: top;}
+/*   .leftBox{float:left;} */
+  .informateBox{clear:both;}
+  .rowThree .col-sm-10{width:25%;}
+  .rowLong.col-sm-10{width:58%;}
+  .rowTwo .col-sm-10{width:inherit;}
+  .rowTwo .form-control{width:100%;}
+  .rowShortAddress .col-sm-10{width:30%;margin-right: -20px;}
+  .rowShortAddress .form-control{padding-right:6px;}
+  .rowAddress .col-sm-10{width:19.2%;}
+  .rowAddress select,#address{width:100%;}
+  .rowThree .col-sm-10 input[type="text"],.rowThree .col-sm-10 #merchantsClassificationId{
+    width:100%;padding-right:6px;}
+  .orangeText{cursor:pointer;}
+  

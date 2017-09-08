@@ -1,0 +1,16 @@
+package com.prj.utils.pay;
+
+/**
+ * @author: Fengc
+ * @date:2017-8-22 下午3:14:10
+ * @version :0.0.1
+ * 
+ */
+public class WxpayConfig {
+	public static String APPID = "wxff154f8b7dae804d";
+	public static String SECRET = "3774f2bb322bbec7ff446fac482d942b";
+	public static String NOTIFY_URL = "http://hilink.chengguokj.com/XA/api/alipayNotify";
+	public static String MCH_ID = "1461315302";
+	public static String PARTNERKEY = "bnegbnegbnegbnegbnegbnegbnegbneg";
+
+}

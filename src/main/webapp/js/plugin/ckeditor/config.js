@@ -1,0 +1,81 @@
+/**
+ * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+CKEDITOR.editorConfig = function( config ) {
+	config.font_names= '宋体/宋体;黑体/黑体;仿宋/仿宋_GB2312;楷体/楷体_GB2312;隶书/隶书;幼圆/幼圆;雅黑/雅黑;'+config.font_names ;
+	config.width = 700; //宽度
+	config.height = 200; //高度 
+	config.language = 'zh-cn';
+    config.skin = 'moono-lisa';
+    // 图片上传配置
+    config.filebrowserUploadUrl = '/XA/filesvr/imageUpload?type=File';
+    config.filebrowserImageUploadUrl ='/XA/filesvr/imageUpload?type=Image';
+    config.filebrowserFlashUploadUrl = '/XA/filesvr/imageUpload?type=Flash';
+    config.filebrowserWindowWidth = '320';  //“浏览服务器”弹出框的size设置
+	// The toolbar groups arrangement, optimized for two toolbar rows.
+	config.toolbarGroups = [
+		{ name: 'clipboard',   groups: [ 'clipboard', 'undo' ] },
+		{ name: 'editing',     groups: [ 'find', 'selection', 'spellchecker' ] },
+		{ name: 'links' },
+		{ name: 'insert' },
+		{ name: 'forms' },
+		{ name: 'tools' },
+		{ name: 'document',	   groups: [ 'mode', 'document', 'doctools' ] },
+		{ name: 'others' },
+		'/',
+		{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+		{ name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ] },
+		{ name: 'styles' ,groups: [ 'Format','Font','FontSize']},
+		{ name: 'colors', groups: [ 'BGColor', 'TextColor' ] },
+		{ name: 'about' }
+	];
+	// Remove some buttons provided by the standard plugins, which are
+	// not needed in the Standard(s) toolbar.
+	config.removeButtons = 'Underline,Subscript,Superscript';
+	config.font_names = 'Arial;Times New Roman;Verdana;宋体;楷体;黑体';
+	config.font_style =
+    {
+        element   : 'span',
+        styles   : { 'font-family' : '#(family)' },
+        overrides : [ { element : 'font', attributes : { 'face' : null } } ]
+    };
+	
+	config.fontSize_style =
+    {
+        element   : 'span',
+        styles   : { 'font-size' : '#(size)' },
+        overrides : [ { element : 'font', attributes : { 'size' : null } } ]
+    };
+    config.fontSize_sizes ='8/8px;9/9px;10/10px;11/11px;12/12px;14/14px;16/16px;18/18px;20/20px;22/22px;24/24px;26/26px;28/28px;36/36px;48/48px;72/72px';
+	// Set the most common block elements.
+	config.format_tags = 'p;h1;h2;h3;pre';
+
+	// Simplify the dialog windows.
+	config.removeDialogTabs = 'image:advanced;link:advanced';
+	//清除预览框里的英文字母
+	config.image_previewText=' '; 
+	//清除图片style属性
+	CKEDITOR.on('dialogDefinition', function(ev) {
+        // Take the dialog name and its definition from the event data
+        var dialogName = ev.data.name;
+        var dialogDefinition = ev.data.definition;
+        var editor = ev.editor;
+        if (dialogName == 'image') {
+           dialogDefinition.onOk = function(e) {
+              var imageSrcUrl = e.sender.originalElement.$.src;
+              var image = new Image();
+              image.src=imageSrcUrl;
+          // if (image.width>320) {
+        	  var imgHtml = CKEDITOR.dom.element.createFromHtml("<img src='" + imageSrcUrl + "' alt=''/>");
+        	  editor.insertElement(imgHtml);
+             // }else{
+			//	alert("图片宽度不能小于320像素！");
+			//	return;
+			//}
+              
+           };
+        }
+    });
+};

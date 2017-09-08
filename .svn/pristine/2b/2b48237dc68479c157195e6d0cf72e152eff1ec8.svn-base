@@ -1,0 +1,257 @@
+package com.prj.task;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import tutorial.redis.RedisUtil;
+
+import com.prj.biz.bean.agent.Agent;
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.codeareas.codeAreas;
+import com.prj.biz.bean.consumers.Consumers;
+import com.prj.biz.bean.consumersaccount.ConsumersAccount;
+import com.prj.biz.service.agent.AgentService;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.codeareas.codeAreasService;
+import com.prj.biz.service.consumers.ConsumersService;
+import com.prj.biz.service.consumersaccount.ConsumersAccountService;
+import com.prj.biz.service.redenvelope.RedEnvelopeService;
+import com.prj.biz.service.redenveloperecord.RedEnvelopeRecordService;
+import com.prj.utils.ObjectUtil;
+import com.prj.utils.UfdmDateUtil;
+
+@Service
+public class TaskService {
+
+	@Autowired
+	RedEnvelopeService envelopeService;
+	
+	@Autowired
+	private AgentService agentService;
+	
+	@Autowired
+	private BusinessInformationService businessInformationService;
+	
+	@Autowired
+	private ConsumersAccountService consumersAccountService;
+	
+	@Autowired
+	private ConsumersService consumersService;
+	
+	@Autowired
+	 private RedEnvelopeRecordService redEnvelopeRecordService;
+	
+	@Autowired
+	private codeAreasService codeAreasService;
+
+	/**
+	 * 每隔2秒查看是否有红包需要发放。
+	 * 
+	 * @throws Exception
+	 */
+	public void invokeTask() throws Exception {
+
+		/*List<RedEnvelope> redEnvelopes = envelopeService.doGetList(null);
+
+		for (RedEnvelope redEnvelope : redEnvelopes) {
+			String srDate = redEnvelope.getCreateDate() + " "
+					+ redEnvelope.getCreateTime();
+			boolean compTime = UfdmDateUtil.comperDateWithNow(srDate);
+			//查询符合条件的红包
+			if (compTime && redEnvelope.getRedEnvelopeState().equals("0")) {
+
+				RedEnvelopeRecord envelopeRecord = new RedEnvelopeRecord();
+				envelopeRecord.setRedEnvelopeId(redEnvelope.getId());
+
+				List<RedEnvelopeRecord> envelopeRecords = redEnvelopeRecordService.doGetList(envelopeRecord);
+				String key = "RedPacket" + redEnvelope.getId();
+
+				for (RedEnvelopeRecord redEnvelopeRecord : envelopeRecords) {
+					RedisUtil.getJedis().lpush(key.getBytes(),ObjectUtil.objectToBytes(redEnvelopeRecord));
+				}
+				//修改红包状态
+				redEnvelope.setRedEnvelopeState("1");
+				envelopeService.doModById(redEnvelope);
+			}
+
+	}*/
+	}
+	/**
+	 * 省市区的查询
+	 * 
+	 * @throws Exception
+	 */
+	public void areaTask() throws Exception {
+		
+		List<codeAreas> countCodeAreas=codeAreasService.selectCountyList();
+		List<codeAreas> codeAreas=codeAreasService.selectProvinceList();
+		List<codeAreas> cityCodeAreas=codeAreasService.selectCityList();
+		List<codeAreas> areaCodeAreas=codeAreasService.selectRegionList();
+		
+	    String key = "countCodeAreas";  
+	    String key1 = "codeAreas";  
+	    String key2 = "cityCodeAreas";  
+	    String key3 = "areaCodeAreas";  
+	        
+		RedisUtil.getJedis().set(key.getBytes(),ObjectUtil.objectToBytes(countCodeAreas));
+		RedisUtil.getJedis().set(key1.getBytes(),ObjectUtil.objectToBytes(codeAreas));
+		RedisUtil.getJedis().set(key2.getBytes(),ObjectUtil.objectToBytes(cityCodeAreas));
+		RedisUtil.getJedis().set(key3.getBytes(),ObjectUtil.objectToBytes(areaCodeAreas));
+
+	}
+	/**
+	 * 每天1点统计前一天的会员、订单增加情况，并存入redis
+	 * 
+	 * @throws Exception
+	 */
+	public void invokeTask1() throws Exception {
+		/**
+		 * 统计昨天的会员
+		 */
+		int agentNum1=0;
+		//商家数量
+		int businessNum1=0;
+		//消费商数量
+		int xfBusinessNum1=0;
+		//消费者数量
+		int consumersNum1=0;
+		//消费者账户
+		int consumersAcountNum1=0;
+		
+		Agent agent=new Agent();
+		BusinessInformation businessInformation=new BusinessInformation();
+		businessInformation.setEffectState("0");
+		
+		Consumers consumers=new Consumers();
+		ConsumersAccount consumersAccount=new ConsumersAccount();
+		
+		//代理商
+		
+		agent.setCreateDate(UfdmDateUtil.getBefoDateByDays());
+		List<Agent> agents1=agentService.doGetList(agent);
+		agentNum1=agents1.size();
+		
+		Map<String, Object> szx = new HashMap<String, Object>();
+		szx.put("value", agentNum1);
+		szx.put("name", "代理商");
+		
+		//商家
+		
+		businessInformation.setCreateDate(UfdmDateUtil.getBefoDateByDays());
+		List<BusinessInformation> businessInformations1=businessInformationService.doGetList(businessInformation);
+		businessNum1=businessInformations1.size();
+		Map<String, Object> szx1 = new HashMap<String, Object>();
+		szx1.put("value",businessNum1);
+		szx1.put("name", "商家");
+		
+		//消费商
+		consumers.setIsXfconsumers("1");
+		consumers.setCreateDate(UfdmDateUtil.getBefoDateByDays());
+		List<Consumers> consumers4=consumersService.doGetList(consumers);
+		xfBusinessNum1=consumers4.size();
+		
+		Map<String, Object> szx2 = new HashMap<String, Object>();
+		szx2.put("value",xfBusinessNum1);
+		szx2.put("name", "消费商");
+		
+		//消费者
+		consumers.setIsXfconsumers("0");
+		consumers.setCreateDate(UfdmDateUtil.getBefoDateByDays());
+		List<Consumers> consumers5=consumersService.doGetList(consumers);
+		consumersNum1=consumers5.size();
+		Map<String, Object> szx3 = new HashMap<String, Object>();
+		szx3.put("value", consumersNum1);
+		szx3.put("name", "消费者");
+		
+		//消费者账户
+		consumersAccount.setCreateDate(UfdmDateUtil.getBefoDateByDays());
+		List<ConsumersAccount> consumersAccounts1=consumersAccountService.doGetList(consumersAccount);
+		consumersAcountNum1=consumersAccounts1.size();
+		
+		Map<String, Object> szx4 = new HashMap<String, Object>();
+		szx4.put("value", consumersAcountNum1);
+		szx4.put("name", "消费者账户");
+		
+		List<Map<String, Object>> sz=Arrays.asList(szx,szx1,szx2,szx3,szx4);
+		RedisUtil.getJedis().set("yesterdayMember", sz.toString());
+
+	}
+
+	/**
+	 * 每月1日缓存上月订单及会员信息至redis
+	 * 
+	 * @throws Exception
+	 */
+	public void invokeTask2() throws Exception {
+		
+		int agentNum1=0;
+		//商家数量
+		int businessNum1=0;
+		//消费商数量
+		int xfBusinessNum1=0;
+		//消费者数量
+		int consumersNum1=0;
+		//消费者账户
+		int consumersAcountNum1=0;
+		Agent agent=new Agent();
+		BusinessInformation businessInformation=new BusinessInformation();
+		businessInformation.setEffectState("0");
+		Consumers consumers=new Consumers();
+		ConsumersAccount consumersAccount=new ConsumersAccount();
+		//代理商
+		
+		agent.setCreateDate(UfdmDateUtil.getBefoDateByMonth());
+		List<Agent> agents1=agentService.doGetList(agent);
+		agentNum1=agents1.size();
+		
+		Map<String, Object> szx = new HashMap<String, Object>();
+		szx.put("value", agentNum1);
+		szx.put("name", "代理商");
+		
+		//商家
+		
+		businessInformation.setCreateDate(UfdmDateUtil.getBefoDateByMonth());
+		List<BusinessInformation> businessInformations1=businessInformationService.doGetList(businessInformation);
+		businessNum1=businessInformations1.size();
+		Map<String, Object> szx1 = new HashMap<String, Object>();
+		szx1.put("value",businessNum1);
+		szx1.put("name", "商家");
+		
+		//消费商
+		consumers.setIsXfconsumers("1");
+		
+		consumers.setCreateDate(UfdmDateUtil.getBefoDateByMonth());
+		List<Consumers> consumers4=consumersService.doGetList(consumers);
+		xfBusinessNum1=consumers4.size();
+		
+		Map<String, Object> szx2 = new HashMap<String, Object>();
+		szx2.put("value",xfBusinessNum1);
+		szx2.put("name", "消费商");
+		//消费者
+		consumers.setIsXfconsumers("0");
+		
+		consumers.setCreateDate(UfdmDateUtil.getBefoDateByMonth());
+		List<Consumers> consumers5=consumersService.doGetList(consumers);
+		consumersNum1=consumers5.size();
+		Map<String, Object> szx3 = new HashMap<String, Object>();
+		szx3.put("value", consumersNum1);
+		szx3.put("name", "消费者");
+		//消费者账户
+		consumersAccount.setCreateDate(UfdmDateUtil.getBefoDateByMonth());
+		List<ConsumersAccount> consumersAccounts1=consumersAccountService.doGetList(consumersAccount);
+		consumersAcountNum1=consumersAccounts1.size();
+		
+		Map<String, Object> szx4 = new HashMap<String, Object>();
+		szx4.put("value", consumersAcountNum1);
+		szx4.put("name", "消费者账户");
+		
+		List<Map<String, Object>> sz=Arrays.asList(szx,szx1,szx2,szx3,szx4);
+		RedisUtil.getJedis().set("lastMonthMember", sz.toString());
+	}
+
+}

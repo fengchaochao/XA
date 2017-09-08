@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.bankwithdrawal.BankWithdrawalDao">
+
+    <resultMap id="bankwithdrawalResult" type="com.prj.biz.bean.bankwithdrawal.BankWithdrawal">
+		<result property="id" column="id" />
+		<result property="totalRevenue" column="total_revenue" />
+		<result property="brankNumber" column="brank_number" />
+		<result property="brankName" column="brank_name" />
+		<result property="brankPhone" column="brank_phone" />
+		<result property="brankAddress" column="brank_address" />
+		<result property="idCard" column="idCard" />
+		<result property="userId" column="user_id" />
+		<result property="identity" column="identity" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,total_revenue,brank_number,brank_name,brank_phone,brank_address,user_id,idCard
+
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="totalRevenue!=null and totalRevenue!='' ">
+		        AND total_revenue = #{totalRevenue}
+		    </if>
+		    <if test="brankNumber!=null and brankNumber!='' ">
+		        AND brank_number = #{brankNumber}
+		    </if>
+		    <if test="brankName!=null and brankName!='' ">
+		        AND brank_name = #{brankName}
+		    </if>
+		    <if test="brankPhone!=null and brankPhone!='' ">
+		        AND brank_phone = #{brankPhone}
+		    </if>
+		    <if test="brankAddress!=null and brankAddress!='' ">
+		        AND brank_address = #{brankAddress}
+		    </if>
+		    <if test="userId!=null and userId!='' ">
+		        AND user_id = #{userId}
+		    </if>
+		    <if test="idCard!=null and idCard!='' ">
+		        AND idCard = #{idCard}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="bankwithdrawalResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_BANK_WITHDRAWAL 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="bankwithdrawalResult" parameterType="com.prj.biz.bean.bankwithdrawal.BankWithdrawal" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_BANK_WITHDRAWAL 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.bankwithdrawal.BankWithdrawal">
+		select
+		    count(ID)
+		from 
+			 XA_BANK_WITHDRAWAL 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.bankwithdrawal.BankWithdrawal">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_BANK_WITHDRAWAL 
+			(id,total_revenue,brank_number,brank_name,brank_phone,brank_address,user_id,idCard)
+		VALUES 
+			(#{id},#{totalRevenue},#{brankNumber},#{brankName},#{brankPhone},#{brankAddress},#{userId},#{idCard})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_BANK_WITHDRAWAL 
+			(id,total_revenue,brank_number,brank_name,brank_phone,brank_address,user_id,idCard)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{totalRevenue},#{brankNumber},#{brankName},#{brankPhone},#{brankAddress},#{userId},#{idCard})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.bankwithdrawal.BankWithdrawal">
+     UPDATE XA_BANK_WITHDRAWAL
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="totalRevenue!=null and totalRevenue!='' ">
+				total_revenue = #{totalRevenue},
+			</if>
+			<if test="brankNumber!=null and brankNumber!='' ">
+				brank_number = #{brankNumber},
+			</if>
+			<if test="brankName!=null and brankName!='' ">
+				brank_name = #{brankName},
+			</if>
+			<if test="brankPhone!=null and brankPhone!='' ">
+				brank_phone = #{brankPhone},
+			</if>
+			<if test="brankAddress!=null and brankAddress!='' ">
+				brank_address = #{brankAddress},
+			</if>
+			<if test="userId!=null and userId!='' ">
+				user_id = #{userId},
+			</if>
+			<if test="idCard!=null and idCard!='' ">
+				idCard = #{idCard},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_BANK_WITHDRAWAL
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="totalRevenue!=null and totalRevenue!='' ">
+				total_revenue = #{totalRevenue},
+			</if>
+			<if test="brankNumber!=null and brankNumber!='' ">
+				brank_number = #{brankNumber},
+			</if>
+			<if test="brankName!=null and brankName!='' ">
+				brank_name = #{brankName},
+			</if>
+			<if test="brankPhone!=null and brankPhone!='' ">
+				brank_phone = #{brankPhone},
+			</if>
+			<if test="brankAddress!=null and brankAddress!='' ">
+				brank_address = #{brankAddress},
+			</if>
+			<if test="userId!=null and userId!='' ">
+				user_id = #{userId},
+			</if>
+			<if test="idCard!=null and idCard!='' ">
+				idCard = #{idCard},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_BANK_WITHDRAWAL WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_BANK_WITHDRAWAL
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

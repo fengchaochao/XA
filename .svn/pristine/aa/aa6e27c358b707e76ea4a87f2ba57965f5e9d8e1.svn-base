@@ -1,0 +1,256 @@
+package com.prj.utils.pay;
+
+/**
+ * @author: Fengc
+ * @date:2017-7-17 上午10:45:41
+ * @version :0.0.1
+ * @dis:
+ */
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.prj.utils.UfdmDateUtil;
+
+/***
+ * @author V型知识库 www.vxzsk.com
+ * 
+ */
+public class JsapiTicketUtil {
+	
+	public static DefaultHttpClient httpclient;
+
+	static {
+		httpclient = new DefaultHttpClient();
+		httpclient = (DefaultHttpClient) HttpClientConnectionManager
+				.getSSLInstance(httpclient);
+	}
+	public static String baseUrl = "http://hilink.chengguokj.com/XA";
+
+	public static ModelAndView getWxStr(HttpServletRequest request,
+			String code, String storeId, Long amount, String orderId,
+			ModelAndView mav) throws ClientProtocolException, IOException {
+		System.out.println("----------进入获取WxStr------------");
+		// 获取当前付款人的openid
+		String openid = "";
+		System.out.println("----" + code);
+		System.out.println("----" + storeId);
+		if (code != null) {
+			String jsonStr = "";
+			String askUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid="
+			+ WxpayConfig.APPID + "&secret="
+			+ WxpayConfig.SECRET
+			+ "&code="
+			+ code
+			+ "&grant_type=authorization_code";
+			System.out.println("askUrl------>"+askUrl);
+			HttpPost httpost = HttpClientConnectionManager
+					.getPostMethod(askUrl);
+			try {
+				HttpResponse responses = httpclient.execute(httpost);
+				jsonStr = EntityUtils.toString(responses.getEntity(), "UTF-8");
+				openid = jsonStr.substring(jsonStr.indexOf("openid\":\"") + 9,
+						jsonStr.indexOf("\",\"scope"));
+				System.out.println("openid>>>>>>>>>>>>>>>" + openid);
+				String access_token = jsonStr.substring(
+						jsonStr.indexOf("access_token\":\"") + 15,
+						jsonStr.indexOf("\",\"expires_in"));
+				System.out.println("在getOpenId中获取token:--->" + access_token);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+
+			}
+		}
+		// 获取jsapi_ticket
+		String access_token = "";
+		String jsonStr = "";
+		String jsapi_ticket = "";
+		HttpGet httget = HttpClientConnectionManager
+				.getGetMethod("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="
+						+ WxpayConfig.APPID
+						+ "&secret="
+						+ WxpayConfig.SECRET
+						+ "");
+		HttpResponse responses = httpclient.execute(httget);
+		jsonStr = EntityUtils.toString(responses.getEntity(), "UTF-8");
+		if (jsonStr.indexOf("errcode") < 0) {
+			access_token = jsonStr.substring(
+					jsonStr.indexOf("access_token\":\"") + 15,
+					jsonStr.indexOf("\",\"expires_in"));
+		}
+		if (StringUtils.isNotEmpty(access_token)) {
+			jsonStr = "";
+			httget = HttpClientConnectionManager
+					.getGetMethod("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="
+							+ access_token + "&type=jsapi");
+			try {
+				responses = httpclient.execute(httget);
+				jsonStr = EntityUtils.toString(responses.getEntity(), "UTF-8");
+
+				jsapi_ticket = jsonStr.substring(
+						jsonStr.indexOf("jsapi_ticket\":\"") + 15,
+						jsonStr.indexOf("\",\"expires_in"));
+
+				System.out.println("jsapi_ticket---->" + jsapi_ticket);
+				// Map map = doXMLParse(jsonStr);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+
+			}
+			mav.addObject("jsapi_ticket", jsapi_ticket);
+		}
+
+		// 微信js授权需要签名
+		String nonce_str = Sha1Util.getNonceStr();// 随机字符串
+		String timestamp = Sha1Util.getTimeStamp();// 时间戳
+		String url = baseUrl + "/api/doWeixinPay";// 发起支付的前端页面的URL地址.而且...而且必须在微信支付里面配置才行!!!
+		System.out.println("===支付前端页面请求地址=="+url);
+		String sign = null;
+		try {
+			SortedMap<String, String> packageParams = new TreeMap<String, String>();
+			packageParams.put("jsapi_ticket", jsapi_ticket);
+			packageParams.put("noncestr", nonce_str);
+			packageParams.put("timestamp", timestamp);
+			packageParams.put("url", url);
+			sign = Sha1Util.createSHA1Sign(packageParams);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		String check = "appId : \"" + WxpayConfig.APPID
+				+ "\",timestamp : \""
+				+ timestamp // 微信个傻逼..这里的timestamp是小写~~
+				+ "\", nonceStr : \"" + nonce_str + "\", signature : \"" + sign
+				+ "\"";
+
+		mav.addObject("check", check);
+
+		// 获取openId后调用统一支付接口https://api.mch.weixin.qq.com/pay/unifiedorder
+		String currTime = TenpayUtil.getCurrTime();
+		// 8位日期
+		String strTime = currTime.substring(8, currTime.length());
+		// 四位随机数
+		String strRandom = TenpayUtil.buildRandom(4) + "";
+		// 10位序列号,可以自行调整。
+		String strReq = strTime + strRandom;
+
+
+		// 商品描述
+		// String body = describe;
+
+		// 商品描述根据情况修改
+		String body = "wxgoods";
+		// 附加数据
+		String attach = "storeId" + storeId;
+
+		;
+		// 商户订单号
+		String out_trade_no = "WX"+ new Date().getTime();
+		// 订单生成的机器 IP
+		String spbill_create_ip = "127.0.0.1";
+
+		String trade_type = "JSAPI";
+		SortedMap<String, String> packageParams = new TreeMap<String, String>();
+		packageParams.put("appid", WxpayConfig.APPID);
+		packageParams.put("mch_id", WxpayConfig.MCH_ID);
+		packageParams.put("nonce_str", nonce_str);
+		packageParams.put("body", body);
+		packageParams.put("attach", attach);
+		packageParams.put("out_trade_no", out_trade_no);
+		
+		// 这里写的金额为1 分到时修改
+		packageParams.put("total_fee",
+				BigDecimal.valueOf(amount).multiply(new BigDecimal(100))
+						.toString());
+
+		packageParams.put("spbill_create_ip", spbill_create_ip);
+		packageParams.put("notify_url", WxpayConfig.NOTIFY_URL);
+
+		packageParams.put("trade_type", trade_type);
+		packageParams.put("openid", openid);
+
+		RequestHandler reqHandler = new RequestHandler(null, null);
+		reqHandler.init(WxpayConfig.APPID, WxpayConfig.SECRET,
+				WxpayConfig.PARTNERKEY);
+
+		sign = reqHandler.createSign(packageParams);
+		String xml = "<xml>" + "<appid>"
+				+ WxpayConfig.APPID
+				+ "</appid>"
+				+ "<mch_id>"
+				+ WxpayConfig.MCH_ID
+				+ "</mch_id>"
+				+ "<nonce_str>"
+				+ nonce_str
+				+ "</nonce_str>"
+				+ "<sign><![CDATA["
+				+ sign
+				+ "]]></sign>"
+				+ "<body><![CDATA["
+				+ body
+				+ "]]></body>"
+				+ "<out_trade_no>"
+				+ out_trade_no
+				+ "</out_trade_no>"
+				+
+				// 金额，这里写的1 分到时修改
+				"<total_fee>"
+				+ (BigDecimal.valueOf(amount).multiply(new BigDecimal(100))
+						.toString()) + "</total_fee>" + "<attach>" + attach
+				+ "</attach>" + "<spbill_create_ip>" + spbill_create_ip
+				+ "</spbill_create_ip>" + "<notify_url>" + WxpayConfig.NOTIFY_URL
+				+ "</notify_url>" + "<trade_type>" + trade_type
+				+ "</trade_type>" + "<openid>" + openid + "</openid>"
+				+ "</xml>";
+		
+		System.out.println(xml);
+	
+		String createOrderURL = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+		String prepay_id = "";
+		try {
+			prepay_id = new GetWxOrderno().getPayNo(createOrderURL, xml);
+			if (prepay_id.equals("")) {
+				System.out.println("统一支付接口获取预支付订单出错");
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		System.out.println("prepay_id:" + prepay_id);
+		SortedMap<String, String> finalpackage = new TreeMap<String, String>();
+		timestamp = Sha1Util.getTimeStamp();
+		String nonceStr2 = nonce_str;
+		String prepay_id2 = "prepay_id=" + prepay_id;
+		String packages = prepay_id2;
+		finalpackage.put("appId", WxpayConfig.APPID);
+		finalpackage.put("timeStamp", timestamp);
+		finalpackage.put("nonceStr", nonceStr2);
+		finalpackage.put("package", packages);
+		finalpackage.put("signType", "MD5");
+		String finalsign = reqHandler.createSign(finalpackage);
+		String str = "timestamp:\""
+				+ timestamp // 这里的也是小写~~
+				+ "\",nonceStr:\"" + nonceStr2 + "\",package:\"" + packages
+				+ "\",signType: \"MD5" + "\",paySign:\"" + finalsign + "\"";
+		mav.addObject("str", str);
+		System.out.println("----扫码支付后台组装完成---");
+		return mav;
+	}
+
+}

@@ -1,0 +1,84 @@
+package com.prj.biz.bean.consumersaccount;
+
+import com.prj.biz.bean._base.BaseEntity;
+import com.prj.biz.bean.consumers.Consumers;
+
+/** 
+ * 描述: 消费者账户表 实体类<br>
+ * @author Liang
+ * @date 2017-07-18
+ * 
+ */
+public class ConsumersAccount extends BaseEntity  
+{
+
+    private static final long	serialVersionUID	= 1L;
+
+    //  
+    private String id;
+    // 用户类型1-微信用户 2-支付宝用户 
+    private String userType;
+    // 用户账号 
+    private String userAccount;
+    //对应的消费者/或者消费商id
+    private String consumersId;
+    //被锁定的商家
+    private String businessInformationId;
+    
+    //账号状态0-正常 1-停用
+    private String accountState;
+    
+    //对应的消费者/或者消费商信息
+    private Consumers consumers;
+    
+
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    public String getUserType() {
+        return userType;
+    }
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+
+    public String getUserAccount() {
+        return userAccount;
+    }
+    public void setUserAccount(String userAccount) {
+        this.userAccount = userAccount;
+    }
+	public Consumers getConsumers() {
+		return consumers;
+	}
+	public void setConsumers(Consumers consumers) {
+		this.consumers = consumers;
+	}
+	
+	public String getConsumersId() {
+		return consumersId;
+	}
+	public void setConsumersId(String consumersId) {
+		this.consumersId = consumersId;
+	}
+	public String getBusinessInformationId() {
+		return businessInformationId;
+	}
+	public void setBusinessInformationId(String businessInformationId) {
+		this.businessInformationId = businessInformationId;
+	}
+	public String getAccountState() {
+		return accountState;
+	}
+	public void setAccountState(String accountState) {
+		this.accountState = accountState;
+	}
+	
+
+}

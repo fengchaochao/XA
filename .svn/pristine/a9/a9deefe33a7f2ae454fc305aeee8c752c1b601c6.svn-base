@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.goods.GoodsDao">
+
+    <resultMap id="goodsResult" type="com.prj.biz.bean.goods.Goods">
+		<result property="id" column="id" />
+		<result property="commodityName" column="commodity_name" />
+		<result property="commodityNumber" column="commodity_number" />
+		<result property="commodityTypeId" column="commodity_type_id" />
+		<result property="commodityDescription" column="commodity_description" />
+		<result property="commodityImages" column="commodity_images" />
+		<result property="promotionFee" column="promotion_fee" />
+		<result property="shippingFee" column="shipping_fee" />
+		<result property="createDate" column="create_date" />
+		<result property="goodsState" column="goods_state" />
+		<result property="publisher" column="publisher" />
+		
+		<result property="merchantsNo" column="merchantsNo" />
+		<result property="merchantsName" column="merchantsName" />
+		<result property="typeName" column="typeName" />
+		<result property="sales" column="sales" />
+		<result property="beginDate" column="beginDate" />
+		<result property="endDate" column="endDate" />
+		<result property="goodsClassification.id" column="id" />
+		<result property="sysUser.id" column="id" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		a.id,a.commodity_name,a.commodity_type_id,a.commodity_description,a.commodity_images,a.promotion_fee,a.shipping_fee,a.create_date,a.goods_state,a.publisher,a.commodity_number
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND a.ID = #{id} 
+	       </if>
+		    <if test="commodityName!=null and commodityName!='' ">
+		        AND a.commodity_name = #{commodityName}
+		    </if>
+		    <if test="commodityTypeId!=null and commodityTypeId!='' ">
+		        AND a.commodity_type_id = #{commodityTypeId}
+		    </if>
+		    <if test="commodityDescription!=null and commodityDescription!='' ">
+		        AND a.commodity_description = #{commodityDescription}
+		    </if>
+		    <if test="commodityImages!=null and commodityImages!='' ">
+		        AND a.commodity_images = #{commodityImages}
+		    </if>
+		    <if test="promotionFee!=null and promotionFee!='' ">
+		        AND a.promotion_fee = #{promotionFee}
+		    </if>
+		    <if test="shippingFee!=null and shippingFee!='' ">
+		        AND a.shipping_fee = #{shippingFee}
+		    </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        AND a.create_date = #{createDate}
+		    </if>
+		    <if test="beginDate != null and beginDate!= ''"><!-- 开始时间-->
+				AND  date_format(a.create_date,'%Y-%m-%d') &gt;= date_format(#{beginDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != null and endDate!= ''"><!-- 结束时间 -->
+				AND  date_format(a.create_date,'%Y-%m-%d') &lt;= date_format(#{endDate},'%Y-%m-%d')
+			</if>
+		    <if test="goodsState!=null and goodsState!='' ">
+		        AND a.goods_state = #{goodsState}
+		    </if>
+		    <if test="publisher!=null and publisher!='' ">
+		        AND a.publisher = #{publisher}
+		    </if>
+		    <if test="commodityNumber!=null and commodityNumber!='' ">
+		        AND a.commodity_number = #{commodityNumber}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="goodsResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" />,
+			b.category_name typeName,
+			d.merchant_number merchantsNo,
+			d.vendor_name merchantsName,
+			(
+				SELECT
+					SUM(f.transaction_num)
+				FROM
+					xa_transaction_records f
+				LEFT JOIN xa_goods_specifications g ON f.goods_unit_id = g.id
+				WHERE
+					g.goods_id = a.id
+			) sales
+		FROM
+			XA_GOODS a
+		LEFT JOIN xa_goods_classification b ON a.commodity_type_id=b.id
+		LEFT JOIN per_sys_user c ON c.ID=a.publisher
+		LEFT JOIN xa_business_information d ON d.id=c.merchants_id
+		where 
+			a.ID = #{id}
+	</select>
+
+	<select id="selectList" resultMap="goodsResult" parameterType="com.prj.biz.bean.goods.Goods" >
+		select
+			<include refid="Base_Column_List" />,
+			b.category_name typeName,
+			d.merchant_number merchantsNo,
+			d.vendor_name merchantsName,
+			(
+				SELECT
+					SUM(f.transaction_num)
+				FROM
+					xa_transaction_records f
+				LEFT JOIN xa_goods_specifications g ON f.goods_unit_id = g.id
+				WHERE
+					g.goods_id = a.id
+			) sales
+		FROM
+			XA_GOODS a
+		LEFT JOIN xa_goods_classification b ON a.commodity_type_id=b.id
+		LEFT JOIN per_sys_user c ON c.ID=a.publisher
+		LEFT JOIN xa_business_information d ON d.id=c.merchants_id
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.goods.Goods">
+		select
+		    count(a.ID)
+		from 
+			 XA_GOODS a
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.goods.Goods">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_GOODS 
+			(id,commodity_name,commodity_type_id,commodity_description,commodity_images,promotion_fee,shipping_fee,create_date,goods_state,publisher,commodity_number)
+		VALUES 
+			(#{id},#{commodityName},#{commodityTypeId},#{commodityDescription},#{commodityImages},#{promotionFee},#{shippingFee},now(),#{goodsState},#{publisher},#{commodityNumber})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_GOODS 
+			(id,commodity_name,commodity_type_id,commodity_description,commodity_images,promotion_fee,shipping_fee,create_date,goods_state,publisher,commodity_number)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{commodityName},#{commodityTypeId},#{commodityDescription},#{commodityImages},#{promotionFee},#{shippingFee},now(),#{goodsState},#{publisher},#{commodityNumber})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.goods.Goods">
+     UPDATE XA_GOODS
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="commodityName!=null and commodityName!='' ">
+				commodity_name = #{commodityName},
+			</if>
+			<if test="commodityTypeId!=null and commodityTypeId!='' ">
+				commodity_type_id = #{commodityTypeId},
+			</if>
+			<if test="commodityDescription!=null and commodityDescription!='' ">
+				commodity_description = #{commodityDescription},
+			</if>
+			<if test="commodityImages!=null and commodityImages!='' ">
+				commodity_images = #{commodityImages},
+			</if>
+			<if test="promotionFee!=null and promotionFee!='' ">
+				promotion_fee = #{promotionFee},
+			</if>
+			<if test="shippingFee!=null and shippingFee!='' ">
+				shipping_fee = #{shippingFee},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="goodsState!=null and goodsState!='' ">
+				goods_state = #{goodsState},
+			</if>
+			<if test="publisher!=null and publisher!='' ">
+				publisher = #{publisher},
+			</if>
+			<if test="commodityNumber!=null and commodityNumber!='' ">
+		        commodity_number = #{commodityNumber},
+		    </if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_GOODS
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="commodityName!=null and commodityName!='' ">
+				commodity_name = #{commodityName},
+			</if>
+			<if test="commodityTypeId!=null and commodityTypeId!='' ">
+				commodity_type_id = #{commodityTypeId},
+			</if>
+			<if test="commodityDescription!=null and commodityDescription!='' ">
+				commodity_description = #{commodityDescription},
+			</if>
+			<if test="commodityImages!=null and commodityImages!='' ">
+				commodity_images = #{commodityImages},
+			</if>
+			<if test="promotionFee!=null and promotionFee!='' ">
+				promotion_fee = #{promotionFee},
+			</if>
+			<if test="shippingFee!=null and shippingFee!='' ">
+				shipping_fee = #{shippingFee},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="goodsState!=null and goodsState!='' ">
+				goods_state = #{goodsState},
+			</if>
+			<if test="publisher!=null and publisher!='' ">
+				publisher = #{publisher},
+			</if>
+			<if test="commodityNumber!=null and commodityNumber!='' ">
+		        commodity_number = #{commodityNumber},
+		    </if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_GOODS WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_GOODS
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

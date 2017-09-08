@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>首页</title>
+    <link href="/css/_base/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/js/plugin/uploadify-3.2.1/uploadify.css">
+</head>
+<body style="margin: 100px;">
+
+    <img id="uppic1" src="" alt="无图片" />
+	<input type="file" id="file_upload" name="upjkfile"  multiple="true"> 
+
+	<script type="text/javascript" src="/js/_base/jquery-1.12.1.min.js"></script>
+    <script type="text/javascript" src="/js/_base/bootstrap.min.3.3.5.js"></script>
+    <script type="text/javascript" src="/js/plugin/uploadify-3.2.1/jquery.uploadify.min.js" ></script>
+    <script type="text/javascript" src="/js/plugin/uploadify-3.2.1/fileListManager.js" ></script>
+    
+    <script type="text/javascript">
+	$(function() {
+		$('#file_upload').uploadify({
+			'swf'      : '/js/plugin/uploadify-3.2.1/uploadify.swf',
+			'method'   :  'post',
+			'uploader' : 'http://10.101.0.140:8080/filesvr/upload',
+			'fileObjName'   : 'upjkfile',  
+			'onUploadSuccess' : function(file, data, response){
+	            var obj = jQuery.parseJSON(data);
+	            var picSrc = 'http://10.101.0.140:8080'+obj.body;
+	            alert(picSrc);
+	            $("#uppic1").attr('src',picSrc); 
+	        }
+		});
+	});
+	</script>    
+</body>
+</html>

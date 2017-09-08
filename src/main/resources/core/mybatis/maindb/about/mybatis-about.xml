@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.about.AboutDao">
+
+    <resultMap id="aboutResult" type="com.prj.biz.bean.about.About">
+		<result property="id" column="id" />
+		<result property="aboutTitle" column="about_title" />
+		<result property="aboutTest" column="about_test" />
+		<result property="aboutEndtime" column="about_endtime" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,about_title,about_test,about_endtime
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="aboutTitle!=null and aboutTitle!='' ">
+		        AND about_title = #{aboutTitle}
+		    </if>
+		    <if test="aboutTest!=null and aboutTest!='' ">
+		        AND about_test = #{aboutTest}
+		    </if>
+		    <if test="aboutEndtime!=null and aboutEndtime!='' ">
+		        AND about_endtime = #{aboutEndtime}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="aboutResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_ABOUT 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="aboutResult" parameterType="com.prj.biz.bean.about.About" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_ABOUT 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.about.About">
+		select
+		    count(ID)
+		from 
+			 XA_ABOUT 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.about.About">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_ABOUT 
+			(id,about_title,about_test,about_endtime)
+		VALUES 
+			(#{id},#{aboutTitle},#{aboutTest},#{aboutEndtime})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_ABOUT 
+			(id,about_title,about_test,about_endtime)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{aboutTitle},#{aboutTest},#{aboutEndtime})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.about.About">
+     UPDATE XA_ABOUT
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="aboutTitle!=null and aboutTitle!='' ">
+				about_title = #{aboutTitle},
+			</if>
+			<if test="aboutTest!=null and aboutTest!='' ">
+				about_test = #{aboutTest},
+			</if>
+			<if test="aboutEndtime!=null and aboutEndtime!='' ">
+				about_endtime = #{aboutEndtime},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_ABOUT
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="aboutTitle!=null and aboutTitle!='' ">
+				about_title = #{aboutTitle},
+			</if>
+			<if test="aboutTest!=null and aboutTest!='' ">
+				about_test = #{aboutTest},
+			</if>
+			<if test="aboutEndtime!=null and aboutEndtime!='' ">
+				about_endtime = #{aboutEndtime},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_ABOUT WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_ABOUT
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

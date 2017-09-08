@@ -1,0 +1,63 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>编辑</title>
+    <%@ include file="/WEB-INF/views/common/headCommon.jsp"%>
+    <link href='<spring:url value="/css/plugin/bootstrap-table/bootstrap-table.min.1.10.1.css" />' rel="stylesheet">
+	<style type="text/css">
+		h6{color:blue;}
+		textarea{resize:none;}
+		#word{color:red;}
+	</style>
+</head>
+
+<body style="width: 96%;">
+
+	<form id="submitForm" class="form-horizontal">
+	
+		
+	    <div class="form-group" style="margin-top: 15px" >
+	    	<c:forEach items="${leavingMessagList }" var = "var">
+	    		<label class="control-label col-sm-2">用户：<span>${var.leavingmessageDate }</span></label>
+				<div class="col-sm-10">
+				    <span>${var.leavingmessageContent }</span>
+				</div>
+				<c:if test="${var.replyDate != null || var.replyDate != ''}">
+					<label class="control-label col-sm-2">客服：<span>${var.replyDate }</span></label>
+					<div class="col-sm-10">
+					    <span>${var.replyContent }</span>
+					</div>
+				</c:if>
+				
+	    	</c:forEach>
+			
+		</div>
+		
+		<div class="form-group">
+	        <div class="col-sm-12">
+			  <div class="navbar-btn">
+			 	  <input type="button" value="取消" class="btn btn-primary col-sm-offset-1" id="cancel" />
+			  </div>
+	        </div>
+        </div>
+	  
+	</form> 
+</body>
+
+<script type="text/javascript">
+	
+	$(function() {
+
+		$("#cancel").bind("click",function(){
+			closeWindow(window.name);
+		});
+		
+	});
+		
+	
+</script>
+</html>

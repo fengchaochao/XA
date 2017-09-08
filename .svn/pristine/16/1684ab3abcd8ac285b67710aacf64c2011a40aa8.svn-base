@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.prj.biz.dao.maindb.sysuser.SysUserDao">
+
+	<resultMap id="sysuserRlt" type="com.prj.biz.bean.sysuser.SysUser" >
+		<result property="id" column="ID" />
+		<result property="loginName" column="LOGIN_NAME" />
+		<result property="loginPass" column="LOGIN_PASS" />
+		<result property="realName" column="REAL_NAME" />
+		<result property="mobile" column="MOBILE" />
+		<result property="telephone" column="TELEPHONE" />
+		<result property="email" column="EMAIL" />
+		<result property="userStatus" column="USER_STATUS" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="depId" column="department_id" />
+		<result property="depName" column="department_name" />
+	</resultMap>
+	
+	<select id="selectById" resultMap="sysuserRlt" parameterType="java.lang.String" >
+		select
+			ID,LOGIN_NAME,LOGIN_PASS,REAL_NAME,MOBILE,TELEPHONE,EMAIL,USER_STATUS,CREATE_TIME,department_id,department_name
+		from 
+			PER_SYS_USER
+		where ID = #{id}
+	</select>
+	
+	<select id="selectSysUserForLogin"  resultMap="sysuserRlt"  parameterType="com.prj.biz.bean.sysuser.SysUser">
+		select
+			ID,LOGIN_NAME,LOGIN_PASS,REAL_NAME,MOBILE,TELEPHONE,EMAIL,USER_STATUS,CREATE_TIME,department_id,department_name 
+		from 
+			PER_SYS_USER 
+		where 
+		    LOGIN_NAME = #{loginName} and LOGIN_PASS=#{loginPass} 
+	</select>
+	
+	<select id="selectSysUserForCheckLoginName" parameterType="java.util.HashMap" resultType="java.lang.Integer" >
+		select 
+			count(ID) 
+		from 
+			PER_SYS_USER 
+		where 
+		    LOGIN_NAME = #{loginName} 
+           <if test="id!=null and id!='' ">
+               <![CDATA[ and ID  <> #{id} ]]> 
+           </if> 
+	</select>
+	
+	<sql id="sysuser_where">
+	    <where>
+			<if test="id!=null and id!='' ">
+				ID = #{id}
+			</if>
+			<if test="loginName!=null and loginName!='' ">
+				AND LOGIN_NAME like  CONCAT('%',#{loginName},'%') 
+			</if>
+			<if test="realName!=null and realName!='' ">
+				AND REAL_NAME  like  CONCAT('%',#{realName},'%') 
+			</if>
+			<if test="mobile!=null and mobile!='' ">
+				AND MOBILE =  #{mobile}
+			</if>
+			<if test="userStatus!=null and userStatus!='' ">
+				AND USER_STATUS =  #{userStatus}
+			</if>
+			<if test="depId!=null and depId!='' ">
+				AND department_id =  #{depId}
+			</if>
+	    </where>
+	</sql>
+	
+	<select id="selectList" resultMap="sysuserRlt"  parameterType="com.prj.biz.bean.sysuser.SysUser">
+		select 
+			ID,LOGIN_NAME,LOGIN_PASS,REAL_NAME,MOBILE,TELEPHONE,EMAIL,USER_STATUS,CREATE_TIME,department_id,department_name 
+		from 
+			PER_SYS_USER 
+		<include refid="sysuser_where" />
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+
+	<select id="selectTotal" resultType="java.lang.Integer"  parameterType="com.prj.biz.bean.sysuser.SysUser" >
+		select 
+		    count(ID) 
+		from 
+		    PER_SYS_USER 
+	    <include refid="sysuser_where" />
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.sysuser.SysUser">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO PER_SYS_USER 
+			(ID,LOGIN_NAME,LOGIN_PASS,REAL_NAME,MOBILE,TELEPHONE,EMAIL,USER_STATUS,CREATE_TIME,department_id,department_name)
+		VALUES 
+			(#{id},#{loginName},#{loginPass},#{realName},#{mobile},#{telephone},#{email},#{userStatus},now(),#{depId},#{depName})
+    </insert> 
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.sysuser.SysUser">
+     UPDATE PER_SYS_USER
+	     <set>   
+			<if test="loginName!=null and loginName!='' ">
+				LOGIN_NAME = #{loginName},
+			</if>
+			<if test="loginPass!=null and loginPass!='' ">
+				LOGIN_PASS = #{loginPass},
+			</if>
+			<if test="realName!=null and realName!='' ">
+				REAL_NAME = #{realName},
+			</if>
+			<if test="mobile!=null and mobile!='' ">
+				MOBILE = #{mobile},
+			</if>
+			<if test="telephone!=null and telephone!='' ">
+				TELEPHONE = #{telephone},
+			</if>
+			<if test="email!=null and email!='' ">
+				EMAIL = #{email},
+			</if>			
+			<if test="userStatus!=null and userStatus!='' ">
+				USER_STATUS = #{userStatus},
+			</if>
+			department_id = #{depId},
+			department_name = #{depName}
+		</set>
+	    where ID = #{id}
+    </update>
+    
+     <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM PER_SYS_USER WHERE ID = #{id}
+     </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			PER_SYS_USER 
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+</mapper>

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.consumers.ConsumersDao">
+
+    <resultMap id="consumersResult" type="com.prj.biz.bean.consumers.Consumers">
+		<result property="id" column="id" />
+		<result property="customerNumber" column="customer_number" />
+		<result property="nickName" column="nick_name" />
+		<result property="customerSex" column="customer_sex" />
+		<result property="birthday" column="birthday" />
+		<result property="address" column="address" />
+		<result property="payAccount" column="pay_account" />
+		<result property="wechatAccount" column="weChat_account" />
+		<result property="customerState" column="customer_state" />
+		<result property="accountType" column="account_type" />
+		<result property="createDate" column="create_date" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,customer_number,nick_name,customer_sex,birthday,address,pay_account,weChat_account,customer_state,account_type,create_date
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="customerNumber!=null and customerNumber!='' ">
+		        AND customer_number = #{customerNumber}
+		    </if>
+		    <if test="nickName!=null and nickName!='' ">
+		        AND nick_name = #{nickName}
+		    </if>
+		    <if test="customerSex!=null and customerSex!='' ">
+		        AND customer_sex = #{customerSex}
+		    </if>
+		    <if test="birthday!=null and birthday!='' ">
+		        AND birthday = #{birthday}
+		    </if>
+		    <if test="address!=null and address!='' ">
+		        AND address = #{address}
+		    </if>
+		    <if test="payAccount!=null and payAccount!='' ">
+		        AND pay_account = #{payAccount}
+		    </if>
+		    <if test="wechatAccount!=null and wechatAccount!='' ">
+		        AND weChat_account = #{wechatAccount}
+		    </if>
+		    <if test="customerState!=null and customerState!='' ">
+		        AND customer_state = #{customerState}
+		    </if>
+		    <if test="accountType!=null and accountType!='' ">
+		        AND account_type = #{accountType}
+		    </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        AND create_date = #{createDate}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="consumersResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_CONSUMERS 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="consumersResult" parameterType="com.prj.biz.bean.consumers.Consumers" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_CONSUMERS 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.consumers.Consumers">
+		select
+		    count(ID)
+		from 
+			 XA_CONSUMERS 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.consumers.Consumers">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_CONSUMERS 
+			(id,customer_number,nick_name,customer_sex,birthday,address,pay_account,weChat_account,customer_state,account_type,create_date)
+		VALUES 
+			(#{id},#{customerNumber},#{nickName},#{customerSex},#{birthday},#{address},#{payAccount},#{wechatAccount},#{customerState},#{accountType},#{createDate})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_CONSUMERS 
+			(id,customer_number,nick_name,customer_sex,birthday,address,pay_account,weChat_account,customer_state,account_type,create_date)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{customerNumber},#{nickName},#{customerSex},#{birthday},#{address},#{payAccount},#{wechatAccount},#{customerState},#{accountType},#{createDate})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.consumers.Consumers">
+     UPDATE XA_CONSUMERS
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="customerNumber!=null and customerNumber!='' ">
+				customer_number = #{customerNumber},
+			</if>
+			<if test="nickName!=null and nickName!='' ">
+				nick_name = #{nickName},
+			</if>
+			<if test="customerSex!=null and customerSex!='' ">
+				customer_sex = #{customerSex},
+			</if>
+			<if test="birthday!=null and birthday!='' ">
+				birthday = #{birthday},
+			</if>
+			<if test="address!=null and address!='' ">
+				address = #{address},
+			</if>
+			<if test="payAccount!=null and payAccount!='' ">
+				pay_account = #{payAccount},
+			</if>
+			<if test="wechatAccount!=null and wechatAccount!='' ">
+				weChat_account = #{wechatAccount},
+			</if>
+			<if test="customerState!=null and customerState!='' ">
+				customer_state = #{customerState},
+			</if>
+			<if test="accountType!=null and accountType!='' ">
+				account_type = #{accountType},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_CONSUMERS
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="customerNumber!=null and customerNumber!='' ">
+				customer_number = #{customerNumber},
+			</if>
+			<if test="nickName!=null and nickName!='' ">
+				nick_name = #{nickName},
+			</if>
+			<if test="customerSex!=null and customerSex!='' ">
+				customer_sex = #{customerSex},
+			</if>
+			<if test="birthday!=null and birthday!='' ">
+				birthday = #{birthday},
+			</if>
+			<if test="address!=null and address!='' ">
+				address = #{address},
+			</if>
+			<if test="payAccount!=null and payAccount!='' ">
+				pay_account = #{payAccount},
+			</if>
+			<if test="wechatAccount!=null and wechatAccount!='' ">
+				weChat_account = #{wechatAccount},
+			</if>
+			<if test="customerState!=null and customerState!='' ">
+				customer_state = #{customerState},
+			</if>
+			<if test="accountType!=null and accountType!='' ">
+				account_type = #{accountType},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_CONSUMERS WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_CONSUMERS
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

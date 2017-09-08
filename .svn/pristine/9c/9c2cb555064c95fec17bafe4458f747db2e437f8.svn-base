@@ -1,0 +1,219 @@
+package com.prj.biz.action.sysuser;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.prj.biz.action._base.BaseAction;
+import com.prj.biz.bean.permission.PerResource;
+import com.prj.biz.bean.sysuser.SysUser;
+import com.prj.biz.enums.RespMessEnum;
+import com.prj.biz.service.permission.PerResourceService;
+import com.prj.biz.service.permission.PerRoleService;
+import com.prj.biz.service.sysuser.SysUserService;
+import com.prj.core.bean.exp.UfdmException;
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.constant.SysConstants;
+import com.prj.utils.UfdmMd5Util;
+import com.prj.utils.UfdmRegexUtil;
+
+import net.sf.json.JSONArray;
+
+/**
+ * 描述: 系统用户ACTION<br>
+ * @author 胡义振
+ */
+@Controller
+@RequestMapping("sysuser/account")
+public class SysUserAccountAction extends BaseAction
+{
+	private static final long serialVersionUID = 3304353109246337608L;
+	@Resource
+	private SysUserService  sysUserService;
+	@Resource
+	private PerRoleService perRoleService;
+	@Resource
+	private PerResourceService   perResourceService;
+	
+	private Logger dataLogger = Logger.getLogger("dataLogFile");
+	
+	/**
+	 * 描述: 进入用户登陆页面
+	 * @auther 胡义振
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("doEnSysUserLogin")
+	public ModelAndView doEnSysUserLogin() throws Exception
+	{
+		Subject currentUser = SecurityUtils.getSubject();
+		if(currentUser.isAuthenticated() || currentUser.isRemembered()){
+			// 进入登录成功页面
+			setSysUserSession(currentUser);
+			return doEnLoginIndex();
+		}
+		// 进入登录页面
+		return new ModelAndView("/sysuser/sysUserLogin");
+	}
+	
+	
+	/**
+	 * @Description: 登录成功首页
+	 * @return
+	 * @throws Exception
+	 * @date 2016年7月27日 
+	 * @author 1936
+	 */
+	@RequestMapping("doEnLoginIndex")
+	public ModelAndView doEnLoginIndex() throws Exception
+	{
+		return new ModelAndView("/common/loginIndex"); 
+	}
+	
+	/**
+	 * 描述: 用户登录
+	 * @auther 胡义振
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("doSysUserLogin")
+	@ResponseBody
+	public RespBean<String> doSysUserLoginAction(HttpServletResponse response,SysUser paramSysUser) throws Exception
+	{
+		dataLogger.info("开始登录："+paramSysUser);
+		
+		RespBean<String> respBean = new RespBean<String>();
+		
+		if (paramSysUser == null || paramSysUser.getLoginName()==null || "".equals(paramSysUser.getLoginName()))	{			
+			throw new UfdmException(RespMessEnum.RESP_CODE_0001000.getRespCode());
+		}
+		if (paramSysUser == null || paramSysUser.getLoginPass()==null || "".equals(paramSysUser.getLoginPass()))	{			
+			throw new UfdmException(RespMessEnum.RESP_CODE_0001001.getRespCode());
+		}
+		// 密码MD5摘要
+		paramSysUser.setLoginPass(UfdmMd5Util.MD5Encode(paramSysUser.getLoginPass()));
+		
+		// 登录
+		SysUser loginSysUser = sysUserService.doGetSysUserForLogin(paramSysUser);
+		
+		// 判断登录是否成功
+		if (loginSysUser == null || loginSysUser.getId()==null || "".equals(loginSysUser.getId()))	{			
+			throw new UfdmException(RespMessEnum.RESP_CODE_0001002.getRespCode());
+		}
+		if (loginSysUser != null &&"1".equals(loginSysUser.getUserStatus()))	{			
+			throw new UfdmException(RespMessEnum.RESP_CODE_0001007.getRespCode());
+		}
+		// 用户身份（格式：'"登录名+"#"+"用户ID"'）
+		String principal = loginSysUser.getLoginName() + "#" +  loginSysUser.getId();
+		// 身份凭证
+		String credential = UfdmMd5Util.MD5Encode(paramSysUser.getLoginPass());
+		// 记住密码
+		boolean remeberMe = paramSysUser.getRememberMe();
+		// 通过 shiro 进行身份验证
+		UsernamePasswordToken token = new UsernamePasswordToken(principal,credential);
+		
+		Subject currentUser = SecurityUtils.getSubject();
+		token.setRememberMe(remeberMe);
+		currentUser.login(token);
+		setSysUserSession(currentUser);
+		
+		System.out.println("\n currentUser.login 登录........");
+		
+		respBean.setBody("登录成功");
+		
+		return respBean;
+	}
+	
+	
+	private void setSysUserSession(Subject currentUser) throws Exception {
+		String principal = (String) currentUser.getPrincipal();
+		String userId = principal.split("#")[1];
+		SysUser loginSysUser = sysUserService.doGetById(userId);
+		List<PerResource> menuList = sysUserService.doGetHxResourceForMenuList(perResourceService.doGetResourceMenuListByUserId(loginSysUser.getId()));
+		loginSysUser.setHxResourceMenuList(menuList);
+		loginSysUser.setHxResourceMenuListJson(JSONArray.fromObject(menuList));
+		currentUser.getSession().setAttribute(SysConstants.SESSION_SYS_USER, loginSysUser);
+	}
+
+	
+	
+	/**
+	 * 描述: 进入用户修改密码
+	 * @auther 胡义振
+	 * @date 2016-10-09
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("doEnEditSysUserPass")
+	@Transactional
+	public ModelAndView doEnEditSysUserPassAction() throws Exception
+	{
+		SysUser sessionSysUser = (SysUser) doGetSession(SysConstants.SESSION_SYS_USER); 
+		SysUser sysUser = sysUserService.doGetById(sessionSysUser.getId());
+		Map<String,SysUser> model=new HashMap<String,SysUser>();
+		model.put("sysUser", sysUser);
+		return new ModelAndView("/userCenter/editSysUserPass", model);
+	}
+	
+	/**
+	 * 描述: 修改密码
+	 * @auther 胡义振
+	 * @date 2014-01-09
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("doEditSysUserPass")
+	@ResponseBody
+	public RespBean<String> doEditSysUserPassAction(SysUser sysUser) throws Exception
+	{
+		RespBean<String> resp=new RespBean<String>();
+		SysUser currSysUser = sysUserService.doGetById(((SysUser) doGetSession(SysConstants.SESSION_SYS_USER)).getId());
+		if (sysUser == null || sysUser.getOldLoginPass()==null || !currSysUser.getLoginPass().equals(UfdmMd5Util.MD5Encode(sysUser.getOldLoginPass()))){			
+			//原密码不符
+			throw new UfdmException(RespMessEnum.RESP_CODE_0001004.getRespCode());
+		}
+		if(sysUser == null || sysUser.getLoginPass()==null||!UfdmRegexUtil.isPwd(sysUser.getLoginPass())){
+			//密码格式错误
+			throw new UfdmException(RespMessEnum.RESP_CODE_0001006.getRespCode());
+		}else{
+			if(sysUser.getRepeatLoginPass()==null||!sysUser.getRepeatLoginPass().equals(sysUser.getLoginPass())){
+				//新密码与确认密码不一致
+				throw new UfdmException(RespMessEnum.RESP_CODE_0001005.getRespCode());
+			}
+		}
+		currSysUser.setLoginPass(UfdmMd5Util.MD5Encode(sysUser.getLoginPass()));
+		sysUserService.doModById(currSysUser);
+		resp.setBody("修改成功！");
+		return resp;
+	}
+	
+
+	/**
+	 * 描述: 退出登录
+	 * @auther 胡义振
+	 * @date 2014-1-14 
+	 * @throws Exception
+	 */
+	@RequestMapping("doSysUserLogout")
+	public ModelAndView doSysUserLogout() throws Exception{
+		Subject currentUser = SecurityUtils.getSubject();
+		Session session = currentUser.getSession();
+		session.removeAttribute(SysConstants.SESSION_SYS_USER);
+		return new ModelAndView("/sysuser/sysUserLogin");
+	}
+
+}

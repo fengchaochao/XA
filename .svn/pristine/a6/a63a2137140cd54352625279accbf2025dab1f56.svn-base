@@ -1,0 +1,60 @@
+package com.prj.utils.pay;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.domain.AlipayTradeAppPayModel;
+import com.alipay.api.request.AlipayTradeAppPayRequest;
+import com.alipay.api.request.AlipayTradeWapPayRequest;
+
+/**
+ * @author: Fengc
+ * @date:2017-7-14 上午9:04:43
+ * @version :0.0.1
+ * @dis:
+ */
+public class Alipay {
+
+	// alipay
+	private static String APPID = "2017041606754676";
+	private static String PRIVATE_KEY = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCAPzuhtjGwbI1HapU5kKQqVErQRq/qh0Qt8sjdpBLDkJ55Hje/lJXcPA9EEM6trTF44i45Z10slO94Iw7V/nf5yx/+mt4oXXccW53LQXWzprZQuYT4lTrFJJoTV3xbgzGLCkETERGGKXleJbbppfC1+gEJF+2M018swJKq149YqPAdriCGh3jd2Ys5fTFTzuHEX/hF6WiYXm0oF2Au1FBaXIfcY7b2THXBc/hldk6qS6l2BOx8MtRxHdi9ak3O3/KWC1wf/DW8I8GbswBLBMpbwkK8hV+R/bek9lYTpb6wCy/KybkHLAxhbD2TWLf4N1g4hDm2uE4SNfmw3y76WOVVAgMBAAECggEATgGoTOGccbplaNYstFoFcPXal7sXT6k9UFGH2kDtZOT3b6ZwtGg1i0NA6d7rR/q7x9KT2TjFFNP2oPV6FbH12guyh1Q94wGO7MHRRguoA0FZTdq6RdXHbJip2y/wpV00amUvVeCg7yEVAK4iBxZ3RsktjhFu3aTIFFmCHMaHG56w/b64adkXvnnnwcCo5dXFWMyWrYKw0MNsfZBON/v1u949R+35ckv9TTmqDlZ4yCX5WRYC/d6RLAdhNli1eq8AgSUazGeoALz8FM/x8uddsHdUR/9u/Ie2+ob6iUNZivQqtj1YjH17dYRo5qIBKnCiHOBLH8t1T++YwVWo6gP4QQKBgQDITuCTSKvX9qonyf0uBf0LDcM7D3BhbsN1pr9ua6LIwh9QAc9Tl6tbNsAsepbtbYzBpxlV/MiXx+h3qztDVOOXYgQGyeVATj0MYHtY7nbq19xvjgAMNsGSuKsz25AFZUOknRznaWnqm19tjq0DZN82xybJ1/RagmtvtZd/v/w2pQKBgQCj51Y5PqUDF3sTmXi2naJl9W0cS9R3+zEpri1CP1rtexITAn9DiLkCSNhRDup0/mizKrN8He6TIr9mL0hGKPZ49jnSzK6HLIgjh8e+35lyukq8QMsP6a7h/CmaoUPZCl5kXiDvr2FNKR990QGiCfDHJXRTMgXabgzzaXJZwn1k8QKBgFiT8OGQsFU3QfWIcApLIaQiuOPEJwkfBxZe36Z/uKOYnGov8rPfjSov4vmIWHe0CxuTvjN1LmtYPqe0s+dJgb9u26L44wT11C9F9yXThgjB3jwCimjcSeuM+EBdZqnMJwaDZ8W5qtnRTXjQMBghIkhB9xgpBGiF5eanYdBfYLP1AoGAWMh7IE8au24AsUE07la9HVWwYN+Cm+tpWhaLVZNUAcfkpn93yHFLJj2nT2ExB2a3+DVtPBJKpVDxNLzv/XE68ZMPB2zwLTCmHfjy7iXYzRi0Wv0OAfSnUqpxLt2kDvFa6CtE1BDAODfKYzDQHaIc1wMm29oA6a0rPr8jvhNoMUECgYEAp74AWqV++YPYTXghiZXm5h7ZBvqo9J6VKxzHIql3RHxt9SwlPbASPTUX2T4PxFjp9gg0Xd23nny9INIqofTT68w8F1fMWrAcYr8LvXBcCou59IHU/ow2jkdinC18k6YLF/Nyvn8M+n35HuFNx4P2MURnkYg2XBMvaRzZYF7MM3Q=";
+	private static String ALIPAY_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl6mYZ5pvqpmkZcLe2Yus+TSzG9/WHhXK1bJ8ABdTB6j7fSaPjCdoSyCliMlhx1A1JuCDj3Tpkr4bK2lc/PSPG3tgTfaiLez8OkruvxMW0bs1UA3ev6Yc2iLMWzQebnt+9XTglc21+aVm1ZqVEiHxRBHBYjuQB9vdB0NunTvc+eNC8jYxZrXCwr0DxcUcUyxxvIrizye2hQIqnjWea7i1XIKsF2I4OJ0IpyT9M7qsPArEMQ/seO2fhR4LrugQ/msVROUckPV513nTwOpXy0z4IXcR8l/C0PC+pnLIpsu5rkERlZftkI24QuostjtrHau9emxsmAQFpBhdqo322u1XkQIDAQAB";
+
+	public static void doPay(HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse, String orderId, String totalPrice) {
+		AlipayClient alipayClient = new DefaultAlipayClient(
+				"https://openapi.alipay.com/gateway.do", APPID, PRIVATE_KEY,
+				"json", "UTF-8", ALIPAY_PUBLIC_KEY, "RSA2"); // 获得初始化的AlipayClient
+		AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();// 创建API对应的request
+		AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+		model.setBody("【易聚客】商品购买订单," + orderId);
+		model.setSubject("【易聚客】商品购买订单");
+		model.setOutTradeNo("123444");
+		model.setTimeoutExpress("30m");
+		model.setTotalAmount("1");
+		model.setProductCode("QUICK_MSECURITY_PAY");
+		alipayRequest.setBizModel(model);
+		String form;
+
+		try {
+			form = alipayClient.pageExecute(alipayRequest).getBody();
+			httpResponse.setContentType("text/html;charset=UTF-8");
+			httpResponse.getWriter().write(form);// 直接将完整的表单html输出到页面
+			httpResponse.getWriter().flush();
+		} catch (AlipayApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+}

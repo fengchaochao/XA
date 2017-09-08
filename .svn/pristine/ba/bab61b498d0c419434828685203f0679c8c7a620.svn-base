@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    					http://www.springframework.org/schema/beans/spring-beans.xsd  
+                        http://www.springframework.org/schema/aop
+                        http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+        				http://www.springframework.org/schema/context 
+        				http://www.springframework.org/schema/context/spring-context-4.0.xsd  
+        				http://www.springframework.org/schema/mvc 
+        				http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd 
+        				http://www.springframework.org/schema/util 
+        				http://www.springframework.org/schema/util/spring-util.xsd">
+        				
+    <description>Shiro 配置</description>
+    
+	<!-- 缓存管理器 使用Ehcache实现 -->  
+	<bean id="UFDMehcacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">  
+	    <property name="cacheManagerConfigFile" value="classpath:/core/cache/ehcache.xml"/>  
+	</bean>  
+
+    <bean id="UFDMrememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">  
+        <constructor-arg value="UFDMrememberMe"/> 
+        <property name="httpOnly" value="true"/>
+        <property name="maxAge" value="2592000" /><!-- 30天，单位秒（30*24*60*60） -->
+    </bean>  
+    
+    <bean id="UFDMsessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">  
+        <constructor-arg name="name" value="UFDMSessionId"/>  
+        <property name="httpOnly" value="true"/>  
+        <property name="maxAge" value="-1"/>  <!-- -1 浏览器关闭 -->
+    </bean> 
+    
+    <bean id="UFDMSessionDao" class="com.prj.core.shiro.UFDMSessionDao">  
+        <property name="activeSessionsCacheName" value="shiro-activeSessionCache"/>  
+    </bean>
+    
+    <!-- 定时清理僵尸session，Shiro会启用一个后台守护线程定时执行清理操作用户直接关闭浏览器造成的孤立会话 -->
+	<bean id="UFDMsessionValidationScheduler" class="org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler">
+	    <property name="interval" value="3600000"/><!-- 1 小时，单位毫秒（60*60*1000） -->
+	    <property name="sessionManager" ref="UFDMsessionManager"/>
+	</bean>
+    
+    <!-- 会话监听 -->  
+    <bean id="UFDMSessionListener" class="com.prj.core.shiro.UFDMSessionListener" />  
+    
+	<!-- 会话管理器 -->  
+	<bean id="UFDMsessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager" >
+	    <property name="globalSessionTimeout" value="1800000"/>  <!-- 30分钟，单位毫秒（30*60*1000） -->
+	    <property name="deleteInvalidSessions" value="true"/>  
+	    <property name="sessionValidationSchedulerEnabled" value="true"/>  
+	    <property name="sessionValidationScheduler" ref="UFDMsessionValidationScheduler" />
+	    <property name="sessionDAO" ref="UFDMSessionDao"/>
+	    <property name="sessionIdCookieEnabled" value="true"/>  
+	    <property name="sessionIdCookie" ref="UFDMsessionIdCookie"/>
+	    <property name="sessionListeners" ref="UFDMSessionListener"/>
+	</bean>  
+	
+    <!-- rememberMe管理器 -->  
+    <bean id="UFDMrememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
+        <!-- org.apache.shiro.codec.Base64.encodeToString("16（32,64）位字符")  rememberMe cookie加密的密钥  默认AES算法 密钥长度（128 256 512 位） -->
+        <property name="cipherKey" value="#{T(org.apache.shiro.codec.Base64).decode('dWZkbXBhc3MxMjM0NTY3OA==')}"/>
+        <property name="cookie" ref="UFDMrememberMeCookie"/>  
+    </bean> 
+    
+    <bean id="formAuthenticationFilter" class="org.apache.shiro.web.filter.authc.FormAuthenticationFilter">
+        <property name="usernameParam" value="loginName"/>
+        <property name="passwordParam" value="loginPass"/>
+        <property name="rememberMeParam" value="rememberMe"/>
+        <property name="loginUrl" value="/sysuser/account/doEnSysUserLogin" />
+    </bean>
+
+    <!-- Shiro Filter  -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean"> 
+        <property name="securityManager" ref="securityManager" />
+        <property name="loginUrl" value="/sysuser/account/doEnSysUserLogin" />
+        <property name="unauthorizedUrl" value="/unauthorized.html" /> 
+        <property name="filters">
+            <util:map>
+                <entry key="authc" value-ref="formAuthenticationFilter"/>
+            </util:map>
+        </property>
+        <property name="filterChainDefinitionMap" ref="shiroChainDefinition" />
+    </bean> 
+    
+    <!-- 添加 动态权限 定义 -->
+    <bean id="shiroChainDefinition" class="com.prj.core.shiro.ShiroChainDefinition">  
+        <property name="filterChainDefinitions">
+            <value>
+                /sysuser/account/doEnSysUserLogin = anon 
+                /sysuser/account/doEnLoginIndex = authc 
+                /sysuser/account/doSysUserLogout = logout 
+                <!-- /** = authc -->
+                /api/** = anon
+            </value>
+        </property>
+    </bean>
+  
+    <!-- 添加 securityManager 定义 -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="cacheManager" ref="UFDMehcacheManager" /> 
+        <property name="realm" ref="UFDMRealm" />
+        <property name="rememberMeManager" ref="UFDMrememberMeManager"/>
+        <property name="sessionManager" ref="UFDMsessionManager"/>
+    </bean>  
+    
+    <!-- 自定义的Realm -->
+    <bean id="UFDMRealm" class="com.prj.core.shiro.UFDMRealm" >
+        <property name="cachingEnabled" value="false" /> 
+    </bean>
+    
+</beans>

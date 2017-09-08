@@ -1,0 +1,126 @@
+package com.prj.biz.api.shareGoods;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.prj.biz.bean.goods.Goods;
+import com.prj.biz.bean.goodsevaluate.GoodsEvaluate;
+import com.prj.biz.bean.goodsspecifications.GoodsSpecifications;
+import com.prj.biz.service.businessclassification.BusinessClassificationService;
+import com.prj.biz.service.goods.GoodsService;
+import com.prj.biz.service.goodsclassification.GoodsClassificationService;
+import com.prj.biz.service.goodsevaluate.GoodsEvaluateService;
+import com.prj.biz.service.goodsspecifications.GoodsSpecificationsService;
+import com.prj.utils.Tool;
+
+/**
+ * @author: Liang
+ * @date:2017-8-21
+ * @version :0.0.1
+ * @dis:App商品分享页面,
+ */
+@Controller
+@RequestMapping("/shareGoods")
+public class ShareGoodsAction {
+
+	@Autowired
+	private BusinessClassificationService businessClassificationService;
+	
+	@Autowired
+	private GoodsService goodsService;
+	
+	@Autowired
+	private GoodsClassificationService goodsClassificationService;
+	
+	@Autowired
+	private GoodsSpecificationsService goodsSpecificationsService;
+	
+	@Autowired
+	private GoodsEvaluateService goodsEvaluateService;
+	
+	
+	/**
+	 * 描述: 进入商品详情页面
+	 * @auther Liang
+	 * @date 2017-07-13
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnGoodsView")
+	@ResponseBody
+	public ModelAndView doEnGoodsView(String goodsId) throws Exception{
+		Goods goods = goodsService.doGetById(goodsId);
+		Map<String, Object> model = new HashMap<String, Object>();
+		//商品规格
+		GoodsSpecifications goodsSpecifications=new GoodsSpecifications();
+		goodsSpecifications.setGoodsId(goodsId);
+		List<GoodsSpecifications> goodsSpecificationsList=goodsSpecificationsService.doGetList(goodsSpecifications);
+		//商品评价
+		GoodsEvaluate goodsEvaluate=new GoodsEvaluate();
+		goodsEvaluate.setGoodsId(goodsId);
+		goodsEvaluate.setOrder("desc");
+		goodsEvaluate.setOrderName("evaluate_date");
+		List<GoodsEvaluate> goodsEvaluateList = goodsEvaluateService.doGetList(goodsEvaluate);
+		for (GoodsEvaluate goodsEvaluate2 : goodsEvaluateList) {
+			if(goodsEvaluate2!=null){
+				goodsEvaluate2.setConsumersName(goodsEvaluate2.getConsumers().getNickName());
+				//比较时间
+				String evaluateDate=Tool.formatDateTime(goodsEvaluate2.getEvaluateDate());
+				goodsEvaluate2.setEvaluateDate(evaluateDate);
+				
+			}
+		}
+		String[] commodityImages={};
+		if(!StringUtils.isEmpty(goods.getCommodityImages())){
+			commodityImages=goods.getCommodityImages().split(",");
+		}
+		String[] goodsPhotos={};
+		if(!StringUtils.isEmpty(goods.getGoodsPhotos())){
+			goodsPhotos=goods.getGoodsPhotos().split(",");
+		}
+		model.put("goodsSpecificationsList", goodsSpecificationsList);
+		model.put("goods", goods);
+		model.put("commodityImages", commodityImages);
+		model.put("goodsPhotos", goodsPhotos);
+		model.put("goodsEvaluateList", goodsEvaluateList);
+		return new ModelAndView("/h5/shareGoods/shareOne", model);
+	}
+	
+	/**
+	 * 描述: 商品评价
+	 * @auther xjt
+	 * @date 2017-07-27
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnGoodsSelById")
+	@ResponseBody
+	public ModelAndView doEnGoodsSelById(String goodsId) throws Exception{
+		Map<String, Object> model = new HashMap<String, Object>();
+		GoodsEvaluate goodsEvaluate=new GoodsEvaluate();
+		goodsEvaluate.setGoodsId(goodsId);
+		goodsEvaluate.setOrder("desc");
+		goodsEvaluate.setOrderName("evaluate_date");
+		List<GoodsEvaluate> goodsEvaluateList = goodsEvaluateService.doGetList(goodsEvaluate);
+		for (GoodsEvaluate goodsEvaluate2 : goodsEvaluateList) {
+			if(goodsEvaluate2!=null){
+				goodsEvaluate2.setConsumersName(goodsEvaluate2.getConsumers().getNickName());
+				
+				String evaluateDate=Tool.formatDateTime(goodsEvaluate2.getEvaluateDate());
+				goodsEvaluate2.setEvaluateDate(evaluateDate);
+			}
+		}
+		
+		model.put("goodsEvaluateList", goodsEvaluateList);
+		return new ModelAndView("/h5/shareGoods/commodityEvaluation", model);
+	}
+	
+}

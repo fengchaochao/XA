@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.withdrawrecord.WithdrawRecordDao">
+
+    <resultMap id="withdrawrecordResult" type="com.prj.biz.bean.withdrawrecord.WithdrawRecord">
+		<result property="id" column="id" />
+		<result property="withdrawPrice" column="withdraw_price" />
+		<result property="withdrawDate" column="withdraw_date" />
+		<result property="applyState" column="apply_state" />
+		<result property="result" column="result" />
+		<result property="bankId" column="bank_id" />
+		<result property="applyNumber" column="apply_number" />
+		
+		<result property="bankWithdrawal.brankAddress" column="brank_address" />
+		<result property="bankWithdrawal.brankNumber" column="brank_number" />
+		<result property="bankWithdrawal.brankName" column="brank_name" />
+		<result property="bankWithdrawal.userId" column="user_id" />
+		<result property="userState" column="userState" />
+		
+		<result property="beginDate" column="beginDate" />
+		<result property="endDate" column="endDate" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		a.id,a.withdraw_price,a.withdraw_date,a.apply_state,a.result,a.bank_id,a.apply_number
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	   		 1=1
+	        <if test="id!=null and id!='' "> 
+	           AND a.ID = #{id} 
+	       </if>
+		    <if test="withdrawPrice!=null and withdrawPrice!='' ">
+		        AND a.withdraw_price = #{withdrawPrice}
+		    </if>
+		    <if test="withdrawDate!=null and withdrawDate!='' ">
+		        AND a.withdraw_date = #{withdrawDate}
+		    </if>
+		     <if test="beginDate != null and beginDate!= ''"><!-- 开始时间-->
+				AND  date_format(a.withdraw_date,'%Y-%m-%d') &gt;= date_format(#{beginDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != null and endDate!= ''"><!-- 结束时间 -->
+				AND  date_format(a.withdraw_date,'%Y-%m-%d') &lt;= date_format(#{endDate},'%Y-%m-%d')
+			</if>
+		    <if test="applyState!=null and applyState!='' ">
+		        AND a.apply_state = #{applyState}
+		    </if>
+		    <if test="result!=null and result!='' ">
+		        AND a.result = #{result}
+		    </if>
+		    <if test="bankId!=null and bankId!='' ">
+		        AND a.bank_id = #{bankId}
+		    </if>
+		    <if test="applyNumber!=null and applyNumber!='' ">
+		        AND a.apply_number = #{applyNumber}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="withdrawrecordResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_WITHDRAW_RECORD  a
+		where 
+			a.ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="withdrawrecordResult" parameterType="com.prj.biz.bean.withdrawrecord.WithdrawRecord" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_WITHDRAW_RECORD a
+		<include refid="query_where" />
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectAllList" resultMap="withdrawrecordResult" parameterType="com.prj.biz.bean.withdrawrecord.WithdrawRecord" >
+		SELECT
+			a.*,
+			b.*,
+			c.user_state userState
+		FROM
+			xa_withdraw_record a
+		LEFT JOIN xa_bank_withdrawal b ON a.bank_id=b.id
+		LEFT JOIN per_sys_user c ON B.user_id=C.ID
+		<include refid="query_where" /> 
+		<if test="userId!=null and userId!='' ">
+		        AND b.user_id = #{userId}
+	    </if>
+		<if test="userState!=null and userState!='' ">
+		        AND c.user_state = #{userState}
+	    </if>
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.withdrawrecord.WithdrawRecord">
+		select
+		    count(a.ID)
+		from 
+			 XA_WITHDRAW_RECORD a
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.withdrawrecord.WithdrawRecord">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_WITHDRAW_RECORD 
+			(id,withdraw_price,withdraw_date,apply_state,result,bank_id,apply_number)
+		VALUES 
+			(#{id},#{withdrawPrice},now(),#{applyState},#{result},#{bankId},#{applyNumber})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_WITHDRAW_RECORD 
+			(id,withdraw_price,withdraw_date,apply_state,result,bank_id,apply_number)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{withdrawPrice},now(),#{applyState},#{result},#{bankId},#{applyNumber})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.withdrawrecord.WithdrawRecord">
+     UPDATE XA_WITHDRAW_RECORD
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="withdrawPrice!=null and withdrawPrice!='' ">
+				withdraw_price = #{withdrawPrice},
+			</if>
+			<if test="withdrawDate!=null and withdrawDate!='' ">
+				withdraw_date = #{withdrawDate},
+			</if>
+			<if test="applyState!=null and applyState!='' ">
+				apply_state = #{applyState},
+			</if>
+			<if test="result!=null and result!='' ">
+				result = #{result},
+			</if>
+			<if test="bankId!=null and bankId!='' ">
+				bank_id = #{bankId},
+			</if>
+			<if test="applyNumber!=null and applyNumber!='' ">
+				apply_number = #{applyNumber},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_WITHDRAW_RECORD
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="withdrawPrice!=null and withdrawPrice!='' ">
+				withdraw_price = #{withdrawPrice},
+			</if>
+			<if test="withdrawDate!=null and withdrawDate!='' ">
+				withdraw_date = #{withdrawDate},
+			</if>
+			<if test="applyState!=null and applyState!='' ">
+				apply_state = #{applyState},
+			</if>
+			<if test="result!=null and result!='' ">
+				result = #{result},
+			</if>
+			<if test="bankId!=null and bankId!='' ">
+				bank_id = #{bankId},
+			</if>
+			<if test="applyNumber!=null and applyNumber!='' ">
+				apply_number = #{applyNumber},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_WITHDRAW_RECORD WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_WITHDRAW_RECORD
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

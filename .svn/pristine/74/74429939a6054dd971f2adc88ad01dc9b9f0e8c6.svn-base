@@ -1,0 +1,83 @@
+package com.prj.biz.action.headquartersPC.businessStatistics;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.prj.biz.action._base.BaseAction;
+import com.prj.biz.bean.order.Order;
+import com.prj.biz.service.codeareas.codeAreasService;
+import com.prj.biz.service.order.OrderService;
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+
+/**
+ * 订单统计
+ * @author xjt
+ *
+ */
+@RestController
+@RequestMapping("/headquarters/orderStatistics")
+public class OrderStatisticsAction extends BaseAction{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
+	@Resource
+	private OrderService orderService;
+	@Resource
+	private codeAreasService codeAreasService;
+
+	/**
+	 * 描述: 订单统计页(总部)
+	 * @auther xjt
+	 * @date 2017-08-01
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doOrderStatisticsList")
+    public ModelAndView doOrderStatisticsList(HttpServletRequest request,HttpServletResponse response) throws Exception
+	{
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("countryList", codeAreasService.selectCountyList());
+		model.put("provinceList", codeAreasService.selectProvinceList());
+		model.put("cityList", codeAreasService.selectCityList());
+		model.put("areaList", codeAreasService.selectRegionList());
+		return new ModelAndView("/headquarters/businessStatistics/orderStatisticsList",model);
+	}
+	
+	/**
+	 * 描述: 分页查询信息
+	 * @auther Liang
+	 * @date 2017-08-01
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadOrderList")
+	@ResponseBody
+	public RespBean<RespPagination<Order>> doReadOrderList(Order order) throws Exception{
+		RespBean<RespPagination<Order>> respBean = new RespBean<RespPagination<Order>>();
+		RespPagination<Order> respPagination = new RespPagination<Order>();
+		Integer total = orderService.doGetTotal(order);
+		List<Order> orderList = orderService.doGetList(order);
+		//需要再这里循环查询是否是消费者id，如果是查询出对应的消费者昵称，不是则显示原本数据
+		respPagination.setTotal(total);
+		respPagination.setRows(orderList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	
+
+}

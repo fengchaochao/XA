@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.leavingmessage.LeavingMessageDao">
+
+    <resultMap id="leavingmessageResult" type="com.prj.biz.bean.leavingmessage.LeavingMessage">
+		<result property="id" column="id" />
+		<result property="userType" column="user_type" />
+		<result property="userId" column="user_id" />
+		<result property="status" column="status" />
+		<result property="replyDate" column="reply_date" />
+		<result property="leavingmessageDate" column="leavingMessage_date" />
+		<result property="leavingmessageContent" column="leavingMessage_content" />
+		<result property="replyContent" column="reply_content" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,user_type,user_id,
+		status,DATE_FORMAT(reply_date,'%y-%m-%d %H:%m:%s') reply_date,
+		DATE_FORMAT(leavingMessage_date,'%y-%m-%d %H:%m:%s') leavingMessage_date,
+		leavingMessage_content,reply_content
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="userType!=null and userType!='' ">
+		        AND user_type = #{userType}
+		    </if>
+		    <if test="userId!=null and userId!='' ">
+		        AND user_id = #{userId}
+		    </if>
+		    <if test="status!=null and status!='' ">
+		        AND status = #{status}
+		    </if>
+		    <if test="replyDate!=null and replyDate!='' ">
+		        AND reply_date = #{replyDate}
+		    </if>
+		    <if test="leavingmessageDate!=null and leavingmessageDate!='' ">
+		        AND leavingMessage_date = #{leavingmessageDate}
+		    </if>
+		    <if test="leavingmessageContent!=null and leavingmessageContent!='' ">
+		        AND leavingMessage_content = #{leavingmessageContent}
+		    </if>
+		    <if test="replyContent!=null and replyContent!='' ">
+		        AND reply_content = #{replyContent}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="leavingmessageResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_LEAVING_MESSAGE 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="leavingmessageResult" parameterType="com.prj.biz.bean.leavingmessage.LeavingMessage" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_LEAVING_MESSAGE 
+		<include refid="query_where" /> 
+		<if test="replyContent == '' ||  replyContent == null ">
+	        ORDER BY leavingMessage_date desc
+	    </if>
+		<if test="replyContent == '1'.toString() "><!-- ==1按照留言时间降序 -->
+	        ORDER BY leavingMessage_date desc
+	    </if>
+		<if test="replyContent == '2'.toString() "><!-- ==2按照回复时间降序，在根据用户id去重 -->
+			GROUP BY user_id
+	        ORDER BY reply_date desc
+	    </if>
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.leavingmessage.LeavingMessage">
+		select
+		    count(ID)
+		from 
+			 XA_LEAVING_MESSAGE 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.leavingmessage.LeavingMessage">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_LEAVING_MESSAGE 
+			(id,user_type,user_id,status,reply_date,leavingMessage_date,leavingMessage_content,reply_content)
+		VALUES 
+			(#{id},#{userType},#{userId},#{status},#{replyDate},#{leavingmessageDate},#{leavingmessageContent},#{replyContent})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_LEAVING_MESSAGE 
+			(id,user_type,user_id,status,reply_date,leavingMessage_date,leavingMessage_content,reply_content)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{userType},#{userId},#{status},#{replyDate},#{leavingmessageDate},#{leavingmessageContent},#{replyContent})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.leavingmessage.LeavingMessage">
+     UPDATE XA_LEAVING_MESSAGE
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="userType!=null and userType!='' ">
+				user_type = #{userType},
+			</if>
+			<if test="userId!=null and userId!='' ">
+				user_id = #{userId},
+			</if>
+			<if test="status!=null and status!='' ">
+				status = #{status},
+			</if>
+			<if test="replyDate!=null and replyDate!='' ">
+				reply_date = #{replyDate},
+			</if>
+			<if test="leavingmessageDate!=null and leavingmessageDate!='' ">
+				leavingMessage_date = #{leavingmessageDate},
+			</if>
+			<if test="leavingmessageContent!=null and leavingmessageContent!='' ">
+				leavingMessage_content = #{leavingmessageContent},
+			</if>
+			<if test="replyContent!=null and replyContent!='' ">
+				reply_content = #{replyContent},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_LEAVING_MESSAGE
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="userType!=null and userType!='' ">
+				user_type = #{userType},
+			</if>
+			<if test="userId!=null and userId!='' ">
+				user_id = #{userId},
+			</if>
+			<if test="status!=null and status!='' ">
+				status = #{status},
+			</if>
+			<if test="replyDate!=null and replyDate!='' ">
+				reply_date = #{replyDate},
+			</if>
+			<if test="leavingmessageDate!=null and leavingmessageDate!='' ">
+				leavingMessage_date = #{leavingmessageDate},
+			</if>
+			<if test="leavingmessageContent!=null and leavingmessageContent!='' ">
+				leavingMessage_content = #{leavingmessageContent},
+			</if>
+			<if test="replyContent!=null and replyContent!='' ">
+				reply_content = #{replyContent},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_LEAVING_MESSAGE WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_LEAVING_MESSAGE
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

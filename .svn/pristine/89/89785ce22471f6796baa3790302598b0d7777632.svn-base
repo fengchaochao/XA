@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.message.MessageDao">
+
+    <resultMap id="messageResult" type="com.prj.biz.bean.message.Message">
+		<result property="id" column="id" />
+		<result property="messageTitle" column="message_title" />
+		<result property="messageTest" column="message_test" />
+		<result property="messageDate" column="message_date" />
+		<result property="messageNumber" column="message_number" />
+		
+		<result property="beginDate" column="beginDate" />
+		<result property="endDate" column="endDate" />
+		
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		a.id,a.message_title,a.message_test,a.message_date,a.message_number
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND a.ID = #{id} 
+	       </if>
+		    <if test="messageTitle!=null and messageTitle!='' ">
+		        AND a.message_title = #{messageTitle}
+		    </if>
+		    <if test="messageTest!=null and messageTest!='' ">
+		        AND a.message_test = #{messageTest}
+		    </if>
+		    <if test="messageDate!=null and messageDate!='' ">
+		        AND a.message_date = #{messageDate}
+		    </if>
+		     <if test="beginDate != null and beginDate!= ''"><!-- 开始时间-->
+				AND  a.date_format(message_date,'%Y-%m-%d') &gt;= date_format(#{beginDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != null and endDate!= ''"><!-- 结束时间 -->
+				AND  a.date_format(message_date,'%Y-%m-%d') &lt;= date_format(#{endDate},'%Y-%m-%d')
+			</if>
+		    <if test="messageNumber!=null and messageNumber!='' ">
+		        AND a.message_number = #{messageNumber}
+		    </if>
+		    <if test="sellerId!=null and sellerId!='' ">
+		        AND  b.user_code = #{sellerId} 
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="messageResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_MESSAGE a
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="messageResult" parameterType="com.prj.biz.bean.message.Message" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_MESSAGE a
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectListByCode" resultMap="messageResult" parameterType="com.prj.biz.bean.message.Message" >
+		SELECT a.* from xa_message a 
+		LEFT JOIN xa_message_detail b on b.message_code = a.id
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.message.Message">
+		select
+		    count(a.ID)
+		from 
+			 XA_MESSAGE a
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.message.Message">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_MESSAGE 
+			(id,message_title,message_test,message_date,message_number)
+		VALUES 
+			(#{id},#{messageTitle},#{messageTest},now(),#{messageNumber})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_MESSAGE 
+			(id,message_title,message_test,message_date,message_number)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{messageTitle},#{messageTest},now(),#{messageNumber})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.message.Message">
+     UPDATE XA_MESSAGE
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="messageTitle!=null and messageTitle!='' ">
+				message_title = #{messageTitle},
+			</if>
+			<if test="messageTest!=null and messageTest!='' ">
+				message_test = #{messageTest},
+			</if>
+			<if test="messageDate!=null and messageDate!='' ">
+				message_date = #{messageDate},
+			</if>
+			<if test="messageNumber!=null and messageNumber!='' ">
+				message_number = #{messageNumber},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_MESSAGE
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="messageTitle!=null and messageTitle!='' ">
+				message_title = #{messageTitle},
+			</if>
+			<if test="messageTest!=null and messageTest!='' ">
+				message_test = #{messageTest},
+			</if>
+			<if test="messageDate!=null and messageDate!='' ">
+				message_date = #{messageDate},
+			</if>
+			<if test="messageNumber!=null and messageNumber!='' ">
+				message_number = #{messageNumber},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_MESSAGE WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_MESSAGE
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

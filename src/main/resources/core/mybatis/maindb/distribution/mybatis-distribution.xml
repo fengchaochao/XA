@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.distribution.DistributionDao">
+
+    <resultMap id="distributionResult" type="com.prj.biz.bean.distribution.Distribution">
+		<result property="id" column="id" />
+		<result property="platform" column="platform" />
+		<result property="agent" column="agent" />
+		<result property="referees" column="referees" />
+		<result property="lockingPeople" column="locking_people" />
+		<result property="other" column="other" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,platform,agent,referees,locking_people,other
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="platform!=null and platform!='' ">
+		        AND platform = #{platform}
+		    </if>
+		    <if test="agent!=null and agent!='' ">
+		        AND agent = #{agent}
+		    </if>
+		    <if test="referees!=null and referees!='' ">
+		        AND referees = #{referees}
+		    </if>
+		    <if test="lockingPeople!=null and lockingPeople!='' ">
+		        AND locking_people = #{lockingPeople}
+		    </if>
+		    <if test="other!=null and other!='' ">
+		        AND other = #{other}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="distributionResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_DISTRIBUTION 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="distributionResult" parameterType="com.prj.biz.bean.distribution.Distribution" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_DISTRIBUTION 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.distribution.Distribution">
+		select
+		    count(ID)
+		from 
+			 XA_DISTRIBUTION 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.distribution.Distribution">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_DISTRIBUTION 
+			(id,platform,agent,referees,locking_people,other)
+		VALUES 
+			(#{id},#{platform},#{agent},#{referees},#{lockingPeople},#{other})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_DISTRIBUTION 
+			(id,platform,agent,referees,locking_people,other)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{platform},#{agent},#{referees},#{lockingPeople},#{other})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.distribution.Distribution">
+     UPDATE XA_DISTRIBUTION
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="platform!=null and platform!='' ">
+				platform = #{platform},
+			</if>
+			<if test="agent!=null and agent!='' ">
+				agent = #{agent},
+			</if>
+			<if test="referees!=null and referees!='' ">
+				referees = #{referees},
+			</if>
+			<if test="lockingPeople!=null and lockingPeople!='' ">
+				locking_people = #{lockingPeople},
+			</if>
+			<if test="other!=null and other!='' ">
+				other = #{other},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_DISTRIBUTION
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="platform!=null and platform!='' ">
+				platform = #{platform},
+			</if>
+			<if test="agent!=null and agent!='' ">
+				agent = #{agent},
+			</if>
+			<if test="referees!=null and referees!='' ">
+				referees = #{referees},
+			</if>
+			<if test="lockingPeople!=null and lockingPeople!='' ">
+				locking_people = #{lockingPeople},
+			</if>
+			<if test="other!=null and other!='' ">
+				other = #{other},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_DISTRIBUTION WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_DISTRIBUTION
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

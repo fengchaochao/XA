@@ -1,0 +1,6 @@
+#mainContent{
+    width: 99%;
+    margin: 0 0 0 1%;
+}
+/* 页面弹框中底部按钮居中*/
+.navbar-btn{text-align:center;}

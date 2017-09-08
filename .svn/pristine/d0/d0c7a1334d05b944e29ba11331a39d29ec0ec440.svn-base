@@ -1,0 +1,295 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>列表信息</title>
+    <%@ include file="/WEB-INF/views/common/headCommon.jsp"%>
+    <link href='<spring:url value="/css/plugin/bootstrap-table/bootstrap-table.min.1.10.1.css" />' rel="stylesheet"/>
+</head>
+<body style="width: 96%;">
+
+<div id="mainContent">
+
+    <form id="formSearch" class="form-horizontal">
+    <input type="hidden" id="id" value="${about.id}" />
+		<div class="form-group">
+	    	<label for="name">标题</label>
+	    	<input  type="text" class="form-control" id="messageTitle"/>
+ 		 </div>
+  		<div class="form-group">
+    		<label for="name">正文</label>
+   			 <textarea class="form-control" rows="3" id="messageTest" ></textarea>
+  		</div>
+  		<div class="form-group">
+	            <label class="control-label col-sm-2">地址</label>
+	            <div class="col-sm-10">
+	                <select id="sel_country" style="display:none;"  class="form-control" ></select>
+	                <select id="sel_province" name="sel_province"  class="form-control" ></select>
+	            </div>
+	            <div class="col-sm-10">
+	                <select id="sel_city" name="sel_city"   class="form-control" ></select>
+	            </div>
+	            <div class="col-sm-10">
+	                <select id="sel_area" name="sel_are"   class="form-control" ></select>
+	            </div>
+	     </div>
+	     <div class="form-group">
+	            <label class="control-label col-sm-2">角色：</label>
+	            <div class="col-sm-10">
+	                <input type="radio" id="userType" name="userType" value="" />全选
+	                <input type="radio" id="userType" name="userType" value="0" /> 商家
+	                <input type="radio" id="userType" name="userType" value="2" /> 消费者
+	                <input type="radio" id="userType" name="userType" value="1" /> 消费商
+	            </div>
+	      </div>
+	   <!--  <input  type="text" class="form-control" id="selectbut"/> -->
+  		 <input type="button" value="查询" class="btn btn-primary col-sm-offset-1" id="btn_query" />
+  		 
+  		 <table id="tb_board"></table> 
+  		 
+		 <input type="button" value="发送" class="btn btn-primary col-sm-offset-1" id="commit"/>
+	</form>
+	
+</div>
+
+    <script type="text/javascript" src='<spring:url value="/js/plugin/bootstrap-table-1.10.1/bootstrap-table.min.1.10.1.js"/>'></script>
+    <script type="text/javascript" src='<spring:url value="/js/plugin/bootstrap-table-1.10.1/locale/bootstrap-table-zh-CN.min.js"/>'></script>
+    
+	<script type="text/javascript">
+	var $table;
+		$(function() {
+		select_Init();
+		initTable();
+		// 搜索
+		$('#btn_query').click(function(){
+				$('#tb_board').bootstrapTable('getOptions').pageNumber=1;
+				$('#tb_board').bootstrapTable('refresh');
+		});
+		$("#commit").bind("click",function(){
+			if($('#messageTitle').val()==null||$('#aboutTitle').val()==""){
+				top.layer.title("标题不能为空！",{icon:2});
+				return;
+			}
+			if($('#messageTest').val()==null||$('#messageTest').val()==""){
+				top.layer.alert("正文不能为空！",{icon:2});
+				return;
+			}
+		    var selects = $table.bootstrapTable('getSelections'); //获取表选择的行
+	        var Ids = "";
+	        for(var p in selects){
+			    Ids += selects[p].id+",";
+			}
+			if(Ids.length<1){
+				top.layer.alert("请先选择发送对象！",{icon:3});
+				return;
+			}
+			$.ajax({
+				type: "POST",
+				url : '<spring:url value="/headquarters/messageDetail/doEditMessageDetail" />',
+				data:{
+					messageTitle:$('#messageTitle').val(),
+					messageTest:$('#messageTest').val(),
+					Ids:Ids
+				},
+				dataType: "json",
+				async: false,
+				success: function(data){
+					if("0000000"==data.head.respCode){
+						top.layer.alert("保存成功！",{icon:1});
+						window.location.href='<spring:url value="/headquarters/messageDetail/doEnMessageDetailList" />';
+					}
+					else{
+						top.layer.alert("保存失败！",{icon:2});
+					}
+				}
+			 });
+	
+		});
+	});
+	
+  // 下拉列表初始化
+	function select_Init(){
+			// 初始化国家
+			country_Init();
+			// 默认选中中国且不可修改
+			$("#sel_country").find("option[value='1']").attr("selected", true);
+			$("#sel_country").attr("disabled",true);
+			
+			// 初始化省份
+			province_Init();
+	        
+			// 初始化城市
+			city_Init();
+	        
+	        // 初始化县区
+			area_Init();
+		}
+		
+		// 国家下拉事件
+		$('#sel_country').change(function(){
+			province_Init();
+		});
+		
+		// 省份下拉事件
+		$('#sel_province').change(function(){
+			city_Init();
+		});
+		
+		// 市下拉事件
+		$('#sel_city').change(function(){
+			area_Init();
+		});
+		
+		// 初始化国家
+		function country_Init(){
+			$("#sel_country").append('<option value="">请选择</option>');
+			<c:forEach var="item" items="${countryList}">
+		    if('${item.parentId==0}'){
+		    	$("#sel_country").append('<option value=${item.areaId}>${item.areaName}</option>');
+		    }
+			</c:forEach>
+		}
+		
+		// 初始化省份
+		function province_Init(){
+			$("#sel_province").empty();
+			$("#sel_province").append('<option value="">请选择省</option>');
+			$("#sel_city").empty();
+			$("#sel_city").append('<option value="">请选择市</option>');
+			<c:forEach var="item" items="${provinceList}">
+	            if($('#sel_country option:selected').val()=='${item.parentId}'){
+	            	$("#sel_province").append('<option value=${item.areaId}>${item.areaName}</option>');
+	            }
+	        </c:forEach>
+		}
+		
+		// 初始化城市
+		function city_Init(){
+			$("#sel_city").empty();
+			$("#sel_city").append('<option value="">请选择市</option>');
+			$("#sel_area").empty();
+			$("#sel_area").append('<option value="">请选择区</option>');
+			<c:forEach var="item" items="${cityList}">
+	            if($('#sel_province option:selected').val()=='${item.parentId}'){
+	            	$("#sel_city").append('<option value=${item.areaId}>${item.areaName}</option>');
+	            }
+	        </c:forEach>
+		}
+		
+		// 初始化县区
+		function area_Init(){
+			$("#sel_area").empty();
+			$("#sel_area").append('<option value="">请选择区</option>');
+			<c:forEach var="item" items="${areaList}">
+	            if($('#sel_city option:selected').val()=='${item.parentId}'){
+	            	$("#sel_area").append('<option value=${item.areaId}>${item.areaName}</option>');
+	            }
+	        </c:forEach>
+		}
+		
+		function initTable() {
+            $table = $('#tb_board').bootstrapTable({
+                method: 'get',
+                url : '<spring:url value="/headquarters/messageDetail/doReadMessageDetailList" />',
+                pagination: true,
+                pageSize: 10,
+                pageList: [10, 50, 100, 200, 500],
+                sidePagination: "server", //服务端请求
+                queryParams: queryParams,
+                showRefresh : true,
+				striped : true,
+				silent : true,
+				sortable: true, 
+				sortOrder: "asc",
+                responseHandler: responseHandler,
+                columns : [ {
+                	field: 'state',
+					checkbox : true
+				}, {
+					field : 'userno',
+					title : '用户编码'
+				}, {
+					field : 'usertype',
+					title : '角色',
+					formatter : statusFormatter
+				}, {
+					field : 'username',
+					title : '用户名称'
+				}, {
+					field : 'phone',
+					title : '电话'
+				}, {
+					field : 'address',
+					title : '地址'
+				}, {
+					field : 'states',
+					title : '状态',
+					formatter : status
+				}],
+                onLoadSuccess:function(){
+
+                },
+                formatLoadingMessage : function() {
+									return "请稍等，正在加载中...";
+								},
+				formatNoMatches : function() { //没有匹配的结果
+					return "无符合条件的记录";
+				},
+                onLoadError: function () {
+                    alert("数据加载失败！");
+                }
+            });
+        }
+		
+		// 查询参数设置  
+		function queryParams(params) {
+			var temp = {
+				//这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的    
+				limit : params.limit, //页面大小    
+				offset : params.offset, //页码   
+				order : params.order,
+				orderName : params.sort,
+				usertype : $('input[name="userType"]:checked').val(),
+				provincesId : $("#sel_province").val(),
+				cityId : $("#sel_city").val(),
+				areaId: $("#sel_are").val()
+			};
+			return temp;
+		};
+		 // 显示数据格式化 statusFormatter
+        function statusFormatter(value, row, index) {
+            if(value=='1')
+            	return "消费商";
+            if(value=='2')
+            	return "消费者";
+            if(value=='0')
+            	return "商家";
+        }
+        function status(value, row, index) {
+            if(value=='1')
+            	return "停用";
+            if(value=='0')
+            	return "正常";
+        }
+		
+		// json 数据处理
+        function responseHandler(res) {
+			if (res.body.total > 0) {
+				return {
+					"rows" : res.body.rows,
+					"total" : res.body.total
+				}
+			} else {
+				return {
+					"rows" : [],
+					"total" : 0
+				}
+			}
+		}
+        
+	</script>
+
+</body>
+</html>

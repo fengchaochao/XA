@@ -1,0 +1,401 @@
+/**
+ * Copyright© 2003-2013 天尔软件, All Rights Reserved <br/>
+ * 描述: 业务文件 <br/>
+ * @author Liang
+ * @date 2017-07-12
+ * @version 1.0
+ */
+package com.prj.biz.action.headquartersPC.businessinformation;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.prj.biz.action._base.BaseAction;
+import com.prj.biz.bean.agent.Agent;
+import com.prj.biz.bean.businessclassification.BusinessClassification;
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.codeareas.codeAreas;
+import com.prj.biz.bean.sysuser.SysUser;
+import com.prj.biz.service.agent.AgentService;
+import com.prj.biz.service.businessclassification.BusinessClassificationService;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.codeareas.codeAreasService;
+import com.prj.biz.service.sysuser.SysUserService;
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+import com.prj.core.constant.SysConstants;
+import com.prj.utils.UfdmDateUtil;
+import com.prj.utils.UfdmMd5Util;
+import com.prj.utils.qrCodeUtli.MatrixToImageWriter;
+
+/**
+ * 描述: 推荐商家查看 Action 类<br>
+ * 
+ * @author Liang
+ * @date 2017-07-12
+ */
+@RestController
+@RequestMapping("/headquarters/recommendBusinessInformation")
+public class RecommendBusinessInformationAction extends BaseAction {
+	private static final long serialVersionUID = 1L;
+
+	@Resource
+	private BusinessInformationService businessInformationService;
+
+	@Resource
+	private BusinessClassificationService businessClassificationService;
+
+	@Resource
+	private codeAreasService codeAreasService;
+
+	@Resource
+	private SysUserService sysUserService;
+	
+	@Resource
+	private AgentService agentService;
+
+	/**
+	 * 描述: 进入列表显示页面(总部)
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnRecommendBusinessInformationList")
+	public ModelAndView doEnRecommendBusinessInformationListAction(
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		return new ModelAndView("/headquarters/recommendBusinessinformation/businessInformationList");
+	}
+
+	/**
+	 * 描述: 分页查询信息
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadRecommendBusinessInformationList")
+	@ResponseBody
+	public RespBean<RespPagination<BusinessInformation>> doReadRecommendBusinessInformationList(
+			BusinessInformation businessInformation) throws Exception {
+		RespBean<RespPagination<BusinessInformation>> respBean = new RespBean<RespPagination<BusinessInformation>>();
+		RespPagination<BusinessInformation> respPagination = new RespPagination<BusinessInformation>();
+		Integer total = businessInformationService.doEnRecommendedBusinessTotal(businessInformation);
+		List<BusinessInformation> businessInformationList = businessInformationService.doEnRecommendedBusinessAllList(businessInformation);
+		for (int i = 0; i < businessInformationList.size(); i++) {
+			String address=businessInformationList.get(i).getProvinces()+"省"+businessInformationList.get(i).getCity()+businessInformationList.get(i).getArea()+businessInformationList.get(i).getAddress();
+			businessInformationList.get(i).setAddress(address);
+		}
+		respPagination.setTotal(total);
+		respPagination.setRows(businessInformationList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 * 描述: 进入列表显示页面(代理商)
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnAgentShowBusinessInformationList")
+	public ModelAndView doEnAgentShowBusinessInformationList(
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		return new ModelAndView("/headquarters/recommendBusinessinformation/agentShowbusinessInformationList");
+	}
+	/**
+	 * 描述: 分页查询信息
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadAgentShowBusinessInformationList")
+	@ResponseBody
+	public RespBean<RespPagination<BusinessInformation>> doReadAgentShowBusinessInformationList(BusinessInformation businessInformation) throws Exception {
+		RespBean<RespPagination<BusinessInformation>> respBean = new RespBean<RespPagination<BusinessInformation>>();
+		RespPagination<BusinessInformation> respPagination = new RespPagination<BusinessInformation>();
+		SysUser sysUsers = (SysUser) (SecurityUtils.getSubject().getSession().getAttribute(SysConstants.SESSION_SYS_USER));
+		List<BusinessInformation> businessInformationList2 =new ArrayList<BusinessInformation>();
+		businessInformation.setEffectState("1");
+		businessInformation.setLimit(0);
+		businessInformation.setOffset(0);
+		if("1".equals(sysUsers.getUserState())){
+			Agent agent=agentService.doGetById(sysUsers.getMerchantsId());
+			if("0".equals(agent.getResellerLevel())){
+				codeAreas areas=new codeAreas();
+				areas.setAgentId(agent.getId());
+				List<codeAreas> codeAreas=codeAreasService.doGetList(areas);
+				if(codeAreas.size()>0){
+					for (int i = 0; i < codeAreas.size(); i++) {
+						if(codeAreas.get(i)!=null){
+							businessInformation.setProvincesId(codeAreas.get(i).getAreaId());
+							List<BusinessInformation> businessInformationList = businessInformationService.selectAllList(businessInformation);
+							if(businessInformationList.size()>0){
+								for (int j = 0; j < businessInformationList.size(); j++) {
+									String address=businessInformationList.get(j).getProvinces()+"省"+businessInformationList.get(j).getCity()+businessInformationList.get(j).getArea()+businessInformationList.get(j).getAddress();
+									businessInformationList.get(j).setAddress(address);
+									businessInformationList2.add(businessInformationList.get(j));
+									
+								}
+							}
+						}
+					}
+				}
+				
+			}
+			if("1".equals(agent.getResellerLevel())){
+				codeAreas areas=new codeAreas();
+				areas.setAgentId(agent.getId());
+				List<codeAreas> codeAreas=codeAreasService.doGetList(areas);
+				if(codeAreas.size()>0){
+					for (int i = 0; i < codeAreas.size(); i++) {
+						if(codeAreas.get(i)!=null){
+							businessInformation.setCityId(codeAreas.get(i).getAreaId());
+							List<BusinessInformation> businessInformationList = businessInformationService.selectAllList(businessInformation);
+							if(businessInformationList.size()>0){
+								for (int j = 0; j < businessInformationList.size(); j++) {
+									String address=businessInformationList.get(j).getProvinces()+"省"+businessInformationList.get(j).getCity()+businessInformationList.get(j).getArea()+businessInformationList.get(j).getAddress();
+									businessInformationList.get(j).setAddress(address);
+									businessInformationList2.add(businessInformationList.get(j));
+									
+								}
+							}
+						}
+						
+						
+					}
+				}
+				
+			}
+			if("2".equals(agent.getResellerLevel())){
+				codeAreas areas=new codeAreas();
+				areas.setAgentId(agent.getId());
+				List<codeAreas> codeAreas=codeAreasService.doGetList(areas);
+				if(codeAreas.size()>0){
+					for (int i = 0; i < codeAreas.size(); i++) {
+						if(codeAreas.get(i)!=null){
+							businessInformation.setAreaId(codeAreas.get(i).getAreaId());
+							List<BusinessInformation> businessInformationList = businessInformationService.selectAllList(businessInformation);
+							if(businessInformationList.size()>0){
+								for (int j = 0; j < businessInformationList.size(); j++) {
+									String address=businessInformationList.get(j).getProvinces()+"省"+businessInformationList.get(j).getCity()+businessInformationList.get(j).getArea()+businessInformationList.get(j).getAddress();
+									businessInformationList.get(j).setAddress(address);
+									businessInformationList2.add(businessInformationList.get(j));
+									
+								}
+							}
+						}
+						
+					}
+				}
+			}
+		}
+		respPagination.setTotal(businessInformationList2.size());
+		respPagination.setRows(businessInformationList2);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 * 描述:新建商家
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnBusinessInformationEdit")
+	public ModelAndView doEnBusinessInformationEdit(String businessInformationId,String flag)
+			throws Exception {
+		BusinessInformation businessInformation = businessInformationService
+				.doGetById(businessInformationId);
+		Map<String, Object> model = new HashMap<String, Object>();
+		List<BusinessClassification> businessClassificationList = businessClassificationService
+				.doGetList(null);
+		String[] idNoPhoto ={};
+		if(!StringUtils.isEmpty(businessInformation.getIdPhoto())){
+			 idNoPhoto = businessInformation.getIdPhoto().split(",");
+		}
+		Agent agent=new Agent();
+		codeAreas codeAreas=codeAreasService.doGetById(businessInformation.getAreaId());
+		agent=agentService.doGetById(codeAreas.getAgentId());
+		if(agent==null){
+			codeAreas codeAreas1=codeAreasService.doGetById(businessInformation.getCityId());
+			agent=agentService.doGetById(codeAreas1.getAgentId());
+			if(agent==null){
+				codeAreas codeAreas2=codeAreasService.doGetById(businessInformation.getProvincesId());
+				agent=agentService.doGetById(codeAreas2.getAgentId());
+			}
+			
+		}
+		int i = (int) (Math.random() * 900) + 100;
+		String merchantNumber = "YJKS" + UfdmDateUtil.getCurrentDate1()
+				+ UfdmDateUtil.getCurrentSimpleTime1() + i;
+
+		model.put("businessClassificationList", businessClassificationList);
+		model.put("businessInformation", businessInformation);
+		model.put("idNoPhoto", idNoPhoto);
+		model.put("countryList", codeAreasService.selectCountyList());
+		model.put("provinceList", codeAreasService.selectProvinceList());
+		model.put("cityList", codeAreasService.selectCityList());
+		model.put("areaList", codeAreasService.selectRegionList());
+		model.put("agent", agent);
+		model.put("flag", flag);
+		model.put("merchantNumber", merchantNumber);
+		return new ModelAndView("/headquarters/recommendBusinessinformation/businessInformationAdd",model);
+	}
+	/**
+	 * 描述: 编辑保存
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEditBusinessInformation")
+	public RespBean<String> doEditBusinessInformation(
+			BusinessInformation businessInformation) throws Exception {
+		RespBean<String> respBean = new RespBean<String>();
+		
+		SysUser sysUser1 = new SysUser();
+		sysUser1.setLoginName(businessInformation.getMerchantPhone());
+		List<SysUser> sysUserList = sysUserService.doGetList(sysUser1);
+		if (sysUserList.size() <1) {
+			//判断上级代理商
+			Agent agent=new Agent();
+			agent.setDiamondCard(businessInformation.getDiamondCard());
+			List<Agent> agentsList=agentService.doGetList(agent);
+			if(agentsList.size()>0){
+				 codeAreas areas=new codeAreas();
+				 areas.setAgentId(agentsList.get(0).getId());
+				 List<codeAreas> codeAreasList=codeAreasService.doGetList(areas);
+				 String msg="0";
+				 for (int i = 0; i < codeAreasList.size(); i++) {
+					 	//省级代理区域
+						if("0".equals(agentsList.get(0).getResellerLevel())){
+							if (codeAreasList.get(i).getAreaId().equals(businessInformation.getProvincesId())) {
+								msg = "1";
+								break;
+							}
+						}
+						//市级代理区域
+						if("1".equals(agentsList.get(0).getResellerLevel())){
+							if (codeAreasList.get(i).getAreaId().equals(businessInformation.getCityId())) {
+								msg = "1";
+								break;
+							}
+						}
+						//区级代理区域
+						if("2".equals(agentsList.get(0).getResellerLevel())){
+							if (codeAreasList.get(i).getAreaId().equals(businessInformation.getAreaId())) {
+								msg = "1";
+								break;
+							}
+						}
+				}
+				if("0".equals(msg)){
+					respBean.setBody("您不在该代理商的代理范围内");
+				}
+				if("1".equals(msg)){
+					businessInformation.setHigherAgentId(agentsList.get(0).getId());
+					businessInformation.setBusinessState("0");
+					businessInformation.setApplicationState("1");
+					businessInformation.setEffectState("0");
+					String a = businessInformation.getMerchantNumber().substring(
+							businessInformation.getMerchantNumber().length() - 5,
+							businessInformation.getMerchantNumber().length());
+					/**
+					 * 生成店铺二维码
+					 */
+					// 项目路径
+					String projectPath= doGetRequst().getSession().getServletContext().getRealPath("/");
+					String imgs=projectPath+"/img/login/logo_03.png";
+					String qrCodePAth = projectPath+"/qrcode";
+					MatrixToImageWriter.createQRcode("www.baidu.com?sellerID=" + a, qrCodePAth, imgs, "店铺名", qrCodePAth);
+					
+					businessInformation.setQrCode(qrCodePAth);
+					
+					businessInformationService.doModById(businessInformation);
+					
+					SysUser sysUser = new SysUser();
+					sysUser.setLoginName(businessInformation.getMerchantPhone());
+					sysUser.setMobile(businessInformation.getMerchantPhone());
+					sysUser.setLoginPass(UfdmMd5Util.MD5Encode("123456"));
+					sysUser.setRealName(businessInformation.getVendorName());
+					sysUser.setTelephone(businessInformation.getPhone());
+					sysUser.setMerchantsId(businessInformation.getId());
+					sysUser.setUserStatus("0");
+					sysUser.setUserState("2");
+					sysUserService.doSave(sysUser);
+					respBean.setBody("保存成功");
+				}
+			}else{
+				respBean.setBody("钻石卡号不正确，请输入上级代理商的钻石卡号");
+				
+			}
+			
+		}else{
+			respBean.setBody("该手机号对应的用户信息已存在");
+		}
+		
+		return respBean;
+	}
+	/**
+	 * 描述: 推荐商家（商家）
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnRecommendBusinessInformation")
+	public ModelAndView doEnRecommendBusinessInformation(HttpServletRequest request, HttpServletResponse response)throws Exception {
+		Map<String, Object> model = new HashMap<String, Object>();
+		List<BusinessClassification> businessClassificationList = businessClassificationService.doGetList(null);
+		model.put("businessClassificationList", businessClassificationList);
+		model.put("countryList", codeAreasService.selectCountyList());
+		model.put("provinceList", codeAreasService.selectProvinceList());
+		model.put("cityList", codeAreasService.selectCityList());
+		model.put("areaList", codeAreasService.selectRegionList());
+		return new ModelAndView("/headquarters/recommendBusinessinformation/recommendBusinessInformation",model);
+	}
+	/**
+	 * 描述: 编辑保存
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doSaveBusinessInformation")
+	public RespBean<BusinessInformation> doSaveBusinessInformation(BusinessInformation businessInformation) throws Exception {
+		RespBean<BusinessInformation> respBean = new RespBean<BusinessInformation>();
+		businessInformation.setEffectState("1");
+		businessInformation.setSource("1");
+		SysUser sysUsers = (SysUser) (SecurityUtils.getSubject().getSession().getAttribute(SysConstants.SESSION_SYS_USER));
+		businessInformation.setFounder(sysUsers.getId());
+		businessInformationService.doSave(businessInformation);
+		respBean.setBody(businessInformation);		
+		return respBean;
+	}
+
+}

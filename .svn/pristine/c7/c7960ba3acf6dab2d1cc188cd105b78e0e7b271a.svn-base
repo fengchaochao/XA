@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.goodsspecifications.GoodsSpecificationsDao">
+
+    <resultMap id="goodsspecificationsResult" type="com.prj.biz.bean.goodsspecifications.GoodsSpecifications">
+		<result property="id" column="id" />
+		<result property="specificationsName" column="specifications_name" />
+		<result property="inventory" column="inventory" />
+		<result property="price" column="price" />
+		<result property="goodsId" column="goods_id" />
+		
+		<result property="goods.createDate" column="create_date" />
+		<result property="goods.goodsState" column="goods_state" />
+		<result property="businessInformation.merchantNumber" column="merchant_number" />
+		<result property="businessInformation.vendorName" column="vendor_name" />
+		<result property="goods.commodityName" column="commodity_name" />
+		<result property="goodsClassification.categoryName" column="category_name" />
+		<result property="goods.promotionFee" column="promotion_fee" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,specifications_name,inventory,price,goods_id
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="specificationsName!=null and specificationsName!='' ">
+		        AND specifications_name = #{specificationsName}
+		    </if>
+		    <if test="inventory!=null and inventory!='' ">
+		        AND inventory = #{inventory}
+		    </if>
+		    <if test="price!=null and price!='' ">
+		        AND price = #{price}
+		    </if>
+		    <if test="goodsId!=null and goodsId!='' ">
+		        AND goods_id = #{goodsId}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="goodsspecificationsResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_GOODS_SPECIFICATIONS 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="goodsspecificationsResult" parameterType="com.prj.biz.bean.goodsspecifications.GoodsSpecifications" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_GOODS_SPECIFICATIONS 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	<select id="selectAllList" resultMap="goodsspecificationsResult" parameterType="com.prj.biz.bean.goodsspecifications.GoodsSpecifications" >
+		SELECT
+			a.*,
+			b.*,
+			d.*,
+			e.*,
+			(SELECT SUM(f.transaction_num) from xa_transaction_records f WHERE f.goods_unit_id=a.id) sale 
+		FROM
+			xa_goods_specifications a
+		LEFT JOIN xa_goods b on a.goods_id=b.id
+		LEFT JOIN per_sys_user c ON b.publisher=c.ID
+		LEFT JOIN xa_business_information d ON c.merchants_id=d.id
+		LEFT JOIN xa_goods_classification e ON b.commodity_type_id=e.id
+		where 
+			1=1
+			   AND (b.goods_state = '3' or b.goods_state = '4')
+		<if test="typeId!=null and typeId!='' "> 
+	           AND e.id = #{typeId} 
+        </if>
+        <if test="goodsName!=null and goodsName!='' "> 
+	           AND b.commodity_name = #{goodsName} 
+        </if>
+        <if test="businessName!=null and businessName!='' "> 
+	           AND d.vendor_name = #{businessName} 
+        </if>
+        <if test="businessNo!=null and businessNo!='' "> 
+	           AND d.merchant_number = #{businessNo} 
+        </if>
+        <if test="provincesId!=null and provincesId!='' ">
+		       AND d.provinces_id = #{provincesId}
+	    </if>
+	    <if test="cityId!=null and cityId!='' ">
+	           AND d.city_id = #{cityId}
+	    </if>
+	    <if test="areaId!=null and areaId!='' ">
+	       	   AND d.area_id = #{areaId}
+	    </if>
+	    <if test="goodsState!=null and goodsState!='' ">
+	       	   AND b.goods_state = #{goodsState}
+	    </if>
+		<if test="beginDate != null and beginDate!= ''"><!-- 开始时间-->
+			   AND  date_format(b.create_date,'%Y-%m-%d') &gt;= date_format(#{beginDate},'%Y-%m-%d')
+		</if>
+		<if test="endDate != null and endDate!= ''"><!-- 结束时间 -->
+			   AND  date_format(b.create_date,'%Y-%m-%d') &lt;= date_format(#{endDate},'%Y-%m-%d')
+		</if>
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	<select id="selectAllTotal" resultType="Integer" parameterType="com.prj.biz.bean.goodsspecifications.GoodsSpecifications">
+		SELECT
+			count(*)
+		FROM
+			xa_goods_specifications a
+		LEFT JOIN xa_goods b on a.goods_id=b.id
+		LEFT JOIN per_sys_user c ON b.publisher=c.ID
+		LEFT JOIN xa_business_information d ON c.merchants_id=d.id
+		LEFT JOIN xa_goods_classification e ON b.commodity_type_id=e.id
+		where 
+			1=1
+			AND (b.goods_state = '3' or b.goods_state = '4')
+		<if test="typeId!=null and typeId!='' "> 
+	           AND e.id = #{typeId} 
+        </if>
+        <if test="goodsName!=null and goodsName!='' "> 
+	           AND b.commodity_name = #{goodsName} 
+        </if>
+        <if test="businessName!=null and businessName!='' "> 
+	           AND d.vendor_name = #{businessName} 
+        </if>
+        <if test="businessNo!=null and businessNo!='' "> 
+	           AND d.merchant_number = #{businessNo} 
+        </if>
+        <if test="provincesId!=null and provincesId!='' ">
+		       AND d.provinces_id = #{provincesId}
+	    </if>
+	    <if test="cityId!=null and cityId!='' ">
+	           AND d.city_id = #{cityId}
+	    </if>
+	    <if test="areaId!=null and areaId!='' ">
+	       	   AND d.area_id = #{areaId}
+	    </if>
+	    <if test="goodsState!=null and goodsState!='' ">
+	       	   AND b.goods_state = #{goodsState}
+	    </if>
+		<if test="beginDate != null and beginDate!= ''"><!-- 开始时间-->
+			   AND  date_format(b.create_date,'%Y-%m-%d') &gt;= date_format(#{beginDate},'%Y-%m-%d')
+		</if>
+		<if test="endDate != null and endDate!= ''"><!-- 结束时间 -->
+			   AND  date_format(b.create_date,'%Y-%m-%d') &lt;= date_format(#{endDate},'%Y-%m-%d')
+		</if>
+	</select>
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.goodsspecifications.GoodsSpecifications">
+		select
+		    count(ID)
+		from 
+			 XA_GOODS_SPECIFICATIONS 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.goodsspecifications.GoodsSpecifications">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_GOODS_SPECIFICATIONS 
+			(id,specifications_name,inventory,price,goods_id)
+		VALUES 
+			(#{id},#{specificationsName},#{inventory},#{price},#{goodsId})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_GOODS_SPECIFICATIONS 
+			(id,specifications_name,inventory,price,goods_id)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{specificationsName},#{inventory},#{price},#{goodsId})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.goodsspecifications.GoodsSpecifications">
+     UPDATE XA_GOODS_SPECIFICATIONS
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="specificationsName!=null and specificationsName!='' ">
+				specifications_name = #{specificationsName},
+			</if>
+			<if test="inventory!=null and inventory!='' ">
+				inventory = #{inventory},
+			</if>
+			<if test="price!=null and price!='' ">
+				price = #{price},
+			</if>
+			<if test="goodsId!=null and goodsId!='' ">
+				goods_id = #{goodsId},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_GOODS_SPECIFICATIONS
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="specificationsName!=null and specificationsName!='' ">
+				specifications_name = #{specificationsName},
+			</if>
+			<if test="inventory!=null and inventory!='' ">
+				inventory = #{inventory},
+			</if>
+			<if test="price!=null and price!='' ">
+				price = #{price},
+			</if>
+			<if test="goodsId!=null and goodsId!='' ">
+				goods_id = #{goodsId},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_GOODS_SPECIFICATIONS WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_GOODS_SPECIFICATIONS
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

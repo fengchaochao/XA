@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.agent.AgentDao">
+
+    <resultMap id="agentResult" type="com.prj.biz.bean.agent.Agent">
+		<result property="id" column="id" />
+		<result property="agentCode" column="agent_code" />
+		<result property="phone" column="phone" />
+		<result property="provincesId" column="provinces_id" />
+		<result property="cityId" column="city_id" />
+		<result property="areaId" column="area_id" />
+		<result property="address" column="address" />
+		<result property="diamondCard" column="diamond_card" />
+		<result property="agentState" column="agent_state" />
+		<result property="agentType" column="Agent_type" />
+		<result property="companyName" column="company_name" />
+		<result property="organizationCode" column="organization_code" />
+		<result property="provincesId" column="company_provinces_id" />
+		<result property="cityId" column="company_city_id" />
+		<result property="areaId" column="company_area_id" />
+		<result property="companyAddress" column="company_address" />
+		<result property="businessLicensePhoto" column="Business_license_photo" />
+		<result property="userName" column="user_name" />
+		<result property="idNo" column="ID_No" />
+		<result property="provincesId" column="user_provinces_id" />
+		<result property="cityId" column="user_city_id" />
+		<result property="areaId" column="user_area_id" />
+		<result property="userAddress" column="user_address" />
+		<result property="idNoPhoto" column="id_no_photo" />
+		<result property="agentName" column="agent_name" />
+		<result property="consumersNumber" column="consumers_number" />
+		<result property="jyd" column="jyd" />
+		<result property="resellerLevel" column="reseller_level" />
+		<result property="createDate" column="create_date" />
+		<result property="applicationState" column="application_state" />
+		<result property="agentArea" column="agentArea" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		a.id,a.agent_code,a.phone,a.address,a.diamond_card,a.agent_state,a.Agent_type,a.company_name,a.organization_code,a.company_address,a.Business_license_photo,
+		a.user_name,a.ID_No,a.user_address,a.id_no_photo,a.agent_name,a.consumers_number,a.provinces_id,a.city_id,a.area_id,a.company_provinces_id,a.company_city_id,
+		a.company_area_id,a.user_provinces_id,a.user_city_id,a.user_area_id,a.jyd,a.reseller_level,a.create_date,a.application_state
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND a.ID = #{id} 
+	       </if>
+		    <if test="agentCode!=null and agentCode!='' ">
+		        AND a.agent_code = #{agentCode}
+		    </if>
+		    <if test="phone!=null and phone!='' ">
+		        AND a.phone = #{phone}
+		    </if>
+		    <if test="address!=null and address!='' ">
+		        AND a.address = #{address}
+		    </if>
+		    <if test="diamondCard!=null and diamondCard!='' ">
+		        AND a.diamond_card = #{diamondCard}
+		    </if>
+		    <if test="agentState!=null and agentState!='' ">
+		        AND a.agent_state = #{agentState}
+		    </if>
+		    <if test="agentType!=null and agentType!='' ">
+		        AND a.Agent_type = #{agentType}
+		    </if>
+		    <if test="companyName!=null and companyName!='' ">
+		        AND a.company_name = #{companyName}
+		    </if>
+		    <if test="organizationCode!=null and organizationCode!='' ">
+		        AND a.organization_code = #{organizationCode}
+		    </if>
+		    <if test="companyAddress!=null and companyAddress!='' ">
+		        AND a.company_address = #{companyAddress}
+		    </if>
+		    <if test="businessLicensePhoto!=null and businessLicensePhoto!='' ">
+		        AND a.Business_license_photo = #{businessLicensePhoto}
+		    </if>
+		    <if test="userName!=null and userName!='' ">
+		        AND a.user_name = #{userName}
+		    </if>
+		    <if test="idNo!=null and idNo!='' ">
+		        AND a.ID_No = #{idNo}
+		    </if>
+		    <if test="userAddress!=null and userAddress!='' ">
+		        AND a.user_address = #{userAddress}
+		    </if>
+		    <if test="idNoPhoto!=null and idNoPhoto!='' ">
+		        AND a.id_no_photo = #{idNoPhoto}
+		    </if>
+		    <if test="agentName!=null and agentName!='' ">
+		        AND a.agent_name = #{agentName}
+		    </if>
+		    <if test="consumersNumber!=null and consumersNumber!='' ">
+		        AND a.consumers_number = #{consumersNumber}
+		    </if>
+		     <if test="provincesId!=null and provincesId!='' ">
+		        AND a.provinces_id = #{provincesId}
+		    </if>
+		    <if test="cityId!=null and cityId!='' ">
+		        AND a.city_id = #{cityId}
+		    </if>
+		    <if test="applicationState!=null and applicationState!='' ">
+		        AND a.application_state = #{applicationState}
+		    </if>
+		    <if test="areaId!=null and areaId!='' ">
+		        AND a.area_id = #{areaId}
+		    </if>
+		    <if test="companyProvincesId!=null and companyProvincesId!='' ">
+		        AND a.company_provinces_id = #{companyProvincesId}
+		    </if>
+		    <if test="companyCityId!=null and companyCityId!='' ">
+		        AND a.company_city_id = #{companyCityId}
+		    </if>
+		    <if test="companyAreaId!=null and companyAreaId!='' ">
+		        AND a.company_area_id = #{companyAreaId}
+		    </if>
+		    <if test="userProvincesId!=null and userProvincesId!='' ">
+		        AND a.user_provinces_id = #{userProvincesId}
+		    </if>
+		    <if test="userCityId!=null and userCityId!='' ">
+		        AND a.user_city_id = #{userCityId}
+		    </if>
+		    <if test="userAreaId!=null and userAreaId!='' ">
+		        AND a.user_area_id = #{userAreaId}
+		    </if>
+		    <if test="jyd!=null and jyd!='' ">
+		        AND a.jyd = #{jyd}
+		    </if>
+		    <if test="resellerLevel!=null and resellerLevel!='' ">
+		        AND a.reseller_level = #{resellerLevel}
+		    </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        AND a.create_date like concat('%',#{createDate},'%')
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="agentResult" parameterType="java.lang.String">
+		SELECT
+			a.*,
+			b.area_name provinces,
+			c.area_name city,
+			d.area_name area,
+			e.area_name companyProvinces,
+			f.area_name companyCity,
+			g.area_name companyArea,
+			h.area_name userProvinces,
+			i.area_name userCity,
+			j.area_name userArea
+		FROM
+			xa_agent a
+		LEFT JOIN code_areas b ON a.provinces_id=b.area_id
+		LEFT JOIN code_areas c ON a.city_id=c.area_id
+		LEFT JOIN code_areas d ON a.area_id=d.area_id
+		LEFT JOIN code_areas e ON a.company_provinces_id=e.area_id
+		LEFT JOIN code_areas f ON a.company_city_id=f.area_id
+		LEFT JOIN code_areas g ON a.area_id=g.area_id
+		LEFT JOIN code_areas h ON a.user_provinces_id=h.area_id
+		LEFT JOIN code_areas i ON a.user_city_id=i.area_id
+		LEFT JOIN code_areas j ON a.user_area_id=j.area_id
+		where 
+			a.ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="agentResult" parameterType="com.prj.biz.bean.agent.Agent" >
+		SELECT
+			a.*,
+			b.area_name provinces,
+			c.area_name city,
+			d.area_name area,
+			e.area_name companyProvinces,
+			f.area_name companyCity,
+			g.area_name companyArea,
+			h.area_name userProvinces,
+			i.area_name userCity,
+			j.area_name userArea
+		FROM
+			xa_agent a
+		LEFT JOIN code_areas b ON a.provinces_id=b.area_id
+		LEFT JOIN code_areas c ON a.city_id=c.area_id
+		LEFT JOIN code_areas d ON a.area_id=d.area_id
+		LEFT JOIN code_areas e ON a.company_provinces_id=e.area_id
+		LEFT JOIN code_areas f ON a.company_city_id=f.area_id
+		LEFT JOIN code_areas g ON a.area_id=g.area_id
+		LEFT JOIN code_areas h ON a.user_provinces_id=h.area_id
+		LEFT JOIN code_areas i ON a.user_city_id=i.area_id
+		LEFT JOIN code_areas j ON a.user_area_id=j.area_id
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.agent.Agent">
+		select
+		    count(a.ID)
+		from 
+			 XA_AGENT  a
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.advertising.Advertising">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_AGENT 
+			(id,agent_code,phone,address,diamond_card,agent_state,Agent_type,company_name,organization_code,company_address,Business_license_photo,user_name,ID_No,user_address,id_no_photo,agent_name,consumers_number,provinces_id,city_id,area_id,company_provinces_id,company_city_id,company_area_id,user_provinces_id,user_city_id,user_area_id,jyd,reseller_level,create_date,application_state)
+		VALUES 
+			(#{id},#{agentCode},#{phone},#{address},#{diamondCard},#{agentState},#{agentType},#{companyName},#{organizationCode},#{companyAddress},#{businessLicensePhoto},#{userName},#{idNo},#{userAddress},#{idNoPhoto},#{agentName},#{consumersNumber},#{provincesId},#{cityId},#{areaId},#{companyProvincesId},#{companyCityId},#{companyAreaId},#{userProvincesId},#{userCityId},#{userAreaId},#{jyd},#{resellerLevel},now(),#{applicationState})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_AGENT 
+			(id,agent_code,phone,address,diamond_card,agent_state,Agent_type,company_name,organization_code,company_address,Business_license_photo,user_name,ID_No,user_address,id_no_photo,agent_name,consumers_number,provinces_id,city_id,area_id,company_provinces_id,company_city_id,company_area_id,user_provinces_id,user_city_id,user_area_id,jyd,reseller_level,create_date,application_state)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{agentCode},#{phone},#{address},#{diamondCard},#{agentState},#{agentType},#{companyName},#{organizationCode},#{companyAddress},#{businessLicensePhoto},#{userName},#{idNo},#{userAddress},#{idNoPhoto},#{agentName},#{consumersNumber},#{provincesId},#{cityId},#{areaId},#{companyProvincesId},#{companyCityId},#{companyAreaId},#{userProvincesId},#{userCityId},#{userAreaId},#{jyd},#{resellerLevel},now(),#{applicationState})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.advertising.Advertising">
+     UPDATE XA_AGENT
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="agentCode!=null and agentCode!='' ">
+				agent_code = #{agentCode},
+			</if>
+			<if test="phone!=null and phone!='' ">
+				phone = #{phone},
+			</if>
+			<if test="address!=null and address!='' ">
+				address = #{address},
+			</if>
+			<if test="diamondCard!=null and diamondCard!='' ">
+				diamond_card = #{diamondCard},
+			</if>
+			<if test="agentState!=null and agentState!='' ">
+				agent_state = #{agentState},
+			</if>
+			<if test="agentType!=null and agentType!='' ">
+				Agent_type = #{agentType},
+			</if>
+			<if test="companyName!=null and companyName!='' ">
+				company_name = #{companyName},
+			</if>
+			<if test="organizationCode!=null and organizationCode!='' ">
+				organization_code = #{organizationCode},
+			</if>
+			<if test="companyAddress!=null and companyAddress!='' ">
+				company_address = #{companyAddress},
+			</if>
+			<if test="businessLicensePhoto!=null and businessLicensePhoto!='' ">
+				Business_license_photo = #{businessLicensePhoto},
+			</if>
+			<if test="userName!=null and userName!='' ">
+				user_name = #{userName},
+			</if>
+			<if test="idNo!=null and idNo!='' ">
+				ID_No = #{idNo},
+			</if>
+			<if test="userAddress!=null and userAddress!='' ">
+				user_address = #{userAddress},
+			</if>
+			<if test="idNoPhoto!=null and idNoPhoto!='' ">
+				id_no_photo = #{idNoPhoto},
+			</if>
+			<if test="agentName!=null and agentName!='' ">
+				agent_name = #{agentName},
+			</if>
+			<if test="consumersNumber!=null and consumersNumber!='' ">
+				consumers_number = #{consumersNumber},
+			</if>
+			<if test="provincesId!=null and provincesId!='' ">
+				provinces_id = #{provincesId},
+			</if>
+			<if test="cityId!=null and cityId!='' ">
+				city_id = #{cityId},
+			</if>
+			<if test="areaId!=null and areaId!='' ">
+				area_id = #{areaId},
+			</if>
+			<if test="companyProvincesId!=null and companyProvincesId!='' ">
+				company_provinces_id = #{companyProvincesId},
+			</if>
+			<if test="companyCityId!=null and companyCityId!='' ">
+				company_city_id = #{companyCityId},
+			</if>
+			<if test="companyAreaId!=null and companyAreaId!='' ">
+				company_area_id = #{companyAreaId},
+			</if>
+			<if test="userProvincesId!=null and userProvincesId!='' ">
+				user_provinces_id = #{userProvincesId},
+			</if>
+			<if test="userCityId!=null and userCityId!='' ">
+				user_city_id = #{userCityId},
+			</if>
+			<if test="userAreaId!=null and userAreaId!='' ">
+				user_area_id = #{userAreaId},
+			</if>
+			<if test="jyd!=null and jyd!='' ">
+				jyd = #{jyd},
+			</if>
+			 <if test="resellerLevel!=null and resellerLevel!='' ">
+		       reseller_level = #{resellerLevel},
+		    </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        create_date = #{createDate},
+		    </if>
+		    <if test="applicationState!=null and applicationState!='' ">
+		        application_state = #{applicationState},
+		    </if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_AGENT
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="agentCode!=null and agentCode!='' ">
+				agent_code = #{agentCode},
+			</if>
+			<if test="phone!=null and phone!='' ">
+				phone = #{phone},
+			</if>
+			<if test="address!=null and address!='' ">
+				address = #{address},
+			</if>
+			<if test="diamondCard!=null and diamondCard!='' ">
+				diamond_card = #{diamondCard},
+			</if>
+			<if test="agentState!=null and agentState!='' ">
+				agent_state = #{agentState},
+			</if>
+			<if test="agentType!=null and agentType!='' ">
+				Agent_type = #{agentType},
+			</if>
+			<if test="companyName!=null and companyName!='' ">
+				company_name = #{companyName},
+			</if>
+			<if test="organizationCode!=null and organizationCode!='' ">
+				organization_code = #{organizationCode},
+			</if>
+			<if test="companyAddress!=null and companyAddress!='' ">
+				company_address = #{companyAddress},
+			</if>
+			<if test="businessLicensePhoto!=null and businessLicensePhoto!='' ">
+				Business_license_photo = #{businessLicensePhoto},
+			</if>
+			<if test="userName!=null and userName!='' ">
+				user_name = #{userName},
+			</if>
+			<if test="idNo!=null and idNo!='' ">
+				ID_No = #{idNo},
+			</if>
+			<if test="userAddress!=null and userAddress!='' ">
+				user_address = #{userAddress},
+			</if>
+			<if test="idNoPhoto!=null and idNoPhoto!='' ">
+				id_no_photo = #{idNoPhoto},
+			</if>
+			<if test="agentName!=null and agentName!='' ">
+				agent_name = #{agentName},
+			</if>
+			<if test="consumersNumber!=null and consumersNumber!='' ">
+				consumers_number = #{consumersNumber},
+			</if>
+			<if test="provincesId!=null and provincesId!='' ">
+				provinces_id = #{provincesId},
+			</if>
+			<if test="cityId!=null and cityId!='' ">
+				city_id = #{cityId},
+			</if>
+			<if test="areaId!=null and areaId!='' ">
+				area_id = #{areaId},
+			</if>
+			<if test="companyProvincesId!=null and companyProvincesId!='' ">
+				company_provinces_id = #{companyProvincesId},
+			</if>
+			<if test="companyCityId!=null and companyCityId!='' ">
+				company_city_id = #{companyCityId},
+			</if>
+			<if test="companyAreaId!=null and companyAreaId!='' ">
+				company_area_id = #{companyAreaId},
+			</if>
+			<if test="userProvincesId!=null and userProvincesId!='' ">
+				user_provinces_id = #{userProvincesId},
+			</if>
+			<if test="userCityId!=null and userCityId!='' ">
+				user_city_id = #{userCityId},
+			</if>
+			<if test="userAreaId!=null and userAreaId!='' ">
+				user_area_id = #{userAreaId},
+			</if>
+			<if test="jyd!=null and jyd!='' ">
+				jyd = #{jyd},
+			</if>
+			 <if test="resellerLevel!=null and resellerLevel!='' ">
+		       reseller_level = #{resellerLevel},
+		    </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        create_date = #{createDate},
+		    </if>
+		     <if test="applicationState!=null and applicationState!='' ">
+		        application_state = #{applicationState},
+		    </if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_AGENT WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_AGENT
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

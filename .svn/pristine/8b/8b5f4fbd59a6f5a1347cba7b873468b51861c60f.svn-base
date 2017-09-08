@@ -1,0 +1,15 @@
+package com.prj.biz.dao.maindb.shippingaddress;
+
+import com.prj.biz.bean.shippingaddress.ShippingAddress;
+import com.prj.biz.dao._base.BaseDao;
+
+/**
+ * 
+ * 描述: 收货地址 Dao 接口<br>
+ * @author Liang
+ * @date 2017-08-15
+ */
+public interface ShippingAddressDao extends BaseDao<ShippingAddress>
+{
+
+}

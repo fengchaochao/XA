@@ -1,0 +1,548 @@
+package com.prj.biz.api.homepageApi;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import tutorial.redis.RedisUtil;
+
+import com.prj.biz.action._base.BaseAction;
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.consumers.Consumers;
+import com.prj.biz.bean.goods.Goods;
+import com.prj.biz.bean.historyseacher.HistorySeacher;
+import com.prj.biz.bean.redenvelope.RedEnvelope;
+import com.prj.biz.bean.redenveloperecord.RedEnvelopeRecord;
+import com.prj.biz.bean.shufflingfigure.ShufflingFigure;
+import com.prj.biz.bean.sysuser.SysUser;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.consumers.ConsumersService;
+import com.prj.biz.service.goods.GoodsService;
+import com.prj.biz.service.historyseacher.HistorySeacherService;
+import com.prj.biz.service.redenvelope.RedEnvelopeService;
+import com.prj.biz.service.redenveloperecord.RedEnvelopeRecordService;
+import com.prj.biz.service.shufflingfigure.ShufflingFigureService;
+import com.prj.biz.service.sysuser.SysUserService;
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+import com.prj.utils.ObjectUtil;
+import com.prj.utils.UfdmDateUtil;
+
+/**
+ * @author: Liang
+ * @date:2017-8-17 上午8:32:12
+ * @version :0.0.1
+ * @dis:Api首页及商城、商圈、抢红包
+ */
+@SuppressWarnings("serial")
+@Controller
+@RequestMapping("/api")
+public class HomepageApiAction extends BaseAction{
+
+	@Autowired
+	private SysUserService userService;
+	
+	@Autowired
+	private ShufflingFigureService shufflingFigureService;
+	
+	@Autowired
+	private BusinessInformationService businessInformationService;
+	
+	@Autowired
+	private GoodsService goodsService;
+	
+	@Autowired
+	private HistorySeacherService historySeacherService;
+	
+	@Autowired
+	private ConsumersService consumersService;
+	@Autowired
+	private RedEnvelopeRecordService redEnvelopeRecordService;
+	@Autowired
+	private RedEnvelopeService redEnvelopeService;
+	
+	
+	/*************************首页***********************************/
+	
+	/**
+	 * 首页->轮播图及广告条
+	 * 
+	 * @param request
+	 * @param response
+	 * @param          
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnSlideShow")
+	@ResponseBody
+	public  RespBean<Map<String, Object>> doEnSlideShow(HttpServletRequest request,
+			HttpServletResponse response) {
+		RespBean<Map<String, Object>> respBean = new RespBean<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			//首页轮播图
+			ShufflingFigure shufflingFigure=new ShufflingFigure();
+			shufflingFigure.setTypeName("APP轮播图");
+			List<ShufflingFigure> shufflingFigureList = shufflingFigureService.doGetList(shufflingFigure);
+			//首页广告条
+			shufflingFigure.setTypeName("APP广告条");
+			List<ShufflingFigure> advertisingPhotoList = shufflingFigureService.doGetList(shufflingFigure);
+			map.put("shufflingFigureList", shufflingFigureList);
+			map.put("advertisingPhotoList", advertisingPhotoList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		respBean.setBody(map);
+		return respBean;
+	}
+	/**
+	 * 首页->热门商家
+	 * 
+	 * @param request
+	 * @param response
+	 * @param          
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnPopularMerchants", method = RequestMethod.POST)
+	@ResponseBody
+	public RespBean<RespPagination<BusinessInformation>> doEnPopularMerchants(HttpServletRequest request,HttpServletResponse response,
+			String areaId,String merchantsClassificationId,String keySeach,String deviceNumber,String limit,String offset) {
+		
+		RespBean<RespPagination<BusinessInformation>> respBean = new RespBean<RespPagination<BusinessInformation>>();
+		RespPagination<BusinessInformation> respPagination = new RespPagination<BusinessInformation>();
+		BusinessInformation businessInformation=new BusinessInformation();
+		
+		try {
+			if(!StringUtils.isEmpty(areaId)){
+				businessInformation.setAreaId(areaId);
+			}
+			if(!StringUtils.isEmpty(merchantsClassificationId)){
+				businessInformation.setMerchantsClassificationId(merchantsClassificationId);
+			}
+			if(!StringUtils.isEmpty(keySeach)){
+				businessInformation.setVendorName(keySeach);
+				HistorySeacher historySeacher=new HistorySeacher();
+				historySeacher.setSeachContext(keySeach);
+				historySeacher.setDeviceNumber(deviceNumber);
+				List<HistorySeacher> historySeachers=historySeacherService.doGetList(historySeacher);
+				if(historySeachers.size()>0){
+					historySeachers.get(0).setSeachDate(UfdmDateUtil.getCurrentTime());
+					historySeacherService.doModById(historySeachers.get(0));
+				}else{
+					historySeacher.setSeachDate(UfdmDateUtil.getCurrentTime());
+					historySeacherService.doSave(historySeacher);
+				}
+			}
+			businessInformation.setLimit(Integer.parseInt(limit));
+			businessInformation.setOffset(Integer.parseInt(offset));
+			List<BusinessInformation> businessInformationList = businessInformationService.doGetList(businessInformation);
+			respPagination.setRows(businessInformationList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 * 首页->热门商品
+	 * 
+	 * @param request
+	 * @param response
+	 * @param          
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnPopularGoods",method=RequestMethod.POST)
+	@ResponseBody
+	public RespBean<RespPagination<Goods>> doEnPopularGoods(String areaId,String commodityTypeId,String keySeach,String deviceNumber,String limit,String offset) {
+		
+		RespBean<RespPagination<Goods>> respBean = new RespBean<RespPagination<Goods>>();
+		RespPagination<Goods> respPagination = new RespPagination<Goods>();
+		
+		try {
+			Goods goods=new Goods();
+			if(!StringUtils.isEmpty(areaId)){
+				goods.setAreaId(areaId);
+			}
+			if(!StringUtils.isEmpty(commodityTypeId)){
+				goods.setCommodityTypeId(commodityTypeId);
+			}
+			if(!StringUtils.isEmpty(keySeach)){
+				goods.setCommodityName(keySeach);
+				HistorySeacher historySeacher=new HistorySeacher();
+				historySeacher.setSeachContext(keySeach);
+				historySeacher.setDeviceNumber(deviceNumber);
+				List<HistorySeacher> historySeachers=historySeacherService.doGetList(historySeacher);
+				if(historySeachers.size()>0){
+					historySeachers.get(0).setSeachDate(UfdmDateUtil.getCurrentTime());
+					historySeacherService.doModById(historySeachers.get(0));
+				}else{
+					historySeacher.setSeachDate(UfdmDateUtil.getCurrentTime());
+					historySeacherService.doSave(historySeacher);
+				}
+			}
+			goods.setGoodsState("3");
+			goods.setLimit(Integer.parseInt(limit));
+			goods.setOffset(Integer.parseInt(offset));
+			
+			List<Goods> goodsList = goodsService.doGetList(goods);
+			respPagination.setRows(goodsList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 * 首页->历史搜索记录
+	 * 
+	 * @param request
+	 * @param response
+	 * @param          
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnSeachRecordList")
+	@ResponseBody
+	public RespBean<RespPagination<HistorySeacher>> doEnSeachRecordList(HttpServletRequest request,HttpServletResponse response,
+			String keySeach,String deviceNumber,String limit,String offset) {
+		
+		RespBean<RespPagination<HistorySeacher>> respBean = new RespBean<RespPagination<HistorySeacher>>();
+		RespPagination<HistorySeacher> respPagination = new RespPagination<HistorySeacher>();
+		
+		try {
+			
+			HistorySeacher historySeacher=new HistorySeacher();
+			if(!StringUtils.isEmpty(keySeach)){
+				historySeacher.setKeySeach(keySeach);
+			}
+			historySeacher.setDeviceNumber(deviceNumber);
+			historySeacher.setLimit(Integer.parseInt(limit));
+			historySeacher.setOffset(Integer.parseInt(offset));
+			historySeacher.setOrder("desc");
+			historySeacher.setOrderName("seach_date");
+			List<HistorySeacher> historySeacherList = historySeacherService.doGetList(historySeacher);
+			
+			respPagination.setRows(historySeacherList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 * 描述: 首页-清空历史搜索记录
+	 * @auther Liang
+	 * @date 2017-07-20
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doDelHistoryRecord")
+	@ResponseBody
+	public RespBean<String> doDelHistoryRecord(String deviceNumber) throws Exception{
+		RespBean<String> respBean = new RespBean<String>();
+		HistorySeacher historySeacher=new HistorySeacher();
+		historySeacher.setDeviceNumber(deviceNumber);
+		List<HistorySeacher> historySeacherList = historySeacherService.doGetList(historySeacher);
+		if(historySeacherList.size()>0){
+			for (HistorySeacher historySeacher2 : historySeacherList) {
+				historySeacherService.doRmById(historySeacher2.getId());
+			}
+		}
+		respBean.setBody("删除成功");
+		return respBean;
+	}
+	/*************************抢红包***********************************/
+	/**
+	 * 描述: 首页-可领取红包列表
+	 * @auther Liang
+	 * @date 2017-07-20
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doEnReceiveRedPacket")
+	@ResponseBody
+	public RespBean<RespPagination<RedEnvelope>> doEnReceiveRedPacket(RedEnvelope redEnvelope) throws Exception {
+		RespBean<RespPagination<RedEnvelope>> respBean = new RespBean<RespPagination<RedEnvelope>>();
+		RespPagination<RedEnvelope> respPagination = new RespPagination<RedEnvelope>();
+		redEnvelope.setRedEnvelopeState("1");
+		redEnvelope.setOrder("desc");
+		redEnvelope.setOrderName("create_time");
+		Integer total = redEnvelopeService.doGetTotal(redEnvelope);
+		List<RedEnvelope> redEnvelopeList = redEnvelopeService.doGetList(redEnvelope);
+		respPagination.setTotal(total);
+		respPagination.setRows(redEnvelopeList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 *描述: 首页-可领取红包对应的详细信息
+	 * @auther Liang
+	 * @date 2017-07-26
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadRedEnvelopeRecordList")
+	@ResponseBody
+	public RespBean<RespPagination<RedEnvelopeRecord>> doReadRedEnvelopeRecordList(RedEnvelopeRecord redEnvelopeRecord) throws Exception{
+		RespBean<RespPagination<RedEnvelopeRecord>> respBean = new RespBean<RespPagination<RedEnvelopeRecord>>();
+		RespPagination<RedEnvelopeRecord> respPagination = new RespPagination<RedEnvelopeRecord>();
+		Integer total = redEnvelopeRecordService.doGetTotal(redEnvelopeRecord);
+		List<RedEnvelopeRecord> redEnvelopeRecordList = redEnvelopeRecordService.doGetList(redEnvelopeRecord);
+		respPagination.setTotal(total);
+		respPagination.setRows(redEnvelopeRecordList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 * 描述: 首页-抢红包
+	 * @auther Liang
+	 * @date 2017-07-20
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doEnRedWars")
+	@ResponseBody
+	public RespBean<String> doEnRedWars(RedEnvelopeRecord redEnvelopeRecord) throws Exception {
+		RespBean<String> respBean = new RespBean<String>();
+		
+		String isExitsKey = "RedPacketIsExits"+redEnvelopeRecord.getId(); 
+		String mainRdKey = "RedPacket" +redEnvelopeRecord.getId();
+		if (!RedisUtil.getJedis().sismember(isExitsKey, redEnvelopeRecord.getReceiver())) {
+			
+			RedEnvelopeRecord s;
+			try {
+				s = (RedEnvelopeRecord) ObjectUtil.bytesToObject((RedisUtil.getJedis().lpop(mainRdKey.getBytes())));
+				if (null != s ) {
+					
+					RedisUtil.getJedis().sadd(isExitsKey, redEnvelopeRecord.getReceiver()); // **
+					// 给红包记录表插入领取人
+					if("2".equals(redEnvelopeRecord.getReceiverType())){
+						redEnvelopeRecord.setReceiverType("2");
+					}
+					if("3".equals(redEnvelopeRecord.getReceiverType())){
+						redEnvelopeRecord.setReceiverType("1");
+					}
+					if("4".equals(redEnvelopeRecord.getReceiverType())){
+						redEnvelopeRecord.setReceiverType("0");
+					}
+					redEnvelopeRecord.setReceiveDate(UfdmDateUtil.getCurrentTime());
+					redEnvelopeRecordService.doModById(redEnvelopeRecord);
+					respBean.setBody("恭喜您已经获得" + redEnvelopeRecord.getPrice() + "元红包!");
+					//领取的红包加到账户余额里面
+					SysUser sysUser=userService.doGetById(redEnvelopeRecord.getReceiver());
+					sysUser.setAccountBalance(String.valueOf(Float.parseFloat(sysUser.getAccountBalance())+Float.parseFloat(redEnvelopeRecord.getPrice())));
+					userService.doModById(sysUser);
+					//领取完之后在查一下 如果没有可以领的红包 则，将状态改为已领取
+					s = (RedEnvelopeRecord)ObjectUtil.bytesToObject((RedisUtil.getJedis().lpop(("RedPacket"+redEnvelopeRecord.getRedEnvelopeId()).getBytes())));
+					if (null == s ) {
+						RedEnvelope redEnvelope=redEnvelopeService.doGetById(redEnvelopeRecord.getRedEnvelopeId());
+						redEnvelope.setRedEnvelopeState("2");
+						redEnvelopeService.doModById(redEnvelope);
+					}
+				} else {
+					respBean.setBody("该红包已经被领取完成!");
+				}
+			} catch (Exception e) {
+				
+			}
+
+		} else {
+			respBean.setBody("你已经领取过红包了！");
+		}
+		return respBean;
+	}
+	/*************************商城***********************************/
+	/**
+	 * 描述: 商城-分享链接
+	 * @auther Liang
+	 * @date 2017-07-20
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doSaveShoppingCart")
+	@ResponseBody
+	public RespBean<String> doSaveShoppingCart(String goodsId,String userId) throws Exception{
+		RespBean<String> respBean = new RespBean<String>();
+		String url="/shareGoods/doEnGoodsView?goodsId="+goodsId+"&shareUserId="+userId;
+		respBean.setBody(url);
+		return respBean;
+	}
+	/*************************商圈***********************************/
+	/**
+	 * 商圈->地图显示头像
+	 * 
+	 * @param request
+	 * @param response
+	 * @param          
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnShowInformation")
+	@ResponseBody
+	public  RespBean<Map<String, Object>> doEnShowInformation(HttpServletRequest request,
+			HttpServletResponse response,String proceId,String cityId,String areaId,String userState) {
+		RespBean<Map<String, Object>> respBean = new RespBean<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		//商家
+		BusinessInformation businessInformation=new BusinessInformation();
+		//消费者
+		Consumers consumers=new Consumers();
+		consumers.setIsXfconsumers("0");
+		//消费商
+		Consumers consumersBusiness=new Consumers();
+		consumersBusiness.setIsXfconsumers("1");
+		
+		List<BusinessInformation> businessInformationList=new ArrayList<BusinessInformation>();
+		List<Consumers> consumersList=new ArrayList<Consumers>();
+		List<Consumers> consumersBusinessList=new ArrayList<Consumers>();
+		try {
+			if(StringUtils.isEmpty(proceId)){
+				businessInformation.setProvincesId(proceId);
+				consumers.setProvincesId(proceId);
+				consumersBusiness.setProvincesId(proceId);
+			}
+			if(StringUtils.isEmpty(cityId)){
+				businessInformation.setCityId(cityId);
+				consumers.setCityId(cityId);
+				consumersBusiness.setAreaId(cityId);
+			}
+			if(StringUtils.isEmpty(areaId)){
+				businessInformation.setAreaId(areaId);
+				consumers.setAreaId(areaId);
+				consumersBusiness.setAreaId(areaId);
+			}
+			//判断是否是商家
+			if("2".equals(userState)){
+				businessInformationList=businessInformationService.doGetList(businessInformation);
+				for (BusinessInformation businessInformation1 : businessInformationList) {
+					businessInformation1.setShowType("2");
+				}
+			}
+			//判断是否是消费商或者消费者
+			if("3".equals(userState)||"4".equals(userState)){
+				businessInformationList=businessInformationService.doGetList(businessInformation);
+				for (BusinessInformation businessInformation1 : businessInformationList) {
+					businessInformation1.setShowType("2");
+				}
+				consumersList=consumersService.doGetList(consumers);
+				for (Consumers consumers1 : consumersList) {
+					consumers1.setShowType("3");
+				}
+				consumersBusinessList=consumersService.doGetList(consumersBusiness);
+				for (Consumers consumers1 : consumersBusinessList) {
+					consumers1.setShowType("4");
+				}
+			}
+			
+			map.put("businessInformationList", businessInformationList);
+			map.put("consumersList", consumersList);
+			map.put("consumersBusinessList", consumersBusinessList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		respBean.setBody(map);
+		return respBean;
+	}
+	/**
+	 * 商圈->商家详情
+	 * 
+	 * @param request
+	 * @param response
+	 * @param          
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnBussinessView")
+	@ResponseBody
+	public  RespBean<Object> doEnBussinessView(HttpServletRequest request,
+			HttpServletResponse response,String sellerId,String userState) {
+		RespBean<Object> respBean = new RespBean<Object>();
+		BusinessInformation businessInformation=new BusinessInformation();
+		Consumers consumers = new Consumers();
+		Consumers consumer = new Consumers();
+		try {
+			//判断是否是商家
+			if("2".equals(userState)){
+				businessInformation=businessInformationService.doGetById(sellerId);
+				businessInformation.setShowType(userState);
+				respBean.setBody(businessInformation);
+			}
+			//判断是否是消费商
+			if("3".equals(userState)){
+				consumer.setId(sellerId);
+				consumers=consumersService.selectByIdInfo(consumer);
+				consumers.setShowType(userState);
+				respBean.setBody(consumers);
+			}
+			//判断是否是消费者
+			if("4".equals(userState)){
+				consumer.setId(sellerId);
+				consumers=consumersService.selectByIdInfo(consumer);
+				consumers.setShowType(userState);
+				respBean.setBody(consumers);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return respBean;
+	}
+	/**
+	 * 商圈-消费商/商家的在线商品展示
+	 * @param request
+	 * @param response
+	 * @param 
+	 * @return
+	 */
+	@RequestMapping(value = "/onLineGoodsingList")
+	@ResponseBody
+	public RespBean<RespPagination<Goods>> onLineGoodsingList(HttpServletRequest request,HttpServletResponse response,String sellerId,String limit,String offset) {
+		
+		RespBean<RespPagination<Goods>> respBean = new RespBean<RespPagination<Goods>>();
+		RespPagination<Goods> respPagination = new RespPagination<Goods>();
+		Goods goods=new Goods();
+		SysUser sysUser=new SysUser();
+	
+		try {
+			sysUser.setMerchantsId(sellerId);
+			List<SysUser> sysUsers=userService.doGetList(sysUser);
+			if(sysUsers.size()>0){
+				goods.setPublisher(sysUsers.get(0).getId());
+			}
+			goods.setGoodsState("3");
+			goods.setLimit(Integer.parseInt(limit));
+			goods.setOffset(Integer.parseInt(offset));
+			
+			List<Goods> goodsList = goodsService.doGetList(goods);
+			Integer total = goodsService.doGetTotal(goods);
+			respPagination.setTotal(total);
+			respPagination.setRows(goodsList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+
+}

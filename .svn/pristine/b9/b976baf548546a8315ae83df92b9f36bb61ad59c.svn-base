@@ -1,0 +1,72 @@
+span,em{display:inline-block;font-style:normal;}
+button{outline:none;}
+body{background:#f2f3f5;}
+#mainContent{
+    width: 99%;
+    margin: 0 0 0 1%;
+    padding-top:25px;
+    padding-left:10px;
+    background:#fff;
+}
+
+/* 页面弹框中底部按钮居中*/
+.navbar-btn{text-align:center;}
+.col-sm-2{}
+
+/*页面headline  */
+.pageHeadline{height:50px;line-height: 50px;}
+.leftNotice{font-size:16px;}
+.pageHeadline p{display:inline-block;float:right;margin:0px;}
+.pageHeadline p input[type="button"]{height:25px;line-height:25px;padding: 0px 20px;outline: none;
+    border: none;border-radius: 3px;margin-left:20px;cursor: pointer;}
+.startBtn{background: #ccc;}
+.closeBtn{background: #ff9c65;color:#fff;}
+.pageHeadline p .startBtn[type="button"]{margin-left:50px;}
+.pageHeadline em{margin:0px 10px;}
+
+/* headerBtn 公用按钮颜色  */
+.greenBtn{float:right;background:#4db988;color:#fff;height: 30px;
+    line-height: 30px;margin-top: 11px;border-radius: 3px;padding: 0px 15px;cursor: pointer;}
+.greenBtn:hover,.greenBtn:active{background:#44b07f;}
+
+/*flRight--Btn 修改--保存--取消--  */
+.flRight input[type="button"]{height:25px;line-height:25px;padding: 0px 20px;outline: none;
+    background:none;border: none;border-radius: 50px;margin-left:20px;cursor: pointer;
+    border:1px solid #ddd;}
+.flRight .blueModifyBtn[type="button"]{border-color:#2370d8;color:#2370d8;}/* 修改 */
+.flRight .greenPreserveBtn[type="button"]{border-color:#3cac7b;color:#3cac7b;}/* 保存 */
+.flRight .orangeCancelBtn[type="button"]{border-color:#f96868;color:#f96868;}/* 取消 */
+.flRight .orangeDefaultBtn[type="button"]{border-color:#fdad01;color:#fdad01;}/* 默认 */
+
+/*弹层公用Btn(无弧度) 确定----取消 */
+.confirm,.cancel{background: none;border: none;margin: 10px;color: #fff;border-radius: 5px;
+    padding: 5px 25px;}
+.confirm {background: #3ab2c3;}
+.cancel {background: #f86868;}
+
+/*footerBtn 公用按钮颜色 （ 有弧度的大按钮 ）   确认---取消---返回 */
+.greenBtnRad,.redBtnRad,.yellowReturnRad{display: inline-block; height: 40px;line-height: 40px;min-width:140px;
+    border-radius: 50px;background: #45be89;outline: none;border: none;color:#fff;margin:0px 30px;
+    font-size:16px;}
+.greenBtnRad:hover,.greenBtnRad:active{background: #3cac7b;}
+.redBtnRad{background: #f95151;}
+.redBtnRad:hover,.redBtnRad:active{background: #e44848;}
+.yellowReturnRad{background: #f97c51;}
+.yellowReturnRad:hover,.yellowReturnRad:active{background: #ea6e43;}
+
+/* 公用字体颜色 */
+.blueText,.blueText:hover,.blueText:active{color:#236adc;}
+.orangeText,.orangeText:hover,.orangeText:active{color:#f74f4c;}
+
+
+/*页面body部分的位置  */
+.mainContant{width:98.5%;margin-left:1.5%;box-sizing: border-box;overflow: hidden;}
+.whiteBox{background:#fff;padding:10px 20px;margin-bottom:20px;box-sizing: border-box;overflow-x:hidden;}
+
+/* Time 页面公用时间样式  */
+.chooseTimeCom{display:inline-block;width:350px;float:left;}
+.chooseTimeCom div{display:inline-block;width:130px;margin-left:8px;}
+
+
+/*5--设置管理菜单下分页面中--单位的css  */
+.unitBusinessEdit{ float:right;margin-right:-20px;margin-top:-26px;}

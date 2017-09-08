@@ -1,0 +1,124 @@
+/**
+ * Copyright© 2003-2013 天尔软件, All Rights Reserved <br/>
+ * 描述: 业务文件 <br/>
+ * @author Liang
+ * @date 2017-07-18
+ * @version 1.0
+ */
+package com.prj.biz.action.localuser;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.prj.biz.bean.localuser.LocalUser;
+import com.prj.biz.service.localuser.LocalUserService;
+import com.prj.biz.action._base.BaseAction;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+
+
+
+/** 
+ * 描述: 锁定用户表 Action 类<br>
+ * @author Liang
+ * @date 2017-07-18
+ */
+@RestController
+@RequestMapping("/localUser")
+public class LocalUserAction extends BaseAction
+{
+	private static final long	serialVersionUID	= 1L;
+	
+	@Resource
+	private LocalUserService localUserService;
+
+	/**
+	 * 描述: 进入列表显示页面
+	 * @auther Liang
+	 * @date 2017-07-18
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doEnLocalUserList")
+    public ModelAndView doEnLocalUserListAction(HttpServletRequest request,HttpServletResponse response) throws Exception
+	{
+		return new ModelAndView("/localuser/localUserList");
+	}
+	
+	/**
+	 * 描述: 分页查询信息
+	 * @auther Liang
+	 * @date 2017-07-18
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadLocalUserList")
+	@ResponseBody
+	public RespBean<RespPagination<LocalUser>> doReadLocalUserList(LocalUser localUser) throws Exception{
+		RespBean<RespPagination<LocalUser>> respBean = new RespBean<RespPagination<LocalUser>>();
+		RespPagination<LocalUser> respPagination = new RespPagination<LocalUser>();
+		Integer total = localUserService.doGetTotal(localUser);
+		List<LocalUser> localUserList = localUserService.doGetList(localUser);
+		respPagination.setTotal(total);
+		respPagination.setRows(localUserList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 进入编辑页面
+	 * @auther Liang
+	 * @date 2017-07-18
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnLocalUserEdit")
+	public ModelAndView doEnLocalUserEdit(String localUserId) throws Exception{
+		LocalUser localUser = localUserService.doGetById(localUserId);
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("localUser", localUser);
+		return new ModelAndView("/localuser/localUserEdit",model);
+	}
+	
+	/**
+	 * 描述: 编辑保存
+	 * @auther Liang
+	 * @date 2017-07-18
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEditLocalUser")
+	public RespBean<LocalUser> doEditLocalUser(LocalUser localUser) throws Exception{
+		RespBean<LocalUser> respBean = new RespBean<LocalUser>();
+		localUserService.doModById(localUser);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 删除
+	 * @auther Liang
+	 * @date 2017-07-18
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doDelLocalUser")
+	@ResponseBody
+	public RespBean<String> doDelLocalUserAction(String localUserIds) throws Exception{
+		RespBean<String> respBean = new RespBean<String>();
+		localUserService.doRmByIds(localUserIds);
+		respBean.setBody("删除成功");
+		return respBean;
+	}
+	
+}

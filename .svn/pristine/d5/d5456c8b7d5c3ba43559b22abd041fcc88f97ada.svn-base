@@ -1,0 +1,8 @@
+ 	 .form-group input[type="text"]{width:300px;}
+     .informateBox .leftBox,.informateBox .rightBox{display:inline-block;width:43%;vertical-align: top;}
+     .informateBox .leftBox{width:49%;margin-left:8%;margin-right:-2%;}	
+	 /*µ¯²ã   */
+	 .showLawyer{position:fixed;width:100%;height:100%;background:#000;z-index:1000;opacity:0.5;}
+	 .showBox{display:block;border:1px solid #666;position:fixed;z-index:100000;padding:10px;top:15%;left:25%;width: 400px;min-height: 150px;background:#fff;}
+	 .showBox span{float:right;margin:5px 10px;}
+	 .showBox p{margin-top:30px;line-height:20px;}

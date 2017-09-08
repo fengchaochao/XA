@@ -1,0 +1,67 @@
+package com.prj.biz.action.rebateCalculation;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.consumersaccount.ConsumersAccount;
+import com.prj.biz.bean.order.Order;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.codeareas.codeAreasService;
+import com.prj.biz.service.consumersaccount.ConsumersAccountService;
+import com.prj.biz.service.order.OrderService;
+
+/**
+ * 购买商品的抽成计算
+ * @author liangjianfang
+ * 描述：
+ * @2017-8-25
+ */
+@Service
+public class RebateCalculation {
+	@Autowired
+	private codeAreasService codeAreasService;
+	
+	@Autowired
+	private ConsumersAccountService consumersAccountService;
+	
+	@Autowired
+	private OrderService orderService;
+	
+	@Autowired
+	private BusinessInformationService businessInformationService;
+	/**
+	 * 
+	 * @param goodsId 商品
+	 * @param orderId 订单
+	 * @param consumersAccountId 消费者账号ID
+	 * @param bussinessId 商品对应的商家ID
+	 */
+	public void pumpingCalculation(String goodsId,String orderId,String consumersAccountId,String bussinessId) throws Exception{
+		//判断是否是该商家锁定的
+		ConsumersAccount consumersAccount=new ConsumersAccount();
+		consumersAccount.setBusinessInformationId(bussinessId);
+		consumersAccount.setId(consumersAccountId);
+		List<ConsumersAccount> consumersAccounts=consumersAccountService.doGetList(consumersAccount);
+		Order order=orderService.doGetById(orderId);
+		BusinessInformation businessInformation=businessInformationService.doGetById(bussinessId);
+		
+		if(consumersAccounts.size()>0){
+			
+		}else{
+			
+		}
+		
+	}
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

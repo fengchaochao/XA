@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.transactionrecords.TransactionRecordsDao">
+
+    <resultMap id="transactionrecordsResult" type="com.prj.biz.bean.transactionrecords.TransactionRecords">
+		<result property="id" column="id" />
+		<result property="orderNo" column="order_no" />
+		<result property="cunsumersId" column="cunsumers_id" />
+		<result property="transactionNum" column="transaction_num" />
+		<result property="totalPrice" column="total_price" />
+		<result property="goodsUnitId" column="goods_unit_id" />
+		<result property="goodsAs" column="goods_as" />
+		<result property="rebate" column="rebate" />
+		<result property="createDate" column="create_date" />
+		<result property="businessId" column="business_id" />
+		
+		<result property="consumersAccount.userAccount" column="user_account" />
+		<result property="consumers.customerNumber" column="customer_number" />
+		<result property="consumers.nickName" column="nick_name" />
+		<result property="goodsSpecifications.specificationsName" column="specifications_name" />
+		<result property="order.orderNumber" column="order_number" />
+		<result property="goods.commodityName" column="commodity_name" />
+		<result property="goods.commodityImages" column="commodity_images" />
+		<result property="goods.commodityTypeId" column="commodity_type_id" />
+		<result property="goodsSpecifications.price" column="price" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		a.id,a.order_no,a.cunsumers_id,a.transaction_num,a.total_price,a.goods_unit_id,a.goods_as,a.rebate,a.create_date,a.business_id
+	</sql>
+		
+	<sql id="query_where">
+	     where 1=1
+	        <if test="id!=null and id!='' "> 
+	           AND a.ID = #{id} 
+	       </if>
+		    <if test="orderNo!=null and orderNo!='' ">
+		        AND a.order_no = #{orderNo}
+		    </if>
+		    <if test="cunsumersId!=null and cunsumersId!='' ">
+		        AND a.cunsumers_id = #{cunsumersId}
+		    </if>
+		    <if test="transactionNum!=null and transactionNum!='' ">
+		        AND a.transaction_num = #{transactionNum}
+		    </if>
+		    <if test="totalPrice!=null and totalPrice!='' ">
+		        AND a.total_price = #{totalPrice}
+		    </if>
+		    <if test="goodsUnitId!=null and goodsUnitId!='' ">
+		        AND a.goods_unit_id = #{goodsUnitId}
+		    </if>
+		    <if test="goodsAs!=null and goodsAs!='' ">
+		        AND a.goods_as = #{goodsAs}
+		    </if>
+		    <if test="rebate!=null and rebate!='' ">
+		        AND a.rebate = #{rebate}
+		    </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        AND a.create_date like concat('%',#{createDate},'%')
+		    </if>
+		    <if test="businessId!=null and businessId!='' ">
+		        AND a.business_id = #{businessId}
+		    </if>
+		    <if test="beginDate != null and beginDate!= ''"><!-- 开始时间-->
+				AND  date_format(a.create_date,'%Y-%m-%d') &gt;= date_format(#{beginDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != null and endDate!= ''"><!-- 结束时间 -->
+				AND  date_format(a.create_date,'%Y-%m-%d') &lt;= date_format(#{endDate},'%Y-%m-%d')
+			</if>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="transactionrecordsResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_TRANSACTION_RECORDS a
+		where 
+			a.ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="transactionrecordsResult" parameterType="com.prj.biz.bean.transactionrecords.TransactionRecords" >
+		SELECT
+			a.id,
+			a.order_no,
+			a.cunsumers_id,
+			sum(a.transaction_num) transactionNum,
+			a.total_price,
+			a.goods_unit_id,
+			a.goods_as,
+			a.rebate,
+			a.create_date,
+			a.business_id,
+			b.*, 
+			c.*,
+			d.*,
+			e.order_number orderNum,
+			f.*
+		FROM
+			xa_transaction_records a
+		LEFT JOIN xa_order e ON a.order_no=e.id
+		LEFT JOIN xa_consumers_account b ON e.consumer_account = b.id
+		LEFT JOIN xa_consumers c ON b.consumers_id = c.id
+		LEFT JOIN xa_goods_specifications d ON a.goods_unit_id=d.id
+		LEFT JOIN xa_goods f ON d.goods_id=f.id
+		<include refid="query_where" />
+		<if test="goodsId!=null and goodsId!='' ">
+		        AND d.goods_id = #{goodsId}
+	    </if> 
+	    <if test="accountId!=null and accountId!='' ">
+		        AND b.id = #{accountId}
+	    </if> 
+	     <if test="isGoodsTotal!=null and isGoodsTotal!='' ">
+		        GROUP BY d.goods_id
+	    </if> 
+		ORDER BY
+			a.create_date DESC
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.transactionrecords.TransactionRecords">
+		select
+		    count(a.ID)
+		FROM
+			xa_transaction_records a
+		LEFT JOIN xa_order e ON a.order_no=e.id
+		LEFT JOIN xa_consumers_account b ON e.consumer_account = b.id
+		LEFT JOIN xa_consumers c ON b.consumers_id = c.id
+		LEFT JOIN xa_goods_specifications d ON a.goods_unit_id=d.id
+		LEFT JOIN xa_goods f ON d.goods_id=f.id
+		<include refid="query_where" />  
+		<if test="goodsId!=null and goodsId!='' ">
+		        AND d.goods_id = #{goodsId}
+	    </if>
+	    <if test="accountId!=null and accountId!='' ">
+		        AND b.id = #{accountId}
+	    </if>  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.transactionrecords.TransactionRecords">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_TRANSACTION_RECORDS 
+			(id,order_no,cunsumers_id,transaction_num,total_price,goods_unit_id,goods_as,rebate,create_date,business_id)
+		VALUES 
+			(#{id},#{orderNo},#{cunsumersId},#{transactionNum},#{totalPrice},#{goodsUnitId},#{goodsAs},#{rebate},now(),#{businessId})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_TRANSACTION_RECORDS 
+			(id,order_no,cunsumers_id,transaction_num,total_price,goods_unit_id,goods_as,rebate,create_date,business_id)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{orderNo},#{cunsumersId},#{transactionNum},#{totalPrice},#{goodsUnitId},#{goodsAs},#{rebate},now(),#{businessId})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.transactionrecords.TransactionRecords">
+     UPDATE XA_TRANSACTION_RECORDS
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="orderNo!=null and orderNo!='' ">
+				order_no = #{orderNo},
+			</if>
+			<if test="cunsumersId!=null and cunsumersId!='' ">
+				cunsumers_id = #{cunsumersId},
+			</if>
+			<if test="transactionNum!=null and transactionNum!='' ">
+				transaction_num = #{transactionNum},
+			</if>
+			<if test="totalPrice!=null and totalPrice!='' ">
+				total_price = #{totalPrice},
+			</if>
+			<if test="goodsUnitId!=null and goodsUnitId!='' ">
+				goods_unit_id = #{goodsUnitId},
+			</if>
+			<if test="goodsAs!=null and goodsAs!='' ">
+				goods_as = #{goodsAs},
+			</if>
+			<if test="rebate!=null and rebate!='' ">
+				rebate = #{rebate},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			 <if test="businessId!=null and businessId!='' ">
+		         business_id = #{businessId},
+		    </if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_TRANSACTION_RECORDS
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="orderNo!=null and orderNo!='' ">
+				order_no = #{orderNo},
+			</if>
+			<if test="cunsumersId!=null and cunsumersId!='' ">
+				cunsumers_id = #{cunsumersId},
+			</if>
+			<if test="transactionNum!=null and transactionNum!='' ">
+				transaction_num = #{transactionNum},
+			</if>
+			<if test="totalPrice!=null and totalPrice!='' ">
+				total_price = #{totalPrice},
+			</if>
+			<if test="goodsUnitId!=null and goodsUnitId!='' ">
+				goods_unit_id = #{goodsUnitId},
+			</if>
+			<if test="goodsAs!=null and goodsAs!='' ">
+				goods_as = #{goodsAs},
+			</if>
+			<if test="rebate!=null and rebate!='' ">
+				rebate = #{rebate},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="businessId!=null and businessId!='' ">
+		         business_id = #{businessId},
+		    </if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_TRANSACTION_RECORDS WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_TRANSACTION_RECORDS
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

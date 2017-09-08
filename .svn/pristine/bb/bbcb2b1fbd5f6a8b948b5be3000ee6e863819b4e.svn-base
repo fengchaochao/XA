@@ -1,0 +1,162 @@
+/**
+ * Copyright© 2003-2013 天尔软件, All Rights Reserved <br/>
+ * 描述: 业务文件 <br/>
+ * @author Liang
+ * @date 2017-08-07
+ * @version 1.0
+ */
+package com.prj.biz.action.withdrawrecord;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.prj.biz.action._base.BaseAction;
+import com.prj.biz.bean.agent.Agent;
+import com.prj.biz.bean.bankwithdrawal.BankWithdrawal;
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.consumers.Consumers;
+import com.prj.biz.bean.order.Order;
+import com.prj.biz.bean.sysuser.SysUser;
+import com.prj.biz.bean.withdrawrecord.ApplyRecord;
+import com.prj.biz.bean.withdrawrecord.WithdrawRecord;
+import com.prj.biz.service.agent.AgentService;
+import com.prj.biz.service.bankwithdrawal.BankWithdrawalService;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.consumers.ConsumersService;
+import com.prj.biz.service.consumersaccount.ConsumersAccountService;
+import com.prj.biz.service.order.OrderService;
+import com.prj.biz.service.sysuser.SysUserService;
+import com.prj.biz.service.withdrawrecord.WithdrawRecordService;
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+import com.prj.core.constant.SysConstants;
+import com.prj.utils.UfdmDateUtil;
+
+
+
+/** 
+ * 描述: 提现记录审核 Action 类<br>
+ * @author Liang
+ * @date 2017-08-07
+ */
+@RestController
+@RequestMapping("/applyCheck")
+public class ApplyCheckAction extends BaseAction
+{
+	private static final long	serialVersionUID	= 1L;
+	
+	@Resource
+	private WithdrawRecordService withdrawRecordService;
+	
+	@Resource
+	private OrderService orderService;
+	
+	@Resource
+	private BankWithdrawalService bankWithdrawalService;
+	
+	@Resource
+	private AgentService agentService;
+	
+	@Resource
+	private BusinessInformationService businessInformationService;
+	
+	@Resource
+	private ConsumersService consumersService;
+	
+	@Resource
+	private SysUserService sysUserService;
+
+	/**
+	 * 描述: 进入待处理列表显示页面
+	 * @auther Liang
+	 * @date 2017-08-07
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doEnApplyCheckList")
+    public ModelAndView doEnApplyCheckListAction(HttpServletRequest request,HttpServletResponse response) throws Exception
+	{
+		Map<String, Object> model = new HashMap<String, Object>();
+		return new ModelAndView("/applyCheck/unApplyCheckList",model);
+	}
+	
+	/**
+	 * 描述: 分页查询信息
+	 * @auther Liang
+	 * @date 2017-08-07
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadApplyCheckList")
+	@ResponseBody
+	public RespBean<RespPagination<ApplyRecord>> doReadApplyCheckList(WithdrawRecord withdrawRecord) throws Exception{
+		RespBean<RespPagination<ApplyRecord>> respBean = new RespBean<RespPagination<ApplyRecord>>();
+		RespPagination<ApplyRecord> respPagination = new RespPagination<ApplyRecord>();
+		withdrawRecord.setApplyState("0");
+		List<WithdrawRecord> withdrawRecordList = withdrawRecordService.doGetAllList(withdrawRecord);
+		List<ApplyRecord> applyRecordList=new ArrayList<ApplyRecord>();
+		if(withdrawRecordList.size()>0){
+			for (int i = 0; i < withdrawRecordList.size(); i++) {
+				SysUser sysUser=sysUserService.doGetById(withdrawRecordList.get(i).getBankWithdrawal().getUserId());
+				ApplyRecord applyRecord=new ApplyRecord();
+				applyRecord.setApplyDate(withdrawRecordList.get(i).getApplyState());
+				applyRecord.setApplyNo(withdrawRecordList.get(i).getApplyNumber());
+				applyRecord.setApplyRole(withdrawRecordList.get(i).getUserState());
+				applyRecord.setPrice(withdrawRecordList.get(i).getWithdrawPrice());
+				applyRecord.setBankNum(withdrawRecordList.get(i).getBankWithdrawal().getBrankNumber());
+				applyRecord.setBankName(withdrawRecordList.get(i).getBankWithdrawal().getBrankName());
+				applyRecord.setApplistate(withdrawRecordList.get(i).getApplyState());
+				//代理商
+				if("1".equals(withdrawRecordList.get(i).getUserState())){
+					Agent agent=agentService.doGetById(sysUser.getMerchantsId());
+					if(agent!=null){
+						applyRecord.setApplyerNumber(agent.getAgentCode());
+						applyRecord.setApplyName(agent.getAgentName());
+					}
+					
+					
+				}
+				//商家
+				if("2".equals(withdrawRecordList.get(i).getUserState())){
+					BusinessInformation businessInformation=businessInformationService.doGetById(sysUser.getMerchantsId());
+					if(businessInformation!=null){
+						applyRecord.setApplyerNumber(businessInformation.getConsumerNo());
+						applyRecord.setApplyName(businessInformation.getAgentName());
+					}
+					
+					
+				}
+				//消费者/消费商
+				if("3".equals(withdrawRecordList.get(i).getUserState())||"4".equals(withdrawRecordList.get(i).getUserState())){
+					Consumers consumers=consumersService.doGetById(sysUser.getMerchantsId());
+					if(consumers!=null){
+						applyRecord.setApplyerNumber(consumers.getCustomerNumber());
+						applyRecord.setApplyName(consumers.getNickName());
+					}
+				}
+				applyRecordList.add(applyRecord);
+			}
+		}
+		withdrawRecord.setLimit(0);
+		withdrawRecord.setOffset(0);
+		List<WithdrawRecord> withdrawRecordList1 = withdrawRecordService.doGetAllList(withdrawRecord);
+		respPagination.setTotal(withdrawRecordList1.size());
+		respPagination.setRows(applyRecordList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	
+	
+}

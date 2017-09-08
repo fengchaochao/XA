@@ -1,0 +1,16 @@
+package com.prj.biz.service.goodsclassification;
+
+import java.util.List;
+
+import com.prj.biz.bean.goodsclassification.GoodsClassification;
+import com.prj.biz.bean.goodsspecifications.GoodsSpecifications;
+import com.prj.biz.service._base.BaseService;
+
+/**
+ * 描述: 商品分类 Service 接口<br>
+ * @author Liang
+ * @date 2017-07-11
+ */
+public interface GoodsClassificationService extends BaseService<GoodsClassification>{
+	
+}

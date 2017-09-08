@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.consumers.ConsumersDao">
+
+    <resultMap id="consumersResult" type="com.prj.biz.bean.consumers.Consumers">
+		<result property="id" column="id" />
+		<result property="customerNumber" column="customer_number" />
+		<result property="nickName" column="nick_name" />
+		<result property="customerSex" column="customer_sex" />
+		<result property="birthday" column="birthday" />
+		<result property="address" column="address" />
+		<result property="isXfconsumers" column="is_XFConsumers" />
+		<result property="merchantsState" column="merchants_state" />
+		<result property="agentId" column="agent_id" />
+		<result property="userName" column="user_name" />
+		<result property="idCard" column="id_card" />
+		<result property="userAddress" column="user_address" />
+		<result property="idPhoto" column="id_photo" />
+		<result property="createDate" column="create_date" />
+		<result property="phone" column="phone" />
+		<result property="certificatePhotos" column="certificate_photos" />
+		<result property="applyUpgrade" column="apply_upgrade" />
+		<result property="provincesId" column="provinces_id" />
+		<result property="cityId" column="city_id" />
+		<result property="areaId" column="area_id" />
+		<result property="userProvincesId" column="user_provinces_id" />
+		<result property="userCityId" column="user_city_id" />
+		<result property="userAreaId" column="user_area_id" />
+		<result property="jyd" column="jyd" />
+		<result property="QrCode" column="qr_code" />
+		<result property="autograph" column="autograph" />
+		
+		<result property="agent.id" column="id" />
+		<result property="agent.agentName" column="agent_name" />
+		<result property="totalPrice" column="totalPrice" />
+		<result property="localUser" column="localUser" />
+		<result property="recommendedBusiness" column="recommendedBusiness" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		a.id,a.customer_number,a.nick_name,a.customer_sex,a.birthday,a.address,a.is_XFConsumers,a.qr_code
+		a.merchants_state,a.agent_id,a.user_name,a.id_card,a.user_address,a.id_photo,a.create_date,a.jyd,
+		a.phone,a.certificate_photos,a.apply_upgrade,a.provinces_id,a.city_id,a.area_id,a.user_provinces_id,
+		a.user_city_id,a.user_area_id,a.autograph
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND a.ID = #{id} 
+	       </if>
+		    <if test="customerNumber!=null and customerNumber!='' ">
+		        AND a.customer_number = #{customerNumber}
+		    </if>
+		    <if test="nickName!=null and nickName!='' ">
+		        AND a.nick_name like '%${nickName}%'
+		    </if>
+		     <if test="keySeach!=null and keySeach!='' ">
+		        AND (a.customer_number like concat('%',#{keySeach},'%') or a.nick_name like concat('%',#{keySeach},'%'))
+	     	</if> 
+		    <if test="customerSex!=null and customerSex!='' ">
+		        AND a.customer_sex = #{customerSex}
+		    </if>
+		    <if test="birthday!=null and birthday!='' ">
+		        AND a.birthday = #{birthday}
+		    </if>
+		    <if test="provincesId!=null and provincesId!='' ">
+		        AND a.provinces_id = #{provincesId}
+		    </if>
+		    <if test="cityId!=null and cityId!='' ">
+		        AND a.city_id = #{cityId}
+		    </if>
+		    <if test="areaId!=null and areaId!='' ">
+		        AND a.area_id = #{areaId}
+		    </if>
+		    <if test="address!=null and address!='' ">
+		        AND a.address = #{address}
+		    </if>
+		    <if test="isXfconsumers!=null and isXfconsumers!='' ">
+		        AND a.is_XFConsumers = #{isXfconsumers}
+		    </if>
+		    <if test="merchantsState!=null and merchantsState!='' ">
+		        AND a.merchants_state = #{merchantsState}
+		    </if>
+		    <if test="agentId!=null and agentId!='' ">
+		        AND a.agent_id = #{agentId}
+		    </if>
+		    <if test="userName!=null and userName!='' ">
+		        AND a.user_name = #{userName}
+		    </if>
+		    <if test="idCard!=null and idCard!='' ">
+		        AND a.id_card = #{idCard}
+		    </if>
+		     <if test="userProvincesId!=null and userProvincesId!='' ">
+		        AND a.user_provinces_id = #{userProvincesId}
+		    </if>
+		    <if test="userCityId!=null and userCityId!='' ">
+		        AND a.user_city_id = #{userCityId}
+		    </if>
+		    <if test="userAreaId!=null and userAreaId!='' ">
+		        AND a.user_area_id = #{userAreaId}
+		    </if>
+		    <if test="userAddress!=null and userAddress!='' ">
+		        AND a.user_address = #{userAddress}
+		    </if>
+		    <if test="idPhoto!=null and idPhoto!='' ">
+		        AND a.id_photo = #{idPhoto}
+		    </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        AND a.create_date like concat('%',#{createDate},'%')
+		    </if>
+		    <if test="phone!=null and phone!='' ">
+		        AND a.phone = #{phone}
+		    </if>
+		    <if test="certificatePhotos!=null and certificatePhotos!='' ">
+		        AND a.certificate_photos = #{certificatePhotos}
+		    </if>
+		    <if test="applyUpgrade!=null and applyUpgrade!='' ">
+		        AND a.apply_upgrade = #{applyUpgrade}
+		    </if>
+		    <if test="jyd!=null and jyd!='' ">
+		        AND a.jyd = #{jyd}
+		    </if>
+		    <if test="autograph!=null and autograph!='' ">
+		        AND a.autograph = #{autograph}
+		    </if>
+		     <if test="beginDate != null and beginDate!= ''"><!-- 开始时间-->
+				AND  date_format(a.create_date,'%Y-%m-%d') &gt;= date_format(#{beginDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != null and endDate!= ''"><!-- 结束时间 -->
+				AND  date_format(a.create_date,'%Y-%m-%d') &lt;= date_format(#{endDate},'%Y-%m-%d')
+			</if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectByIdInfo" resultMap="consumersResult"  parameterType="com.prj.biz.bean.consumers.Consumers">
+		SELECT 
+			a.id,
+			a.nick_name,
+			b.person_photo personPhoto,
+			a.phone,a.birthday, 
+			a.autograph 
+		from xa_consumers a
+		LEFT JOIN per_sys_user b on b.merchants_id = a.id  
+		where 
+			<if test="id!=null and id!='' "> 
+	            a.ID = #{id} 
+	        </if>
+			<if test="phone!=null and phone!='' ">
+		        a.phone = #{phone}
+		    </if>
+	</select>
+	
+	<select id="selectById" resultMap="consumersResult" parameterType="java.lang.String">
+		select
+			a.*,
+			b.*,
+			d.area_name provinces,
+			e.area_name city,
+			f.area_name area,
+			h.area_name userProvinces,
+			i.area_name userCity,
+			j.area_name userArea 
+		from 
+			xa_consumers a
+		LEFT JOIN xa_agent b on a.agent_id = b.id 
+		LEFT JOIN code_areas d ON a.provinces_id=d.area_id
+		LEFT JOIN code_areas e ON a.city_id=e.area_id
+		LEFT JOIN code_areas f ON a.area_id=f.area_id
+		LEFT JOIN code_areas h ON a.user_provinces_id=h.area_id
+		LEFT JOIN code_areas i ON a.user_city_id=i.area_id
+		LEFT JOIN code_areas j ON a.user_area_id=j.area_id
+		where 
+			a.ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="consumersResult" parameterType="com.prj.biz.bean.consumers.Consumers" >
+		SELECT 
+			a.*,
+			b.*,
+			d.area_name provinces,
+			e.area_name city,
+			f.area_name area,
+			h.area_name userProvinces,
+			i.area_name userCity,
+			j.area_name userArea,
+			c.person_photo personPhoto 
+		from 
+			xa_consumers a
+		LEFT JOIN xa_agent b on a.agent_id = b.id
+		LEFT JOIN code_areas d ON a.provinces_id=d.area_id
+		LEFT JOIN code_areas e ON a.city_id=e.area_id
+		LEFT JOIN code_areas f ON a.area_id=f.area_id
+		LEFT JOIN code_areas h ON a.user_provinces_id=h.area_id
+		LEFT JOIN code_areas i ON a.user_city_id=i.area_id
+		LEFT JOIN code_areas j ON a.user_area_id=j.area_id
+		LEFT JOIN per_sys_user c on a.id = c.merchants_id
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.consumers.Consumers">
+		select
+		    count(a.ID)
+		from 
+			 XA_CONSUMERS a 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.consumers.Consumers">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_CONSUMERS 
+			(id,customer_number,nick_name,customer_sex,birthday,provinces_id,city_id,area_id,address,is_XFConsumers,merchants_state,agent_id,user_name,id_card,user_address,id_photo,create_date,phone,certificate_photos,apply_upgrade,user_provinces_id,user_city_id,user_area_id,jyd,qr_code,autograph)
+		VALUES 
+			(#{id},#{customerNumber},#{nickName},#{customerSex},#{birthday},#{provincesId},#{cityId},#{areaId},#{address},#{isXfconsumers},#{merchantsState},#{agentId},#{userName},#{idCard},#{userAddress},#{idPhoto},#{createDate},#{phone},#{certificatePhotos},#{applyUpgrade},#{userProvincesId},#{userCityId},#{userAreaId},#{jyd},#{QrCode},#{autograph})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_CONSUMERS 
+			(id,customer_number,nick_name,customer_sex,birthday,provinces_id,city_id,area_id,address,is_XFConsumers,merchants_state,agent_id,user_name,id_card,user_address,id_photo,create_date,phone,certificate_photos,apply_upgrade,user_provinces_id,user_city_id,user_area_id,jyd,qr_code)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{customerNumber},#{nickName},#{customerSex},#{birthday},#{provincesId},#{cityId},#{areaId},#{address},#{isXfconsumers},#{merchantsState},#{agentId},#{userName},#{idCard},#{userAddress},#{idPhoto},#{createDate},#{phone},#{certificatePhotos},#{applyUpgrade},#{userProvincesId},#{userCityId},#{userAreaId},#{jyd},#{QrCode})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.consumers.Consumers">
+     UPDATE XA_CONSUMERS
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="customerNumber!=null and customerNumber!='' ">
+				customer_number = #{customerNumber},
+			</if>
+			<if test="nickName!=null and nickName!='' ">
+				nick_name = #{nickName},
+			</if>
+			<if test="customerSex!=null and customerSex!='' ">
+				customer_sex = #{customerSex},
+			</if>
+			<if test="birthday!=null and birthday!='' ">
+				birthday = #{birthday},
+			</if>
+			<if test="address!=null and address!='' ">
+				address = #{address},
+			</if>
+			<if test="isXfconsumers!=null and isXfconsumers!='' ">
+				is_XFConsumers = #{isXfconsumers},
+			</if>
+			<if test="merchantsState!=null and merchantsState!='' ">
+				merchants_state = #{merchantsState},
+			</if>
+			<if test="agentId!=null and agentId!='' ">
+				agent_id = #{agentId},
+			</if>
+			<if test="userName!=null and userName!='' ">
+				user_name = #{userName},
+			</if>
+			<if test="idCard!=null and idCard!='' ">
+				id_card = #{idCard},
+			</if>
+			<if test="userAddress!=null and userAddress!='' ">
+				user_address = #{userAddress},
+			</if>
+			<if test="provincesId!=null and provincesId!='' ">
+				provinces_id = #{provincesId},
+			</if>
+			<if test="cityId!=null and cityId!='' ">
+				city_id = #{cityId},
+			</if>
+			<if test="areaId!=null and areaId!='' ">
+				area_id = #{areaId},
+			</if>
+			<if test="userProvincesId!=null and userProvincesId!='' ">
+				user_provinces_id = #{userProvincesId},
+			</if>
+			<if test="userCityId!=null and userCityId!='' ">
+				user_city_id = #{userCityId},
+			</if>
+			<if test="userAreaId!=null and userAreaId!='' ">
+				user_area_id = #{userAreaId},
+			</if>
+			<if test="idPhoto!=null and idPhoto!='' ">
+				id_photo = #{idPhoto},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="phone!=null and phone!='' ">
+				phone = #{phone},
+			</if>
+			<if test="certificatePhotos!=null and certificatePhotos!='' ">
+				certificate_photos = #{certificatePhotos},
+			</if>
+			<if test="applyUpgrade!=null and applyUpgrade!='' ">
+		        apply_upgrade = #{applyUpgrade},
+		    </if>
+		    <if test="jyd!=null and jyd!='' ">
+		        jyd = #{jyd},
+		    </if>
+		    <if test="qrCode!=null and qrCode!='' ">
+				qr_code = #{qrCode},
+			</if>
+		    <if test="autograph!=null and autograph!='' ">
+				autograph = #{autograph},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_CONSUMERS
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="customerNumber!=null and customerNumber!='' ">
+				customer_number = #{customerNumber},
+			</if>
+			<if test="nickName!=null and nickName!='' ">
+				nick_name = #{nickName},
+			</if>
+			<if test="customerSex!=null and customerSex!='' ">
+				customer_sex = #{customerSex},
+			</if>
+			<if test="birthday!=null and birthday!='' ">
+				birthday = #{birthday},
+			</if>
+			<if test="address!=null and address!='' ">
+				address = #{address},
+			</if>
+			<if test="provincesId!=null and provincesId!='' ">
+				provinces_id = #{provincesId},
+			</if>
+			<if test="cityId!=null and cityId!='' ">
+				city_id = #{cityId},
+			</if>
+			<if test="areaId!=null and areaId!='' ">
+				area_id = #{areaId},
+			</if>
+			<if test="userProvincesId!=null and userProvincesId!='' ">
+				user_provinces_id = #{userProvincesId},
+			</if>
+			<if test="userCityId!=null and userCityId!='' ">
+				user_city_id = #{userCityId},
+			</if>
+			<if test="userAreaId!=null and userAreaId!='' ">
+				user_area_id = #{userAreaId},
+			</if>
+			<if test="isXfconsumers!=null and isXfconsumers!='' ">
+				is_XFConsumers = #{isXfconsumers},
+			</if>
+			<if test="merchantsState!=null and merchantsState!='' ">
+				merchants_state = #{merchantsState},
+			</if>
+			<if test="agentId!=null and agentId!='' ">
+				agent_id = #{agentId},
+			</if>
+			<if test="userName!=null and userName!='' ">
+				user_name = #{userName},
+			</if>
+			<if test="idCard!=null and idCard!='' ">
+				id_card = #{idCard},
+			</if>
+			<if test="userAddress!=null and userAddress!='' ">
+				user_address = #{userAddress},
+			</if>
+			<if test="idPhoto!=null and idPhoto!='' ">
+				id_photo = #{idPhoto},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="phone!=null and phone!='' ">
+				phone = #{phone},
+			</if>
+			<if test="certificatePhotos!=null and certificatePhotos!='' ">
+				certificate_photos = #{certificatePhotos},
+			</if>
+			<if test="applyUpgrade!=null and applyUpgrade!='' ">
+		        apply_upgrade = #{applyUpgrade},
+		    </if>
+		    <if test="jyd!=null and jyd!='' ">
+		        jyd = #{jyd},
+		     </if>
+		     <if test="qrCode!=null and qrCode!='' ">
+				qr_code = #{qrCode},
+			 </if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_CONSUMERS WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_CONSUMERS
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

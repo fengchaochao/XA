@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.shufflingfigure.ShufflingFigureDao">
+
+    <resultMap id="shufflingfigureResult" type="com.prj.biz.bean.shufflingfigure.ShufflingFigure">
+		<result property="id" column="id" />
+		<result property="typeName" column="type_name" />
+		<result property="pic" column="pic" />
+		<result property="linkAddress" column="link_address" />
+		<result property="serialNumber" column="serial_number" />
+		<result property="picSize" column="pic_size" />
+		<result property="picFormat" column="pic_format" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,type_name,pic,link_address,serial_number,pic_size,pic_format
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="typeName!=null and typeName!='' ">
+		        AND type_name = #{typeName}
+		    </if>
+		    <if test="pic!=null and pic!='' ">
+		        AND pic = #{pic}
+		    </if>
+		    <if test="linkAddress!=null and linkAddress!='' ">
+		        AND link_address = #{linkAddress}
+		    </if>
+		    <if test="serialNumber!=null and serialNumber!='' ">
+		        AND serial_number = #{serialNumber}
+		    </if>
+		    <if test="picSize!=null and picSize!='' ">
+		        AND pic_size = #{picSize}
+		    </if>
+		    <if test="picFormat!=null and picFormat!='' ">
+		        AND pic_format = #{picFormat}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="shufflingfigureResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_SHUFFLING_FIGURE 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="shufflingfigureResult" parameterType="com.prj.biz.bean.shufflingfigure.ShufflingFigure" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_SHUFFLING_FIGURE 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.shufflingfigure.ShufflingFigure">
+		select
+		    count(ID)
+		from 
+			 XA_SHUFFLING_FIGURE 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.shufflingfigure.ShufflingFigure">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_SHUFFLING_FIGURE 
+			(id,type_name,pic,link_address,serial_number,pic_size,pic_format)
+		VALUES 
+			(#{id},#{typeName},#{pic},#{linkAddress},#{serialNumber},#{picSize},#{picFormat})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_SHUFFLING_FIGURE 
+			(id,type_name,pic,link_address,serial_number,pic_size,pic_format)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{typeName},#{pic},#{linkAddress},#{serialNumber},#{picSize},#{picFormat})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.shufflingfigure.ShufflingFigure">
+     UPDATE XA_SHUFFLING_FIGURE
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="typeName!=null and typeName!='' ">
+				type_name = #{typeName},
+			</if>
+			<if test="pic!=null and pic!='' ">
+				pic = #{pic},
+			</if>
+			<if test="linkAddress!=null and linkAddress!='' ">
+				link_address = #{linkAddress},
+			</if>
+			<if test="serialNumber!=null and serialNumber!='' ">
+				serial_number = #{serialNumber},
+			</if>
+			<if test="picSize!=null and picSize!='' ">
+				pic_size = #{picSize},
+			</if>
+			<if test="picFormat!=null and picFormat!='' ">
+				pic_format = #{picFormat},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_SHUFFLING_FIGURE
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="typeName!=null and typeName!='' ">
+				type_name = #{typeName},
+			</if>
+			<if test="pic!=null and pic!='' ">
+				pic = #{pic},
+			</if>
+			<if test="linkAddress!=null and linkAddress!='' ">
+				link_address = #{linkAddress},
+			</if>
+			<if test="serialNumber!=null and serialNumber!='' ">
+				serial_number = #{serialNumber},
+			</if>
+			<if test="picSize!=null and picSize!='' ">
+				pic_size = #{picSize},
+			</if>
+			<if test="picFormat!=null and picFormat!='' ">
+				pic_format = #{picFormat},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_SHUFFLING_FIGURE WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_SHUFFLING_FIGURE
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

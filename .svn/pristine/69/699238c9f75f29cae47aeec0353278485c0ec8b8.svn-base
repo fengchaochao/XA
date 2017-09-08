@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.localuser.LocalUserDao">
+
+    <resultMap id="localuserResult" type="com.prj.biz.bean.localuser.LocalUser">
+		<result property="id" column="id" />
+		<result property="userId" column="user_id" />
+		<result property="merchantId" column="merchant_id" />
+		<result property="userType" column="user_type" />
+		<result property="userAccount" column="user_account" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,user_id,merchant_id,user_type,user_account
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="userId!=null and userId!='' ">
+		        AND user_id = #{userId}
+		    </if>
+		    <if test="merchantId!=null and merchantId!='' ">
+		        AND merchant_id = #{merchantId}
+		    </if>
+		    <if test="userType!=null and userType!='' ">
+		        AND user_type = #{userType}
+		    </if>
+		    <if test="userAccount!=null and userAccount!='' ">
+		        AND user_account = #{userAccount}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="localuserResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_LOCAL_USER 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="localuserResult" parameterType="com.prj.biz.bean.localuser.LocalUser" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_LOCAL_USER 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.localuser.LocalUser">
+		select
+		    count(ID)
+		from 
+			 XA_LOCAL_USER 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.localuser.LocalUser">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_LOCAL_USER 
+			(id,user_id,merchant_id,user_type,user_account)
+		VALUES 
+			(#{id},#{userId},#{merchantId},#{userType},#{userAccount})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_LOCAL_USER 
+			(id,user_id,merchant_id,user_type,user_account)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{userId},#{merchantId},#{userType},#{userAccount})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.localuser.LocalUser">
+     UPDATE XA_LOCAL_USER
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="userId!=null and userId!='' ">
+				user_id = #{userId},
+			</if>
+			<if test="merchantId!=null and merchantId!='' ">
+				merchant_id = #{merchantId},
+			</if>
+			<if test="userType!=null and userType!='' ">
+				user_type = #{userType},
+			</if>
+			<if test="userAccount!=null and userAccount!='' ">
+				user_account = #{userAccount},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_LOCAL_USER
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="userId!=null and userId!='' ">
+				user_id = #{userId},
+			</if>
+			<if test="merchantId!=null and merchantId!='' ">
+				merchant_id = #{merchantId},
+			</if>
+			<if test="userType!=null and userType!='' ">
+				user_type = #{userType},
+			</if>
+			<if test="userAccount!=null and userAccount!='' ">
+				user_account = #{userAccount},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_LOCAL_USER WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_LOCAL_USER
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

@@ -1,0 +1,187 @@
+package com.prj.biz.bean.agent;
+
+import com.prj.biz.bean._base.BaseEntity;
+
+/** 
+ * 描述: 代理商客户信息 实体类<br>
+ * @author Liang
+ * @date 2017-07-10
+ * 
+ */
+public class Agent extends BaseEntity  
+{
+
+    private static final long	serialVersionUID	= 1L;
+
+    //  
+    private String id;
+    // 代理商编号 
+    private String agentCode;
+    //  联系电话
+    private String phone;
+    //  地址
+    private String address;
+    //  钻石卡号
+    private String diamondCard;
+    //  代理商状态 0 正常 1 停用
+    private String state;
+    // 代理商类型 1.公司代理商；2.个人代理商 
+    private String agentType;
+    //  公司名称
+    private String companyName;
+    // 组织机构代码 
+    private String organizationCode;
+    //  公司地址
+    private String companyAddress;
+    //营业执照 
+    private String businessLicensePhoto;
+    //  姓名
+    private String userName;
+    // 身份证号 
+    private String idNo;
+    //  个人代理地址
+    private String userAddress;
+    //  身份证照片
+    private String idNoPhoto;
+    //  代理商名称
+    private String agentName;
+    
+    
+    //  消费商数量上限
+    private String consumersNumber;
+
+
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    public String getAgentCode() {
+        return agentCode;
+    }
+    public void setAgentCode(String agentCode) {
+        this.agentCode = agentCode;
+    }
+
+
+    public String getPhone() {
+        return phone;
+    }
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+
+    public String getAddress() {
+        return address;
+    }
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+
+    public String getDiamondCard() {
+        return  diamondCard;
+    }
+    public void setDiamondCard(String  diamondCard) {
+        this.diamondCard = diamondCard;
+    }
+
+
+    public String getState() {
+        return state;
+    }
+    public void setState(String state) {
+        this.state = state;
+    }
+
+
+    public String getAgentType() {
+        return agentType;
+    }
+    public void setAgentType(String agentType) {
+        this.agentType = agentType;
+    }
+
+
+    public String getCompanyName() {
+        return companyName;
+    }
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+
+    public String getOrganizationCode() {
+        return organizationCode;
+    }
+    public void setOrganizationCode(String organizationCode) {
+        this.organizationCode = organizationCode;
+    }
+
+
+    public String getCompanyAddress() {
+        return companyAddress;
+    }
+    public void setCompanyAddress(String companyAddress) {
+        this.companyAddress = companyAddress;
+    }
+
+
+    public String getBusinessLicensePhoto() {
+        return businessLicensePhoto;
+    }
+    public void setBusinessLicensePhoto(String businessLicensePhoto) {
+        this.businessLicensePhoto = businessLicensePhoto;
+    }
+
+
+    public String getUserName() {
+        return userName;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+
+    public String getIdNo() {
+        return idNo;
+    }
+    public void setIdNo(String idNo) {
+        this.idNo = idNo;
+    }
+
+
+    public String getUserAddress() {
+        return userAddress;
+    }
+    public void setUserAddress(String userAddress) {
+        this.userAddress = userAddress;
+    }
+
+
+    public String getIdNoPhoto() {
+        return idNoPhoto;
+    }
+    public void setIdNoPhoto(String idNoPhoto) {
+        this.idNoPhoto = idNoPhoto;
+    }
+
+
+    public String getAgentName() {
+        return agentName;
+    }
+    public void setAgentName(String agentName) {
+        this.agentName = agentName;
+    }
+	public String getConsumersNumber() {
+		return consumersNumber;
+	}
+	public void setConsumersNumber(String consumersNumber) {
+		this.consumersNumber = consumersNumber;
+	}
+
+}

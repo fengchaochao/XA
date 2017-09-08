@@ -1,0 +1,112 @@
+package com.prj.biz.api.homepageApi;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.prj.biz.action._base.BaseAction;
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.shufflingfigure.ShufflingFigure;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.shufflingfigure.ShufflingFigureService;
+import com.prj.biz.service.sysuser.SysUserService;
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+
+/**
+ * @author: Liang
+ * @date:2017-8-17 上午8:32:12
+ * @version :0.0.1
+ * @dis:Api首页
+ */
+@SuppressWarnings("serial")
+@Controller
+@RequestMapping("/api")
+public class HomepageApiAction extends BaseAction{
+
+	@Autowired
+	SysUserService userService;
+	
+	@Autowired
+	ShufflingFigureService shufflingFigureService;
+	
+	@Autowired
+	private BusinessInformationService businessInformationService;
+	
+	/**
+	 * 首页->轮播图及广告条
+	 * 
+	 * @param request
+	 * @param response
+	 * @param          
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnSlideShow")
+	@ResponseBody
+	public  RespBean<Map<String, Object>> doEnSlideShow(HttpServletRequest request,
+			HttpServletResponse response) {
+		RespBean<Map<String, Object>> respBean = new RespBean<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			//首页轮播图
+			ShufflingFigure shufflingFigure=new ShufflingFigure();
+			shufflingFigure.setTypeName("APP轮播图");
+			List<ShufflingFigure> shufflingFigureList = shufflingFigureService.doGetList(shufflingFigure);
+			//首页广告条
+			shufflingFigure.setTypeName("APP广告条");
+			List<ShufflingFigure> advertisingPhotoList = shufflingFigureService.doGetList(shufflingFigure);
+			map.put("shufflingFigureList", shufflingFigureList);
+			map.put("advertisingPhotoList", advertisingPhotoList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		respBean.setBody(map);
+		return respBean;
+	}
+	/**
+	 * 首页->热门商家
+	 * 
+	 * @param request
+	 * @param response
+	 * @param          
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnPopularMerchants")
+	@ResponseBody
+	public RespBean<RespPagination<BusinessInformation>> doEnPopularMerchants(HttpServletRequest request,HttpServletResponse response,
+			String areaId,String limit,String offset) {
+		
+		RespBean<RespPagination<BusinessInformation>> respBean = new RespBean<RespPagination<BusinessInformation>>();
+		RespPagination<BusinessInformation> respPagination = new RespPagination<BusinessInformation>();
+		BusinessInformation businessInformation=new BusinessInformation();
+		if(StringUtils.isEmpty(areaId)){
+			businessInformation.setAreaId(areaId);
+		}
+		businessInformation.setLimit(Integer.parseInt(limit));
+		businessInformation.setOffset(Integer.parseInt(offset));
+		try {
+			List<BusinessInformation> goodsList = businessInformationService.doGetList(businessInformation);
+			
+			respPagination.setRows(goodsList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+
+}

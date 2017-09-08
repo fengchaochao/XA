@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.redenveloperecord.RedEnvelopeRecordDao">
+
+    <resultMap id="redenveloperecordResult" type="com.prj.biz.bean.redenveloperecord.RedEnvelopeRecord">
+		<result property="id" column="id" />
+		<result property="redEnvelopeNo" column="red_envelope_no" />
+		<result property="price" column="price" />
+		<result property="receiver" column="receiver" />
+		<result property="receiverType" column="receiver_type" />
+		<result property="receiveDate" column="receive_date" />
+		<result property="redEnvelopeId" column="red_envelope_id" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,red_envelope_no,price,receiver,receiver_type,receive_date,red_envelope_id
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="redEnvelopeNo!=null and redEnvelopeNo!='' ">
+		        AND red_envelope_no = #{redEnvelopeNo}
+		    </if>
+		    <if test="price!=null and price!='' ">
+		        AND price = #{price}
+		    </if>
+		    <if test="receiver!=null and receiver!='' ">
+		        AND receiver = #{receiver}
+		    </if>
+		    <if test="receiverType!=null and receiverType!='' ">
+		        AND receiver_type = #{receiverType}
+		    </if>
+		    <if test="receiveDate!=null and receiveDate!='' ">
+		        AND receive_date = #{receiveDate}
+		    </if>
+		    <if test="redEnvelopeId!=null and redEnvelopeId!='' ">
+		        AND red_envelope_id = #{redEnvelopeId}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="redenveloperecordResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_RED_ENVELOPE_RECORD 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="redenveloperecordResult" parameterType="com.prj.biz.bean.redenveloperecord.RedEnvelopeRecord" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_RED_ENVELOPE_RECORD 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.redenveloperecord.RedEnvelopeRecord">
+		select
+		    count(ID)
+		from 
+			 XA_RED_ENVELOPE_RECORD 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.redenveloperecord.RedEnvelopeRecord">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_RED_ENVELOPE_RECORD 
+			(id,red_envelope_no,price,receiver,receiver_type,receive_date,red_envelope_id)
+		VALUES 
+			(#{id},#{redEnvelopeNo},#{price},#{receiver},#{receiverType},#{receiveDate},#{redEnvelopeId})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_RED_ENVELOPE_RECORD 
+			(id,red_envelope_no,price,receiver,receiver_type,receive_date,red_envelope_id)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{redEnvelopeNo},#{price},#{receiver},#{receiverType},#{receiveDate},#{redEnvelopeId})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.redenveloperecord.RedEnvelopeRecord">
+     UPDATE XA_RED_ENVELOPE_RECORD
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="redEnvelopeNo!=null and redEnvelopeNo!='' ">
+				red_envelope_no = #{redEnvelopeNo},
+			</if>
+			<if test="price!=null and price!='' ">
+				price = #{price},
+			</if>
+			<if test="receiver!=null and receiver!='' ">
+				receiver = #{receiver},
+			</if>
+			<if test="receiverType!=null and receiverType!='' ">
+				receiver_type = #{receiverType},
+			</if>
+			<if test="receiveDate!=null and receiveDate!='' ">
+				receive_date = #{receiveDate},
+			</if>
+			<if test="redEnvelopeId!=null and redEnvelopeId!='' ">
+				red_envelope_id = #{redEnvelopeId},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_RED_ENVELOPE_RECORD
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="redEnvelopeNo!=null and redEnvelopeNo!='' ">
+				red_envelope_no = #{redEnvelopeNo},
+			</if>
+			<if test="price!=null and price!='' ">
+				price = #{price},
+			</if>
+			<if test="receiver!=null and receiver!='' ">
+				receiver = #{receiver},
+			</if>
+			<if test="receiverType!=null and receiverType!='' ">
+				receiver_type = #{receiverType},
+			</if>
+			<if test="receiveDate!=null and receiveDate!='' ">
+				receive_date = #{receiveDate},
+			</if>
+			<if test="redEnvelopeId!=null and redEnvelopeId!='' ">
+				red_envelope_id = #{redEnvelopeId},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_RED_ENVELOPE_RECORD WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_RED_ENVELOPE_RECORD
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

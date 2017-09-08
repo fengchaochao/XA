@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.order.OrderDao">
+
+    <resultMap id="orderResult" type="com.prj.biz.bean.order.Order">
+		<result property="id" column="id" />
+		<result property="orderNumber" column="order_number" />
+		<result property="goodsId" column="goods_id" />
+		<result property="purchaserId" column="purchaser_id" />
+		<result property="businessId" column="business_id" />
+		<result property="consumerAccount" column="consumer_account" />
+		<result property="money" column="money" />
+		<result property="isBonus" column="is_bonus" />
+		<result property="bonus" column="bonus" />
+		<result property="transactionMode" column="transaction_mode" />
+		<result property="status" column="status" />
+		<result property="createtime" column="createtime" />
+	    <result property="plantBonus" column="plant_bonus" />
+		<result property="agentBonus" column="agent_bonus" />
+		<result property="localBonus" column="local_bonus" />
+		<result property="remmBonus" column="remm_bonus" />
+		<result property="otherBonus" column="other_bonus" />
+		<result property="agentId" column="agent_id" />
+		
+		<result property="distributionAddressId" column="distribution_address_id" />
+		<result property="businessInformation.id" column="id" />
+		<result property="businessInformation.merchantNumber" column="merchant_number" />
+		<result property="businessInformation.vendorName" column="vendor_name" />
+		<result property="consumersAccount.userAccount" column="user_account" />
+		<result property="businessClassification.categoryName" column="category_name" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,order_number,goods_id,purchaser_id,business_id,consumer_account,
+		money,is_bonus,bonus,transaction_mode,status,
+		date_format(createtime, '%Y-%m-%d %h:%i:%s' ) as createtime,distribution_address_id,
+		plant_bonus,agent_bonus,local_bonus,remm_bonus,other_bonus,agent_id
+	</sql>
+		
+	<sql id="query_where">
+	    where
+	   		 1=1
+	        <if test="id!=null and id!='' "> 
+	           AND a.ID = #{id} 
+	       </if>
+		    <if test="orderNumber!=null and orderNumber!='' ">
+		        AND a.order_number like concat('%',#{orderNumber},'%') 
+		    </if>
+		    <if test="goodsId!=null and goodsId!='' ">
+		        AND a.goods_id = #{goodsId}
+		    </if>
+		    <if test="purchaserId!=null and purchaserId!='' ">
+		        AND a.purchaser_id = #{purchaserId}
+		    </if>
+		    <if test="businessId!=null and businessId!='' ">
+		        AND a.business_id = #{businessId}
+		    </if>
+		    <if test="consumerAccount!=null and consumerAccount!='' ">
+		        AND a.consumer_account = #{consumerAccount}
+		    </if>
+		    <if test="money!=null and money!='' ">
+		        AND a.money = #{money}
+		    </if>
+		    <if test="isBonus!=null and isBonus!='' ">
+		        AND a.is_bonus = #{isBonus}
+		    </if>
+		    <if test="bonus!=null and bonus!='' ">
+		        AND a.bonus = #{bonus}
+		    </if>
+		    <if test="transactionMode!=null and transactionMode!='' ">
+		        AND a.transaction_mode = #{transactionMode}
+		    </if>
+		    <if test="status!=null and status!='' ">
+			     <if test="orderState!=null and orderState!='' ">
+			        AND (a.status = #{status} or a.status = #{orderState})
+			    </if>
+			    <if test="orderState==null or orderState=='' ">
+			        AND a.status = #{status} 
+			    </if>
+		    </if>
+		    <if test="status==null and status=='' ">
+		       AND a.`status` &lt; '4'
+		    </if>
+		    <if test="createtime!=null and createtime!='' ">
+		        AND a.createtime like concat('%',#{createtime},'%')
+		    </if>
+		    <if test="distributionAddressId!=null and distributionAddressId!='' ">
+		        AND a.distribution_address_id = #{distributionAddressId}
+		    </if>
+		    <if test="startTime != null and startTime!= ''"><!-- 开始时间-->
+				and  date_format(a.createtime,'%Y-%m-%d') &gt;= date_format(#{startTime},'%Y-%m-%d')
+ 			</if>
+			<if test="endTime != null and endTime!= ''"><!-- 结束时间 -->
+				and  date_format(a.createtime,'%Y-%m-%d') &lt;= date_format(#{endTime},'%Y-%m-%d')
+ 			</if>
+ 			<if test="province!=null and province!='' ">
+		        AND b.provinces_id = #{province}
+		    </if>
+		    <if test="city!=null and city!='' ">
+		        AND b.city_id  = #{city}
+		    </if>
+		    <if test="area!=null and area!='' ">
+		        AND b.area_id = #{area}
+		    </if>
+		    <if test="plantBonus!=null and plantBonus!='' ">
+		        AND a.plant_bonus = #{plantBonus}
+		    </if>
+		    <if test="agentBonus!=null and agentBonus!='' ">
+		        AND a.agent_bonus = #{agentBonus}
+		    </if>
+		    <if test="localBonus!=null and localBonus!='' ">
+		        AND a.local_bonus = #{localBonus}
+		    </if>
+		    <if test="remmBonus!=null and remmBonus!='' ">
+		        AND a.remm_bonus = #{remmBonus}
+		    </if>
+		    <if test="otherBonus!=null and otherBonus!='' ">
+		        AND a.other_bonus = #{otherBonus}
+		    </if>
+		    <if test="agentId!=null and agentId!='' ">
+		        AND a.agent_id = #{agentId}
+		    </if>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="orderResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_ORDER 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="orderResult" parameterType="com.prj.biz.bean.order.Order" >
+		SELECT 
+			a.id,
+			a.order_number,
+			a.goods_id,
+			a.purchaser_id,
+			a.business_id,
+			a.consumer_account,
+			a.money,
+			a.is_bonus,
+			a.bonus,
+			a.transaction_mode,
+			a.status,
+			date_format(a.createtime, '%Y-%m-%d %h:%i:%s' ) as createtime,
+			a.distribution_address_id,
+			a.plant_bonus,
+			a.agent_bonus,
+			a.local_bonus,
+			a.remm_bonus,
+			a.other_bonus,
+			a.agent_id,
+			b.*,
+			c.* ,
+			d.category_name businessType
+		from 
+			xa_order a
+		LEFT JOIN xa_business_information b on b.id = a.business_id 
+		LEFT JOIN xa_consumers_account C ON C.ID=A.consumer_account
+		LEFT JOIN xa_business_classification d ON b.merchants_classification_id = d.id
+		<include refid="query_where" /> 
+		<if test="remmBussines!=null and remmBussines!='' ">
+		        AND b.founder = #{remmBussines}
+	    </if>
+		<if test="higherAgent!=null and higherAgent!='' ">
+		        AND b.higher_agent_id = #{higherAgent}
+	    </if>
+		<if test="localBussiness!=null and localBussiness!='' ">
+		        AND c.businessInformation_id = #{localBussiness}
+	    </if>
+		ORDER BY a.createtime DESC
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectMonthListApi" resultMap="orderResult" parameterType="com.prj.biz.bean.order.Order" >
+		SELECT 
+			a.id,
+			a.order_number,
+			a.goods_id,
+			a.purchaser_id,
+			a.business_id,
+			a.consumer_account,
+			a.money,
+			a.is_bonus,
+			a.bonus,
+			a.transaction_mode,
+			a.status,
+			date_format(a.createtime, '%Y-%m-%d' ) as createtime,
+			a.distribution_address_id,
+			a.plant_bonus,
+			a.agent_bonus,
+			a.local_bonus,
+			a.remm_bonus,
+			a.other_bonus,
+			a.agent_id,
+			b.*,
+			c.* ,
+			d.category_name businessType,
+			f.person_photo personPhoto
+		from 
+			xa_order a
+		LEFT JOIN xa_business_information b on b.id = a.business_id 
+		LEFT JOIN xa_consumers_account C ON C.ID=A.consumer_account
+		LEFT JOIN xa_business_classification d ON b.merchants_classification_id = d.id
+		LEFT JOIN xa_consumers e ON e.id=a.purchaser_id
+		LEFT JOIN per_sys_user f ON f.merchants_id=e.id
+		<include refid="query_where" /> 
+		<if test="remmBussines!=null and remmBussines!='' ">
+		        AND b.founder = #{remmBussines}
+	    </if>
+		<if test="higherAgent!=null and higherAgent!='' ">
+		        AND b.higher_agent_id = #{higherAgent}
+	    </if>
+		<if test="localBussiness!=null and localBussiness!='' ">
+		        AND c.businessInformation_id = #{localBussiness}
+	    </if>
+	    <if test="month!=null and month!='' ">
+		        AND YEAR (a.createtime) = year(now()) AND MONTH (a.createtime) = #{month}  
+	    </if>
+		GROUP BY date_format(a.createtime, '%Y-%m-%d' ) 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	<select id="selectMonthTotalApi" resultMap="orderResult" parameterType="com.prj.biz.bean.order.Order" >
+		SELECT 
+			
+			SUM(a.plant_bonus) plantBonusNum,
+			SUM(a.agent_bonus) agentBonusNum,
+			SUM(a.local_bonus) localBonusNum,
+			SUM(a.remm_bonus) remmBonusNum,
+			SUM(a.other_bonus) otherBonusNum
+		from 
+			xa_order a
+		LEFT JOIN xa_business_information b on b.id = a.business_id 
+		LEFT JOIN xa_consumers_account C ON C.ID=A.consumer_account
+		LEFT JOIN xa_business_classification d ON b.merchants_classification_id = d.id
+		LEFT JOIN xa_consumers e ON e.id=a.purchaser_id
+		LEFT JOIN per_sys_user f ON f.merchants_id=e.id
+		<include refid="query_where" /> 
+		<if test="remmBussines!=null and remmBussines!='' ">
+		        AND b.founder = #{remmBussines}
+	    </if>
+		<if test="higherAgent!=null and higherAgent!='' ">
+		        AND b.higher_agent_id = #{higherAgent}
+	    </if>
+		<if test="localBussiness!=null and localBussiness!='' ">
+		        AND c.businessInformation_id = #{localBussiness}
+	    </if>
+	    <if test="month!=null and month!='' ">
+		        AND YEAR (a.createtime) = year(now()) AND MONTH (a.createtime) = #{month}  
+	    </if>
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	<select id="selectListApi" resultMap="orderResult" parameterType="com.prj.biz.bean.order.Order" >
+		SELECT
+			a.id,
+			a.order_number,
+			a.goods_id,
+			a.purchaser_id,
+			a.business_id,
+			a.consumer_account,
+			a.money,
+			a.is_bonus,
+			a.bonus,
+			a.transaction_mode,
+			a.status,
+			date_format(a.createtime, '%Y-%m-%d %h:%i:%s' ) as createtime,
+			a.distribution_address_id,
+			a.plant_bonus,
+			a.agent_bonus,
+			a.local_bonus,
+			a.remm_bonus,
+			a.other_bonus,
+			a.agent_id,
+			b.address distributionAddress,
+			c.area_name province,
+			d.area_name city,
+			e.area_name area,
+			f.nick_name consumersName,
+			g.vendor_name bussinessName,
+			i.person_photo personPhoto,
+			l.person_photo bussinessPhoto
+		FROM
+			xa_order a
+		LEFT JOIN xa_shipping_address b ON a.distribution_address_id=b.id
+		LEFT JOIN code_areas c ON b.prices_id=c.area_id 
+		LEFT JOIN code_areas d ON b.city_id=d.area_id
+		LEFT JOIN code_areas e ON b.area_id=e.area_id
+		LEFT JOIN xa_consumers f ON a.purchaser_id=f.id
+		LEFT JOIN xa_business_information g on g.id = a.business_id
+		LEFT JOIN per_sys_user i ON i.merchants_id=f.id
+		LEFT JOIN per_sys_user l ON l.merchants_id=g.id
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectSalesTotal" resultMap="orderResult" parameterType="com.prj.biz.bean.order.Order" >
+		SELECT
+			a.id,
+			COUNT(a.id) orderNum,
+			SUM(a.money) moneyNum,
+			SUM(a.bonus) bonusNum,
+			a.createtime,
+			a.is_bonus 
+		FROM
+			xa_order a
+		WHERE 1=1
+		 <if test="startTime != null and startTime!= ''"><!-- 开始时间-->
+				and  date_format(a.createtime,'%Y-%m-%d') &gt;= date_format(#{startTime},'%Y-%m-%d')
+ 		</if>
+		<if test="endTime != null and endTime!= ''"><!-- 结束时间 -->
+				and  date_format(a.createtime,'%Y-%m-%d') &lt;= date_format(#{endTime},'%Y-%m-%d')
+		</if>
+		<if test="createtime!=null and createtime!='' ">
+		        AND a.createtime like concat('%',#{createtime},'%') 
+		</if>
+		 <if test="agentId!=null and agentId!='' ">
+		        AND a.agent_id = #{agentId}
+	    </if>
+	    <if test="businessId!=null and businessId!='' ">
+		        AND a.business_id = #{businessId}
+	    </if>
+		GROUP BY a.is_bonus
+	</select>
+	
+	<select id="selectRemmTotal" resultMap="orderResult" parameterType="com.prj.biz.bean.order.Order" >
+		SELECT
+			COUNT(a.id) orderNum,
+			SUM(a.money) moneyNum,
+			SUM(a.bonus) bonusNum,
+			a.createtime,
+			SUM(a.remm_bonus) remmBonusNum,
+			SUM(a.plant_bonus) plantBonusNum,
+			SUM(a.local_bonus) localBonusNum,
+			SUM(a.agent_bonus) agentBonusNum,
+			SUM(a.other_bonus) otherBonusNum,
+			c.category_name businessType,
+			b.*,
+			d.*
+		FROM
+			xa_order a
+		LEFT JOIN xa_business_information B ON A.business_id=B.id
+		LEFT JOIN xa_business_classification C ON B.merchants_classification_id = C.id
+		LEFT JOIN xa_consumers_account d ON a.consumer_account=d.id
+		WHERE 1=1
+		 <if test="startTime != null and startTime!= ''"><!-- 开始时间-->
+				and  date_format(a.createtime,'%Y-%m-%d') &gt;= date_format(#{startTime},'%Y-%m-%d')
+ 		</if>
+		<if test="endTime != null and endTime!= ''"><!-- 结束时间 -->
+				and  date_format(a.createtime,'%Y-%m-%d') &lt;= date_format(#{endTime},'%Y-%m-%d')
+		</if>
+		<if test="remmBussines!=null and remmBussines!='' ">
+		        AND b.founder = #{remmBussines}
+	    </if>
+		<if test="higherAgent!=null and higherAgent!='' ">
+		        AND b.higher_agent_id = #{higherAgent}
+	    </if>
+		<if test="localBussiness!=null and localBussiness!='' ">
+		        AND d.businessInformation_id = #{localBussiness}
+	    </if>
+		GROUP BY 	
+		    B.merchants_classification_id
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.order.Order">
+		SELECT 
+			count(a.id) 
+		from 
+			xa_order a
+		LEFT JOIN xa_business_information b on b.id = a.business_id 
+		LEFT JOIN xa_consumers_account C ON C.ID=A.consumer_account
+		LEFT JOIN xa_business_classification d ON B.merchants_classification_id = d.id
+		<include refid="query_where" />  
+		<if test="remmBussines!=null and remmBussines!='' ">
+		        AND b.founder = #{remmBussines}
+	    </if>
+		<if test="higherAgent!=null and higherAgent!='' ">
+		        AND b.higher_agent_id = #{higherAgent}
+	    </if>
+		<if test="localBussiness!=null and localBussiness!='' ">
+		        AND d.businessInformation_id = #{localBussiness}
+	    </if>
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.order.Order">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_ORDER 
+			(id,order_number,goods_id,purchaser_id,business_id,consumer_account,money,is_bonus,bonus,transaction_mode,status,createtime,distribution_address_id,plant_bonus,agent_bonus,local_bonus,remm_bonus,other_bonus,agent_id)
+		VALUES 
+			(#{id},#{orderNumber},#{goodsId},#{purchaserId},#{businessId},#{consumerAccount},#{money},#{isBonus},#{bonus},#{transactionMode},#{status},now(),#{distributionAddressId},#{plantBonus},#{agentBonus},#{localBonus},#{remmBonus},#{otherBonus},#{agentId})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_ORDER 
+			(id,order_number,goods_id,purchaser_id,business_id,consumer_account,money,is_bonus,bonus,transaction_mode,status,createtime,distribution_address_id,plant_bonus,agent_bonus,local_bonus,remm_bonus,other_bonus)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{orderNumber},#{goodsId},#{purchaserId},#{businessId},#{consumerAccount},#{money},#{isBonus},#{bonus},#{transactionMode},#{status},now(),#{distributionAddressId},#{plantBonus},#{agentBonus},#{localBonus},#{remmBonus},#{otherBonus})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.order.Order">
+     UPDATE XA_ORDER
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="orderNumber!=null and orderNumber!='' ">
+				order_number = #{orderNumber},
+			</if>
+			<if test="goodsId!=null and goodsId!='' ">
+				goods_id = #{goodsId},
+			</if>
+			<if test="purchaserId!=null and purchaserId!='' ">
+				purchaser_id = #{purchaserId},
+			</if>
+			<if test="businessId!=null and businessId!='' ">
+				business_id = #{businessId},
+			</if>
+			<if test="consumerAccount!=null and consumerAccount!='' ">
+				consumer_account = #{consumerAccount},
+			</if>
+			<if test="money!=null and money!='' ">
+				money = #{money},
+			</if>
+			<if test="isBonus!=null and isBonus!='' ">
+				is_bonus = #{isBonus},
+			</if>
+			<if test="bonus!=null and bonus!='' ">
+				bonus = #{bonus},
+			</if>
+			<if test="transactionMode!=null and transactionMode!='' ">
+				transaction_mode = #{transactionMode},
+			</if>
+			<if test="status!=null and status!='' ">
+				status = #{status},
+			</if>
+			<if test="createtime!=null and createtime!='' ">
+				createtime = #{createtime},
+			</if>
+			<if test="distributionAddressId!=null and distributionAddressId!='' ">
+				distribution_address_id = #{distributionAddressId},
+			</if>
+			<if test="plantBonus!=null and plantBonus!='' ">
+				plant_bonus = #{plantBonus},
+			</if>
+			<if test="agentBonus!=null and agentBonus!='' ">
+				agent_bonus = #{agentBonus},
+			</if>
+			<if test="localBonus!=null and localBonus!='' ">
+				local_bonus = #{localBonus},
+			</if>
+			<if test="remmBonus!=null and remmBonus!='' ">
+				remm_bonus = #{remmBonus},
+			</if>
+			<if test="otherBonus!=null and otherBonus!='' ">
+				other_bonus = #{otherBonus},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_ORDER
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="orderNumber!=null and orderNumber!='' ">
+				order_number = #{orderNumber},
+			</if>
+			<if test="goodsId!=null and goodsId!='' ">
+				goods_id = #{goodsId},
+			</if>
+			<if test="purchaserId!=null and purchaserId!='' ">
+				purchaser_id = #{purchaserId},
+			</if>
+			<if test="businessId!=null and businessId!='' ">
+				business_id = #{businessId},
+			</if>
+			<if test="consumerAccount!=null and consumerAccount!='' ">
+				consumer_account = #{consumerAccount},
+			</if>
+			<if test="money!=null and money!='' ">
+				money = #{money},
+			</if>
+			<if test="isBonus!=null and isBonus!='' ">
+				is_bonus = #{isBonus},
+			</if>
+			<if test="bonus!=null and bonus!='' ">
+				bonus = #{bonus},
+			</if>
+			<if test="transactionMode!=null and transactionMode!='' ">
+				transaction_mode = #{transactionMode},
+			</if>
+			<if test="status!=null and status!='' ">
+				status = #{status},
+			</if>
+			<if test="createtime!=null and createtime!='' ">
+				createtime = #{createtime},
+			</if>
+			<if test="distributionAddressId!=null and distributionAddressId!='' ">
+				distribution_address_id = #{distributionAddressId},
+			</if>
+			<if test="plantBonus!=null and plantBonus!='' ">
+				plant_bonus = #{plantBonus},
+			</if>
+			<if test="agentBonus!=null and agentBonus!='' ">
+				agent_bonus = #{agentBonus},
+			</if>
+			<if test="localBonus!=null and localBonus!='' ">
+				local_bonus = #{localBonus},
+			</if>
+			<if test="remmBonus!=null and remmBonus!='' ">
+				remm_bonus = #{remmBonus},
+			</if>
+			<if test="otherBonus!=null and otherBonus!='' ">
+				other_bonus = #{otherBonus},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_ORDER WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_ORDER
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

@@ -1,0 +1,306 @@
+/**
+ * Copyright© 2003-2013 天尔软件, All Rights Reserved <br/>
+ * 描述: 业务文件 <br/>
+ * @author Liang
+ * @date 2017-07-26
+ * @version 1.0
+ */
+package com.prj.biz.action.headquartersPC.redenvelope;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.prj.biz.action._base.BaseAction;
+import com.prj.biz.bean.redenvelope.RedEnvelope;
+import com.prj.biz.bean.redenveloperecord.RedEnvelopeRecord;
+import com.prj.biz.bean.sysuser.SysUser;
+import com.prj.biz.service.redenvelope.RedEnvelopeService;
+import com.prj.biz.service.redenveloperecord.RedEnvelopeRecordService;
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+import com.prj.core.constant.SysConstants;
+import com.prj.utils.random.RedPacketUtil;
+
+/**
+ * 描述: 红包 Action 类<br>
+ * 
+ * @author Liang
+ * @date 2017-07-26
+ */
+@RestController
+@RequestMapping("/headquarters/redEnvelope")
+public class RedEnvelopeAction extends BaseAction {
+	private static final long serialVersionUID = 1L;
+
+	@Resource
+	private RedEnvelopeService redEnvelopeService;
+	
+	@Resource
+	private RedEnvelopeRecordService envelopeRecordService;
+
+	/**
+	 * 描述: 进入列表显示页面
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-26
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnRedEnvelopeList")
+	public ModelAndView doEnRedEnvelopeListAction(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		return new ModelAndView("/headquarters/redenvelope/redEnvelopeList");
+	}
+
+	/**
+	 * 描述: 分页查询信息
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-26
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadRedEnvelopeList")
+	@ResponseBody
+	public RespBean<RespPagination<RedEnvelope>> doReadRedEnvelopeList(
+			RedEnvelope redEnvelope) throws Exception {
+		RespBean<RespPagination<RedEnvelope>> respBean = new RespBean<RespPagination<RedEnvelope>>();
+		RespPagination<RedEnvelope> respPagination = new RespPagination<RedEnvelope>();
+		Integer total = redEnvelopeService.doGetTotal(redEnvelope);
+		List<RedEnvelope> redEnvelopeList = redEnvelopeService
+				.doGetList(redEnvelope);
+		respPagination.setTotal(total);
+		respPagination.setRows(redEnvelopeList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+
+	/**
+	 * 描述: 进入新增页面
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-26
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnRedEnvelopeAdd")
+	public ModelAndView doEnRedEnvelopeAddAction(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		return new ModelAndView("/headquarters/redenvelope/redEnvelopeAdd");
+	}
+
+	/**
+	 * 描述: 生成红包
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-26
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@RequestMapping("/doGenerateRedEnvelope")
+	@ResponseBody
+	public RespBean<String> doGenerateRedEnvelope(RedEnvelope redEnvelope)
+			throws Exception {
+		RespBean<String> respBean = new RespBean<String>();
+		// 固定红包 均分
+		if ("1".equals(redEnvelope.getRedEnvelopeType())) {
+			float a = Float.parseFloat(redEnvelope.getTotalPrice())
+					/ Integer.parseInt(redEnvelope.getNumber());
+			String b=String.valueOf(a).substring(String.valueOf(a).indexOf(".")+1,String.valueOf(a).length());
+			if (b.length() > 2) {
+				respBean.setBody("您输入的红包金额和红包个数不能均分，请重新输入！");
+			} else {
+				List list = new ArrayList();
+				for (int i = 0; i < Integer.parseInt(redEnvelope.getNumber()); i++) {
+					list.add(Float.parseFloat(redEnvelope.getTotalPrice())
+							/ Integer.parseInt(redEnvelope.getNumber()));
+				}
+				String C=list.toString().replace("[", "").replaceAll("]", "").trim();
+				respBean.setBody(C);
+			}
+		}
+		// 随机红包 随机分配
+		if ("0".equals(redEnvelope.getRedEnvelopeType())) {
+			RedPacketUtil util = new RedPacketUtil(Float.parseFloat(redEnvelope
+					.getMinPrice()),
+					Float.parseFloat(redEnvelope.getMaxPrice()));
+			List<Float> folats = util.splitRedPackets(
+					Float.parseFloat(redEnvelope.getTotalPrice()),
+					Integer.parseInt(redEnvelope.getNumber()));
+			String a=folats.toString().replace("[", "").replaceAll("]", "").trim();
+			respBean.setBody(a);
+		}
+		return respBean;
+	}
+
+	/**
+	 * 描述: 保存数据
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-26
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doSaveRedEnvelope")
+	public RespBean<RedEnvelope> doSaveRedEnvelope(RedEnvelope redEnvelope,String amountAllocated)
+			throws Exception {
+		RespBean<RedEnvelope> respBean = new RespBean<RedEnvelope>();
+		SysUser sysUsers = (SysUser) (SecurityUtils.getSubject().getSession().getAttribute(SysConstants.SESSION_SYS_USER));
+		redEnvelope.setRedEnvelopeState("0");
+		redEnvelope.setFounderId(sysUsers.getId());
+		redEnvelopeService.doSave(redEnvelope);
+		String[] amountAllocateds=amountAllocated.split(",");
+		List<RedEnvelopeRecord> envelopeRecords = new ArrayList<RedEnvelopeRecord>();
+		for (int i = 0; i < amountAllocateds.length; i++) {
+			RedEnvelopeRecord envelopeRecord=new RedEnvelopeRecord();
+			envelopeRecord.setRedEnvelopeId(redEnvelope.getId());
+			envelopeRecord.setRedEnvelopeNo(String.valueOf(i+1));
+			envelopeRecord.setPrice(amountAllocateds[i].trim());
+			envelopeRecords.add(envelopeRecord);
+		}
+		envelopeRecordService.doSaveBatch(envelopeRecords);
+		respBean.setBody(redEnvelope);
+		return respBean;
+	}
+	/**
+	 * 描述: 进入查看页面
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-26
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnRedEnvelopeView")
+	public ModelAndView doEnRedEnvelopeViewAction(String redEnvelopeId) throws Exception {
+		RedEnvelope redEnvelope = redEnvelopeService.doGetById(redEnvelopeId);
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("redEnvelope", redEnvelope);
+		return new ModelAndView("/headquarters/redenvelope/redEnvelopeView",model);
+	}
+	/**
+	 * 描述: 分页查询信息
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-26
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadRedEnvelopeRecordList")
+	@ResponseBody
+	public RespBean<RespPagination<RedEnvelopeRecord>> doReadRedEnvelopeRecordList(
+			RedEnvelopeRecord redEnvelopeRecord) throws Exception {
+		RespBean<RespPagination<RedEnvelopeRecord>> respBean = new RespBean<RespPagination<RedEnvelopeRecord>>();
+		RespPagination<RedEnvelopeRecord> respPagination = new RespPagination<RedEnvelopeRecord>();
+		Integer total = envelopeRecordService.doGetTotal(redEnvelopeRecord);
+		List<RedEnvelopeRecord> envelopeRecordList=envelopeRecordService.doGetList(redEnvelopeRecord);
+		respPagination.setTotal(total);
+		respPagination.setRows(envelopeRecordList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 * 描述: 进入编辑页面
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-26
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnRedEnvelopeEdit")
+	public ModelAndView doEnRedEnvelopeEdit(String redEnvelopeId)
+			throws Exception {
+		RedEnvelope redEnvelope = redEnvelopeService.doGetById(redEnvelopeId);
+		RedEnvelopeRecord envelopeRecord=new RedEnvelopeRecord();
+		envelopeRecord.setRedEnvelopeId(redEnvelopeId);
+		List<RedEnvelopeRecord> envelopeRecordList=envelopeRecordService.doGetList(envelopeRecord);
+		//
+		String redEnvelopePrice="";
+		for (int i = 0; i < envelopeRecordList.size(); i++) {
+			if(StringUtils.isEmpty(redEnvelopePrice)){
+				redEnvelopePrice+=envelopeRecordList.get(i).getPrice();
+			}else{
+				redEnvelopePrice+=","+envelopeRecordList.get(i).getPrice();
+			}
+		}
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("redEnvelope", redEnvelope);
+		model.put("envelopeRecordList", envelopeRecordList);
+		model.put("redEnvelopePrice", redEnvelopePrice);
+		return new ModelAndView("/headquarters/redenvelope/redEnvelopeEdit",model);
+	}
+
+	/**
+	 * 描述: 编辑保存
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-26
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEditRedEnvelope")
+	public RespBean<RedEnvelope> doEditRedEnvelope(RedEnvelope redEnvelope,String amountAllocated)
+			throws Exception {
+		RespBean<RedEnvelope> respBean = new RespBean<RedEnvelope>();
+		RedEnvelopeRecord envelopeRecord=new RedEnvelopeRecord();
+		envelopeRecord.setRedEnvelopeId(redEnvelope.getId());
+		List<RedEnvelopeRecord> envelopeRecordList=envelopeRecordService.doGetList(envelopeRecord);
+		if(envelopeRecordList.size()>0){
+			for (int i = 0; i < envelopeRecordList.size(); i++) {
+				envelopeRecordService.doRmById(envelopeRecordList.get(i).getId());
+			}
+		}
+		String[] amountAllocateds=amountAllocated.split(",");
+		for (int i = 0; i < amountAllocateds.length; i++) {
+			RedEnvelopeRecord envelopeRecord1=new RedEnvelopeRecord();
+			envelopeRecord1.setRedEnvelopeId(redEnvelope.getId());
+			envelopeRecord1.setRedEnvelopeNo(String.valueOf(i+1));
+			envelopeRecord1.setPrice(amountAllocateds[i].trim());
+			envelopeRecordService.doSave(envelopeRecord1);
+			
+		}
+		redEnvelopeService.doModById(redEnvelope);
+		respBean.setBody(redEnvelope);
+		return respBean;
+	}
+
+	/**
+	 * 描述: 删除
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-26
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doDelRedEnvelope")
+	@ResponseBody
+	public RespBean<String> doDelRedEnvelopeAction(String redEnvelopeId)
+			throws Exception {
+		RespBean<String> respBean = new RespBean<String>();
+		RedEnvelopeRecord envelopeRecord=new RedEnvelopeRecord();
+		envelopeRecord.setRedEnvelopeId(redEnvelopeId);
+		List<RedEnvelopeRecord> envelopeRecordList=envelopeRecordService.doGetList(envelopeRecord);
+		if(envelopeRecordList.size()>0){
+			for (int i = 0; i < envelopeRecordList.size(); i++) {
+				envelopeRecordService.doRmById(envelopeRecordList.get(i).getId());
+			}
+		}
+		redEnvelopeService.doRmById(redEnvelopeId);
+		respBean.setBody("删除成功");
+		return respBean;
+	}
+
+}

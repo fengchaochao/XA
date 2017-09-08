@@ -1,0 +1,19 @@
+package com.prj.biz.service._impl.shippingaddress;
+
+import com.prj.biz.bean.shippingaddress.ShippingAddress;
+import com.prj.biz.dao.maindb.shippingaddress.ShippingAddressDao;
+import com.prj.biz.service._impl._base.BaseServiceImpl;
+import com.prj.biz.service.shippingaddress.ShippingAddressService;
+import org.springframework.stereotype.Service;
+/**
+ * 
+ * 描述: 收货地址 Service 实现<br>
+ * @author Liang
+ * @date 2017-08-15
+ */
+@Service
+public class ShippingAddressServiceImpl extends BaseServiceImpl<ShippingAddressDao,ShippingAddress> implements ShippingAddressService
+{
+	
+
+}

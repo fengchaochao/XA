@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.shippingaddress.ShippingAddressDao">
+
+    <resultMap id="shippingaddressResult" type="com.prj.biz.bean.shippingaddress.ShippingAddress">
+		<result property="id" column="id" />
+		<result property="recipients" column="recipients" />
+		<result property="telphone" column="telphone" />
+		<result property="zipCode" column="zip_code" />
+		<result property="pricesId" column="prices_id" />
+		<result property="cityId" column="city_id" />
+		<result property="areaId" column="area_id" />
+		<result property="address" column="address" />
+		<result property="isDefault" column="is_default" />
+		<result property="userId" column="user_id" />
+		<result property="createDate" column="create_date" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,recipients,telphone,zip_code,prices_id,city_id,area_id,address,is_default,user_id,create_date
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	    	1=1
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="recipients!=null and recipients!='' ">
+		        AND recipients = #{recipients}
+		    </if>
+		    <if test="telphone!=null and telphone!='' ">
+		        AND telphone = #{telphone}
+		    </if>
+		    <if test="zipCode!=null and zipCode!='' ">
+		        AND zip_code = #{zipCode}
+		    </if>
+		    <if test="pricesId!=null and pricesId!='' ">
+		        AND prices_id = #{pricesId}
+		    </if>
+		    <if test="cityId!=null and cityId!='' ">
+		        AND city_id = #{cityId}
+		    </if>
+		    <if test="areaId!=null and areaId!='' ">
+		        AND area_id = #{areaId}
+		    </if>
+		    <if test="address!=null and address!='' ">
+		        AND address = #{address}
+		    </if>
+		    <if test="isDefault!=null and isDefault!='' ">
+		        AND is_default = #{isDefault}
+		    </if>
+		    <if test="userId!=null and userId!='' ">
+		        AND user_id = #{userId}
+		    </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        AND create_date = #{createDate}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="shippingaddressResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_SHIPPING_ADDRESS 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="shippingaddressResult" parameterType="com.prj.biz.bean.shippingaddress.ShippingAddress" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_SHIPPING_ADDRESS 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.shippingaddress.ShippingAddress">
+		select
+		    count(ID)
+		from 
+			 XA_SHIPPING_ADDRESS 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.shippingaddress.ShippingAddress">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_SHIPPING_ADDRESS 
+			(id,recipients,telphone,zip_code,prices_id,city_id,area_id,address,is_default,user_id,create_date)
+		VALUES 
+			(#{id},#{recipients},#{telphone},#{zipCode},#{pricesId},#{cityId},#{areaId},#{address},#{isDefault},#{userId},now())
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_SHIPPING_ADDRESS 
+			(id,recipients,telphone,zip_code,prices_id,city_id,area_id,address,is_default,user_id,create_date)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{recipients},#{telphone},#{zipCode},#{pricesId},#{cityId},#{areaId},#{address},#{isDefault},#{userId},now())
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.shippingaddress.ShippingAddress">
+     UPDATE XA_SHIPPING_ADDRESS
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="recipients!=null and recipients!='' ">
+				recipients = #{recipients},
+			</if>
+			<if test="telphone!=null and telphone!='' ">
+				telphone = #{telphone},
+			</if>
+			<if test="zipCode!=null and zipCode!='' ">
+				zip_code = #{zipCode},
+			</if>
+			<if test="pricesId!=null and pricesId!='' ">
+				prices_id = #{pricesId},
+			</if>
+			<if test="cityId!=null and cityId!='' ">
+				city_id = #{cityId},
+			</if>
+			<if test="areaId!=null and areaId!='' ">
+				area_id = #{areaId},
+			</if>
+			<if test="address!=null and address!='' ">
+				address = #{address},
+			</if>
+			<if test="isDefault!=null and isDefault!='' ">
+				is_default = #{isDefault},
+			</if>
+			<if test="userId!=null and userId!='' ">
+				user_id = #{userId},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_SHIPPING_ADDRESS
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="recipients!=null and recipients!='' ">
+				recipients = #{recipients},
+			</if>
+			<if test="telphone!=null and telphone!='' ">
+				telphone = #{telphone},
+			</if>
+			<if test="zipCode!=null and zipCode!='' ">
+				zip_code = #{zipCode},
+			</if>
+			<if test="pricesId!=null and pricesId!='' ">
+				prices_id = #{pricesId},
+			</if>
+			<if test="cityId!=null and cityId!='' ">
+				city_id = #{cityId},
+			</if>
+			<if test="areaId!=null and areaId!='' ">
+				area_id = #{areaId},
+			</if>
+			<if test="address!=null and address!='' ">
+				address = #{address},
+			</if>
+			<if test="isDefault!=null and isDefault!='' ">
+				is_default = #{isDefault},
+			</if>
+			<if test="userId!=null and userId!='' ">
+				user_id = #{userId},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_SHIPPING_ADDRESS WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_SHIPPING_ADDRESS
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

@@ -1,0 +1,77 @@
+package com.prj.biz.bean.codeareas;
+
+import com.prj.biz.bean._base.BaseEntity;
+
+/** 
+ * 描述: 代理区域表 实体类<br>
+ * @author Liang
+ * @date 2017-07-10
+ * 
+ */
+public class codeAreas extends BaseEntity  
+{
+
+    private static final long	serialVersionUID	= 1L;
+
+    // 地区id 
+    private String areaId;
+    // 地区父id 
+    private String parentId;
+    // 地区名称 
+    private String areaName;
+    // 地区类型 0:country,1:province,2:city,3:district 
+    private String areaType;
+    // 代理状态 0-未代理 1-已代理 
+    private String agentState;
+    //  代理商id
+    private String agentId;
+
+
+    public String getAreaId() {
+        return areaId;
+    }
+    public void setAreaId(String areaId) {
+        this.areaId = areaId;
+    }
+
+
+    public String getParentId() {
+        return parentId;
+    }
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+
+    public String getAreaName() {
+        return areaName;
+    }
+    public void setAreaName(String areaName) {
+        this.areaName = areaName;
+    }
+
+
+    public String getAreaType() {
+        return areaType;
+    }
+    public void setAreaType(String areaType) {
+        this.areaType = areaType;
+    }
+
+
+    public String getAgentState() {
+        return agentState;
+    }
+    public void setAgentState(String agentState) {
+        this.agentState = agentState;
+    }
+
+
+    public String getAgentId() {
+        return agentId;
+    }
+    public void setAgentId(String agentId) {
+        this.agentId = agentId;
+    }
+
+}

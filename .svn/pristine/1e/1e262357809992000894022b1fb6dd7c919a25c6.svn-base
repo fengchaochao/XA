@@ -1,0 +1,186 @@
+/**
+ * Copyright© 2003-2013 天尔软件, All Rights Reserved <br/>
+ * 描述: 业务文件 <br/>
+ * @author Liang
+ * @date 2017-07-11
+ * @version 1.0
+ */
+package com.prj.biz.action.headquartersPC.businessclassification;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import tutorial.redis.RedisUtil;
+
+import com.prj.biz.action._base.BaseAction;
+import com.prj.biz.bean.businessclassification.BusinessClassification;
+import com.prj.biz.bean.showamount.ShowAmount;
+import com.prj.biz.service.businessclassification.BusinessClassificationService;
+import com.prj.biz.service.showamount.ShowAmountService;
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+
+
+
+/** 
+ * 描述: 商家分类及抽成信息 Action 类<br>
+ * @author Liang
+ * @date 2017-07-11
+ */
+@RestController
+@RequestMapping("/headquarters/businessClassification")
+public class BusinessClassificationAction extends BaseAction
+{
+	private static final long	serialVersionUID	= 1L;
+	
+	@Resource
+	private BusinessClassificationService businessClassificationService;
+	
+	@Resource
+	private ShowAmountService showAmountService;
+
+	/**
+	 * 描述: 进入列表显示页面
+	 * @auther Liang
+	 * @date 2017-07-11
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doEnBusinessClassificationList")
+    public ModelAndView doEnBusinessClassificationListAction(HttpServletRequest request,HttpServletResponse response) throws Exception
+	{
+		Map<String, Object> model = new HashMap<String, Object>();
+		/**
+		 * 是否显示商家实收额
+		 */
+		//0-不显示 1-显示
+			String isShowAmount= RedisUtil.getJedis().get("isShowAmount");
+			if(StringUtils.isEmpty(isShowAmount)){
+				RedisUtil.getJedis().set("isShowAmount", "0");
+			}
+			model.put("showAmount", RedisUtil.getJedis().get("isShowAmount"));
+		return new ModelAndView("/headquarters/businessclassification/businessClassificationList",model);
+	}
+	
+	/**
+	 * 描述: 分页查询信息
+	 * @auther Liang
+	 * @date 2017-07-11
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadBusinessClassificationList")
+	@ResponseBody
+	public RespBean<RespPagination<BusinessClassification>> doReadBusinessClassificationList(BusinessClassification businessClassification) throws Exception{
+		RespBean<RespPagination<BusinessClassification>> respBean = new RespBean<RespPagination<BusinessClassification>>();
+		RespPagination<BusinessClassification> respPagination = new RespPagination<BusinessClassification>();
+		Integer total = businessClassificationService.doGetTotal(businessClassification);
+		businessClassification.setOrder("asc");
+		businessClassification.setOrderName("classification_number");
+		List<BusinessClassification> businessClassificationList = businessClassificationService.doGetList(businessClassification);
+		respPagination.setTotal(total);
+		respPagination.setRows(businessClassificationList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 进入编辑页面
+	 * @auther Liang
+	 * @date 2017-07-11
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnBusinessClassificationEdit")
+	public ModelAndView doEnBusinessClassificationEdit(String businessClassificationId) throws Exception{
+		Map<String, Object> model = new HashMap<String, Object>();
+		BusinessClassification businessClassification = businessClassificationService.doGetById(businessClassificationId);
+		if(businessClassificationId==null||"".equals(businessClassificationId)){
+			List<BusinessClassification> businessClassificationList=businessClassificationService.doGetList(null);
+			model.put("classificationNumber", businessClassificationList.size()+1);
+		}
+		model.put("businessClassification", businessClassification);
+		model.put("businessClassificationId", businessClassificationId);
+		return new ModelAndView("/headquarters/businessclassification/businessClassificationEdit",model);
+	}
+	/**
+	 * 描述: 保存数据
+	 * @auther Liang
+	 * @date 2017-07-11
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doSaveBusinessClassification")
+	public RespBean<BusinessClassification> doSaveBusinessClassification(BusinessClassification businessClassification) throws Exception{
+		RespBean<BusinessClassification> respBean = new RespBean<BusinessClassification>();
+		businessClassification.setCreateDate(new Date().toLocaleString());
+		businessClassificationService.doSave(businessClassification);
+		respBean.setBody(businessClassification);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 编辑保存
+	 * @auther Liang
+	 * @date 2017-07-11
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEditBusinessClassification")
+	public RespBean<BusinessClassification> doEditBusinessClassification(BusinessClassification businessClassification) throws Exception{
+		RespBean<BusinessClassification> respBean = new RespBean<BusinessClassification>();
+		businessClassification.setModifyDate(new Date().toLocaleString());
+		businessClassificationService.doModById(businessClassification);
+		respBean.setBody(businessClassification);
+		return respBean;
+	}
+	/**
+	 * 描述: 查看分类名称是否重复
+	 * @auther Liang
+	 * @date 2017-07-11
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/toRepeatBusinessClassification")
+	public RespBean<String> toRepeatBusinessClassification(BusinessClassification businessClassification) throws Exception{
+		RespBean<String> respBean = new RespBean<String>();
+		List<BusinessClassification> businessClassificationList = businessClassificationService.doGetList(businessClassification);
+		String msg="";
+		if(businessClassificationList.size()>0){
+			msg="1";
+		}else{
+			msg="0";
+		}
+		respBean.setBody(msg);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 删除
+	 * @auther Liang
+	 * @date 2017-07-11
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doDelBusinessClassification")
+	@ResponseBody
+	public RespBean<String> doDelBusinessClassificationAction(String businessClassificationIds) throws Exception{
+		RespBean<String> respBean = new RespBean<String>();
+		businessClassificationService.doRmByIds(businessClassificationIds);
+		respBean.setBody("删除成功");
+		return respBean;
+	}
+	
+}

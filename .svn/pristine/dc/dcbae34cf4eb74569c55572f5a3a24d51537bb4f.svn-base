@@ -1,0 +1,44 @@
+package com.prj.task;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import tutorial.redis.RedisUtil;
+
+import com.prj.biz.bean.redenvelope.RedEnvelope;
+import com.prj.biz.bean.redenveloperecord.RedEnvelopeRecord;
+import com.prj.biz.service.redenvelope.RedEnvelopeService;
+import com.prj.utils.ObjectUtil;
+
+@Service
+public class TaskService {
+
+	@Autowired
+	RedEnvelopeService envelopeService;
+
+	@Autowired
+	com.prj.biz.service.redenveloperecord.RedEnvelopeRecordService redEnvelopeRecordService;
+
+	public void invokeTask() throws Exception {
+
+		/*List<RedEnvelope> redEnvelopes = envelopeService.doGetList(null);
+
+		for (RedEnvelope redEnvelope : redEnvelopes) {
+			if (true) {
+				RedEnvelopeRecord envelopeRecord = new RedEnvelopeRecord();
+				envelopeRecord.setRedEnvelopeId(redEnvelope.getId());
+
+				List<RedEnvelopeRecord> envelopeRecords = redEnvelopeRecordService
+						.doGetList(envelopeRecord);
+				String key = "RedPacket"+ redEnvelope.getId();
+				
+				for (RedEnvelopeRecord redEnvelopeRecord : envelopeRecords) {
+					RedisUtil.getJedis().lpush(key.getBytes(),ObjectUtil.objectToBytes(redEnvelopeRecord));
+				}
+			}
+		}*/
+	}
+
+}

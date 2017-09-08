@@ -1,0 +1,213 @@
+package com.prj.biz.api.sellerCenter;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.prj.biz.bean.businessclassification.BusinessClassification;
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.codeareas.codeAreas;
+import com.prj.biz.bean.consumersaccount.ConsumersAccount;
+import com.prj.biz.bean.sysuser.SysUser;
+import com.prj.biz.service.businessclassification.BusinessClassificationService;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.codeareas.codeAreasService;
+import com.prj.biz.service.consumersaccount.ConsumersAccountService;
+import com.prj.biz.service.sysuser.SysUserService;
+import com.prj.core.bean.resp.RespBean;
+import com.prj.utils.UfdmDateUtil;
+
+/**
+ * @author: Fengc
+ * @date:2017-7-18 下午2:48:33
+ * @version :0.0.1
+ * @dis:App商家中心API_ACTION,
+ */
+@Controller
+@RequestMapping("/api")
+public class SellerCenterAction {
+
+	@Autowired
+	private BusinessInformationService businessInformationService;
+
+	@Autowired
+	private ConsumersAccountService consumersAccountService;
+	
+	@Autowired
+	private codeAreasService codeAreasService;
+	
+	@Autowired
+	private SysUserService sysUserService;
+	
+	@Autowired
+	private BusinessClassificationService businessClassificationService;
+
+	/**
+	 * 客户管理->锁定的消费者
+	 * 
+	 * @param request
+	 * @param response
+	 * @param sellerId
+	 *            商家ID
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/lockedCustomerList")
+	@ResponseBody
+	public RespBean<Map<String, Object>> lockedCustomerList(HttpServletRequest request,
+			HttpServletResponse response, String sellerId) {
+		RespBean<Map<String, Object>> respBean = new RespBean<Map<String, Object>>();
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			//今日锁定的消费者
+			ConsumersAccount consumersAccount = new ConsumersAccount();
+			consumersAccount.setBusinessInformationId(sellerId);
+			consumersAccount.setLocalDate(UfdmDateUtil.getCurrentDate());
+			List<ConsumersAccount> todayConsumersList = consumersAccountService.doGetList(consumersAccount);
+			//历史锁定的消费者
+			ConsumersAccount consumersAccount1 = new ConsumersAccount();
+			consumersAccount1.setBusinessInformationId(sellerId);
+			consumersAccount1.setHistoryLocalDate(UfdmDateUtil.getCurrentDate());
+			List<ConsumersAccount> historyConsumersList = consumersAccountService.doGetList(consumersAccount1);
+			
+			map.put("todayConsumersList", todayConsumersList);
+			map.put("historyConsumersList", historyConsumersList);
+			
+		} catch (Exception e) {
+		}
+		respBean.setBody(map);
+		return respBean;
+	}
+	
+	/**
+	 * 推荐的商家
+	 * @param request
+	 * @param response
+	 * @param sellerId 商家Id
+	 * @return
+	 */
+	@RequestMapping(value = "/RecommendBusinessList")
+	@ResponseBody
+	public RespBean<Map<String, Object>> RecommendBusinessList(HttpServletRequest request,
+			HttpServletResponse response, String sellerId) {
+		
+		RespBean<Map<String, Object>> respBean = new RespBean<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		try {
+			
+			BusinessInformation information = new BusinessInformation();
+			information.setFounder(sellerId);
+			information.setCreateDate(UfdmDateUtil.getCurrentDate());
+			List<BusinessInformation> todayInformations = businessInformationService.doGetList(information);
+			
+			BusinessInformation information1 = new BusinessInformation();
+			information1.setFounder(sellerId);
+			information1.setRemmDate(UfdmDateUtil.getCurrentDate());
+			List<BusinessInformation> historyInformations = businessInformationService.doGetList(information1);
+			
+			map.put("todayInformations", todayInformations);
+			map.put("historyInformations", historyInformations);
+		} catch (Exception e) {
+		}
+		
+		respBean.setBody(map);
+		return respBean;
+	}
+	
+	/**
+	 * 推荐的商家新增
+	 * @param request
+	 * @param response
+	 * @param businessInformation 商家对象
+	 * @return
+	 */
+	@RequestMapping(value = "/RecommendBusiness")
+	@ResponseBody
+	public RespBean<String> RecommendBusiness(HttpServletRequest request,
+			HttpServletResponse response, BusinessInformation businessInformation) {
+		RespBean<String> respBean = new RespBean<String>();
+		SysUser sysUser1 = new SysUser();
+		sysUser1.setLoginName(businessInformation.getMerchantPhone());
+		try {
+			List<SysUser> sysUserList = sysUserService.doGetList(sysUser1);
+			if (sysUserList.size() < 1) {
+				businessInformation.setEffectState("1");
+				if("2".equals(businessInformation.getSource())){
+					businessInformation.setSource("1");
+				}
+				if("3".equals(businessInformation.getSource())){
+					businessInformation.setSource("2");
+				}
+				businessInformationService.doSave(businessInformation);
+				respBean.setBody("保存成功！");
+			}else{
+				respBean.setBody("该手机号对应的用户已经存在！");
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			respBean.setBody("保存失败！");
+		}
+		return respBean;
+	}
+	/**
+	 * 省市区
+	 * @param request
+	 * @param response
+	 * @param 
+	 * @return
+	 */
+	@RequestMapping(value = "/areaList")
+	@ResponseBody
+	public RespBean<Map<String, Object>> areaList(HttpServletRequest request,
+			HttpServletResponse response) {
+		
+		RespBean<Map<String, Object>> respBean = new RespBean<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		try {
+			List<codeAreas> codeAreas=codeAreasService.selectProvinceList();
+			List<codeAreas> cityCodeAreas=codeAreasService.selectCityList();
+			List<codeAreas> areaCodeAreas=codeAreasService.selectRegionList();
+			map.put("codeAreas", codeAreas);
+			map.put("cityCodeAreas", cityCodeAreas);
+			map.put("areaCodeAreas", areaCodeAreas);
+		} catch (Exception e) {
+		}
+		respBean.setBody(map);
+		return respBean;
+	}
+	/**
+	 * 店铺分类
+	 * @param request
+	 * @param response
+	 * @param 
+	 * @return
+	 */
+	@RequestMapping(value = "/storeTypeList")
+	@ResponseBody
+	public RespBean<Map<String, Object>> storeTypeList(HttpServletRequest request,
+			HttpServletResponse response) {
+		
+		RespBean<Map<String, Object>> respBean = new RespBean<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		try {
+			List<BusinessClassification> businessClassifications=businessClassificationService.doGetList(null);
+			map.put("businessClassifications", businessClassifications);
+		} catch (Exception e) {
+		}
+		respBean.setBody(map);
+		return respBean;
+	}
+	
+}

@@ -1,0 +1,36 @@
+package com.prj.utils.ping;
+
+public class PayConfiger {
+
+	public static String appId = "app_SOGarTiH44KSuvnv";
+
+	public static String payType_alipay = "alipay";
+	public static String payType_wxpay = "wx";
+
+	public static String ipAddress = "116.62.113.180";
+
+	public static String apiKey = "sk_live_0aTaDO180Cy9ib9y50S0a9yL";
+	public static String privateKey = "-----BEGIN RSA PRIVATE KEY-----\n"
+			+ "MIICWwIBAAKBgQDCYjXruCTwAB9GkT9KlhPodQV34br4BBNL3R6/yGxBXA13Y0w9\n"
+			+ "B4APq9GwHKbU7LCGQn07JEUqkljbhN4nN5wiWqveXR2wsWUvXhHfAIfrljitOu/k\n"
+			+ "L2dY5s+qdAryohpZYVRX5gUA21duTiuxIOgDHv3xF96QsbuY27zp23OyRwIDAQAB\n"
+			+ "AoGAT5oUZsF0Lux94lIczxiCcpFpedxwypwwosKckwEqg+GEij2ZvOxTXxeHuU0i\n"
+			+ "bNO4vmKAEjYaNQLVbKAOsZSuVRPuffaJC4nkYC6+oKZ1aey39kxe1Vs02IOlykdQ\n"
+			+ "zD8ML6nmXMTaPlGiibnv2B3LS+v2p+aWVcaOWHG8w/u9oeECQQDxpPtE2UOMcoW2\n"
+			+ "0rMMpgsTQHEhdNuO5OLeHtvYAnUmM0A5nqr6Nwm9/5SdfYBCrX7wat9i0o/Ru09B\n"
+			+ "PL7iD35fAkEAze54D4Usp1fKm8EiBaSO+TGNf+9GaxwmyBdxv8Ykn3CaANRiPY+N\n"
+			+ "RjLnSa981n0eS+QXoOE6dhUD3+5S11eFGQJAEM5Wo20w4327iwGQblrF/mrG83q7\n"
+			+ "Im8M0EH5LEbPev6pgthkL87QIKS741AtMXX7lCD6tFbMpduPIYxmAjbtpQJATPf3\n"
+			+ "md1tvjI7ARIjlDZYVd1mhM265SfFev4APuxhHdKpTOwUt+uiov09ozXbFBP5seXT\n"
+			+ "ywbDogTiyNy7y87jaQJAS3ZbKMC4nCdHYkMytF6OlnY649F4TnxIjIbb10nKJgkD\n"
+			+ "fi3fvfgs3n6bYrUiW/+fdtdqPSyr/FNW5VCxmFmI0w==\n"
+			+ "-----END RSA PRIVATE KEY-----";
+	public static String hookspublickey = "-----BEGIN PUBLIC KEY-----\n"
+			+ "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtALJm/KzFCYtAhk3kfS1\n"
+			+ "0Y522AqsheS1W39K11yjDJQ6gFeSQI/divqO8j7UBQyXyyJMvka2kV+K4oFcSqwr\n"
+			+ "W2TFu/01TdJMNhKA9Icq/81bxcrKt7o2dQP5j0ECwo2FoxHdUegr56uUcreHd8EM\n"
+			+ "ylHMiZRxfEVMVIb0LK46kHuClQ6IyIG8eTAlNB111MS71NHxygmtJoWs7DuHlecu\n"
+			+ "KUMboyu7DXIA7rksMLm+6jG9YaCwwkPsi1zJgiBP7kiSSKA0ZDNrm0uncXHJgKWD\n"
+			+ "BEgd1tTQONOtmEeKeDYz353E3MRv6+qpzgd+qFR7xn2ZNM9zZyEDn0ZMxZSP8Fit\n"
+			+ "EwIDAQAB\n" + "-----END PUBLIC KEY-----";
+}

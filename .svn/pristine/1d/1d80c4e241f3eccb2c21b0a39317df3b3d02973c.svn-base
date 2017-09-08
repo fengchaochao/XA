@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.goodsspecifications.GoodsSpecificationsDao">
+
+    <resultMap id="goodsspecificationsResult" type="com.prj.biz.bean.goodsspecifications.GoodsSpecifications">
+		<result property="id" column="id" />
+		<result property="specificationsName" column="specifications_name" />
+		<result property="inventory" column="inventory" />
+		<result property="price" column="price" />
+		<result property="goodsId" column="goods_id" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,specifications_name,inventory,price,goods_id
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="specificationsName!=null and specificationsName!='' ">
+		        AND specifications_name = #{specificationsName}
+		    </if>
+		    <if test="inventory!=null and inventory!='' ">
+		        AND inventory = #{inventory}
+		    </if>
+		    <if test="price!=null and price!='' ">
+		        AND price = #{price}
+		    </if>
+		    <if test="goodsId!=null and goodsId!='' ">
+		        AND goods_id = #{goodsId}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="goodsspecificationsResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_GOODS_SPECIFICATIONS 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="goodsspecificationsResult" parameterType="com.prj.biz.bean.goodsspecifications.GoodsSpecifications" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_GOODS_SPECIFICATIONS 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.goodsspecifications.GoodsSpecifications">
+		select
+		    count(ID)
+		from 
+			 XA_GOODS_SPECIFICATIONS 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.goodsspecifications.GoodsSpecifications">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_GOODS_SPECIFICATIONS 
+			(id,specifications_name,inventory,price,goods_id)
+		VALUES 
+			(#{id},#{specificationsName},#{inventory},#{price},#{goodsId})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_GOODS_SPECIFICATIONS 
+			(id,specifications_name,inventory,price,goods_id)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{specificationsName},#{inventory},#{price},#{goodsId})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.goodsspecifications.GoodsSpecifications">
+     UPDATE XA_GOODS_SPECIFICATIONS
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="specificationsName!=null and specificationsName!='' ">
+				specifications_name = #{specificationsName},
+			</if>
+			<if test="inventory!=null and inventory!='' ">
+				inventory = #{inventory},
+			</if>
+			<if test="price!=null and price!='' ">
+				price = #{price},
+			</if>
+			<if test="goodsId!=null and goodsId!='' ">
+				goods_id = #{goodsId},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_GOODS_SPECIFICATIONS
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="specificationsName!=null and specificationsName!='' ">
+				specifications_name = #{specificationsName},
+			</if>
+			<if test="inventory!=null and inventory!='' ">
+				inventory = #{inventory},
+			</if>
+			<if test="price!=null and price!='' ">
+				price = #{price},
+			</if>
+			<if test="goodsId!=null and goodsId!='' ">
+				goods_id = #{goodsId},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_GOODS_SPECIFICATIONS WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_GOODS_SPECIFICATIONS
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

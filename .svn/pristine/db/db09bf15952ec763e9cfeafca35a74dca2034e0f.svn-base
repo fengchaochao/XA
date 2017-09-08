@@ -1,0 +1,264 @@
+/**
+ * Copyright© 2003-2013 天尔软件, All Rights Reserved <br/>
+ * 描述: 业务文件 <br/>
+ * @author Liang
+ * @date 2017-07-12
+ * @version 1.0
+ */
+package com.prj.biz.action.headquartersPC.businessinformation;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.prj.biz.bean.businessclassification.BusinessClassification;
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.sysuser.SysUser;
+import com.prj.biz.service.businessclassification.BusinessClassificationService;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.codeareas.codeAreasService;
+import com.prj.biz.service.sysuser.SysUserService;
+import com.prj.biz.action._base.BaseAction;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+import com.prj.core.constant.SysConstants;
+import com.prj.utils.UfdmDateUtil;
+import com.prj.utils.UfdmMd5Util;
+
+
+
+/** 
+ * 描述: 商家信息 Action 类<br>
+ * @author Liang
+ * @date 2017-07-12
+ */
+@RestController
+@RequestMapping("/headquarters/businessInformation")
+public class BusinessInformationAction extends BaseAction
+{
+	private static final long	serialVersionUID	= 1L;
+	
+	@Resource
+	private BusinessInformationService businessInformationService;
+	
+	@Resource
+	private BusinessClassificationService businessClassificationService;
+	
+	@Resource
+	private codeAreasService codeAreasService;
+	
+	@Resource
+	private SysUserService	sysUserService;
+
+	/**
+	 * 描述: 进入列表显示页面
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doEnBusinessInformationList")
+    public ModelAndView doEnBusinessInformationListAction(HttpServletRequest request,HttpServletResponse response) throws Exception
+	{
+		Map<String, Object> model = new HashMap<String, Object>();
+		List<BusinessClassification> businessClassificationList=businessClassificationService.doGetList(null);
+		model.put("businessClassificationList", businessClassificationList);
+		return new ModelAndView("/headquarters/businessinformation/businessInformationList",model);
+	}
+	
+	/**
+	 * 描述: 分页查询信息
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadBusinessInformationList")
+	@ResponseBody
+	public RespBean<RespPagination<BusinessInformation>> doReadBusinessInformationList(BusinessInformation businessInformation) throws Exception{
+		RespBean<RespPagination<BusinessInformation>> respBean = new RespBean<RespPagination<BusinessInformation>>();
+		RespPagination<BusinessInformation> respPagination = new RespPagination<BusinessInformation>();
+		businessInformation.setEffectState("0");
+		Integer total = businessInformationService.doGetTotal(businessInformation);
+		List<BusinessInformation> businessInformationList = businessInformationService.selectAllList(businessInformation);
+		respPagination.setTotal(total);
+		respPagination.setRows(businessInformationList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 * 描述: 进入添加页面
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnBusinessInformationAdd")
+	public ModelAndView doEnBusinessInformationAdd() throws Exception{
+		Map<String, Object> model = new HashMap<String, Object>();
+		int i=(int)(Math.random()*900)+100;
+		String merchantNumber="YJKS"+UfdmDateUtil.getCurrentDate1()+UfdmDateUtil.getCurrentSimpleTime1()+i;
+		
+		List<BusinessClassification> businessClassificationList=businessClassificationService.doGetList(null);
+		model.put("businessClassificationList", businessClassificationList);
+		model.put("countryList", codeAreasService.selectCountyList());
+		model.put("provinceList", codeAreasService.selectProvinceList());
+		model.put("cityList", codeAreasService.selectCityList());
+		model.put("areaList", codeAreasService.selectRegionList());
+		model.put("merchantNumber", merchantNumber);
+		return new ModelAndView("/headquarters/businessinformation/businessInformationAdd",model);
+	}
+	/**
+	 * 描述: 编辑保存
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doSaveBusinessInformation")
+	public RespBean<BusinessInformation> doSaveBusinessInformation(BusinessInformation businessInformation) throws Exception{
+		RespBean<BusinessInformation> respBean = new RespBean<BusinessInformation>();
+		businessInformation.setBusinessState("0");
+		businessInformation.setSource("0");
+		businessInformation.setEffectState("0");
+		//推荐人
+		SysUser sysUsers = (SysUser)(SecurityUtils.getSubject().getSession().getAttribute(SysConstants.SESSION_SYS_USER));
+		businessInformation.setFounder(sysUsers.getId());
+		businessInformationService.doSave(businessInformation);
+		SysUser sysUser1=new SysUser();
+		sysUser1.setLoginName(businessInformation.getMerchantPhone());
+		List<SysUser> sysUserList=sysUserService.doGetList(sysUser1);
+		if(sysUserList.size()<0){
+			SysUser sysUser=new SysUser();
+			sysUser.setLoginName(businessInformation.getMerchantPhone());
+			sysUser.setMobile(businessInformation.getMerchantPhone());
+			sysUser.setLoginPass(UfdmMd5Util.MD5Encode("123456"));
+			sysUser.setRealName(businessInformation.getVendorName());
+			sysUser.setMerchantsId(businessInformation.getId());
+			sysUser.setUserStatus("0");
+			sysUserService.doSave(sysUser);
+		}
+		respBean.setBody(businessInformation);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 进入编辑页面
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnBusinessInformationEdit")
+	public ModelAndView doEnBusinessInformationEdit(String businessInformationId) throws Exception{
+		BusinessInformation businessInformation = businessInformationService.doGetById(businessInformationId);
+		Map<String, Object> model = new HashMap<String, Object>();
+		List<BusinessClassification> businessClassificationList=businessClassificationService.doGetList(null);
+		String[] businessLicensePhoto=businessInformation.getBusinessIcensePhoto().split(",");
+		
+		String[] idNoPhoto=businessInformation.getIdPhoto().split(",");
+		
+		model.put("businessClassificationList", businessClassificationList);
+		model.put("businessInformation", businessInformation);
+		model.put("idNoPhoto", idNoPhoto);
+		model.put("businessLicensePhoto", businessLicensePhoto);
+		return new ModelAndView("/headquarters/businessinformation/businessInformationEdit",model);
+	}
+	/**
+	 * 描述: 进入自定义抽成比例页面
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnBusinessInformationCustomAs")
+	public ModelAndView doEnBusinessInformationCustomAs(String businessInformationId) throws Exception{
+		Map<String, Object> model = new HashMap<String, Object>();
+		BusinessInformation businessInformation = businessInformationService.doGetById(businessInformationId);
+		model.put("businessInformation", businessInformation);
+		return new ModelAndView("/headquarters/businessinformation/customAs",model);
+	}
+	
+	/**
+	 * 描述: 编辑保存
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEditBusinessInformation")
+	public RespBean<BusinessInformation> doEditBusinessInformation(BusinessInformation businessInformation) throws Exception{
+		RespBean<BusinessInformation> respBean = new RespBean<BusinessInformation>();
+		BusinessInformation businessInformation1 = businessInformationService.doGetById(businessInformation.getId());
+		businessInformation1.setMerchantsClassificationId(businessInformation.getMerchantsClassificationId());
+		businessInformation1.setVendorName(businessInformation.getVendorName());
+		businessInformation1.setMerchantPhone(businessInformation.getMerchantPhone());
+		businessInformationService.doModById(businessInformation1);
+		respBean.setBody(businessInformation1);
+		return respBean;
+	}
+	/**
+	 * 描述: 编辑保存
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEditBusinessInformationCustomAs")
+	public RespBean<BusinessInformation> doEditBusinessInformationCustomAs(BusinessInformation businessInformation) throws Exception{
+		RespBean<BusinessInformation> respBean = new RespBean<BusinessInformation>();
+		BusinessInformation businessInformation1 = businessInformationService.doGetById(businessInformation.getId());
+		businessInformation1.setLocalConsumption(businessInformation.getLocalConsumption());
+		businessInformation1.setDrainageConsumption(businessInformation.getDrainageConsumption());
+		businessInformationService.doModById(businessInformation1);
+		respBean.setBody(businessInformation1);
+		return respBean;
+	}
+	/**
+	 * 描述: 停用 启用
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doDelBusinessInformation")
+	@ResponseBody
+	public RespBean<String> doDelBusinessInformationAction(String businessInformationId) throws Exception{
+		RespBean<String> respBean = new RespBean<String>();
+		BusinessInformation businessInformation = businessInformationService.doGetById(businessInformationId);
+		SysUser sysUser1=new SysUser();
+		sysUser1.setMerchantsId(businessInformationId);
+		List<SysUser> sysUserList=sysUserService.doGetList(sysUser1);
+		if(businessInformation!=null){
+			if("0".equals(businessInformation.getBusinessState())){
+				businessInformation.setBusinessState("1");
+				if(sysUserList.size()>0){
+					sysUserList.get(0).setUserStatus("1");
+					sysUserService.doModById(sysUserList.get(0));
+				}
+				respBean.setBody("停用成功！");
+			}else{
+				businessInformation.setBusinessState("0");
+				if(sysUserList.size()>0){
+					sysUserList.get(0).setUserStatus("0");
+					sysUserService.doModById(sysUserList.get(0));
+				}
+				respBean.setBody("启用成功！");
+			}
+		}
+		businessInformationService.doModById(businessInformation);
+		return respBean;
+	}
+	
+}

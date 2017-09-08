@@ -1,0 +1,339 @@
+package com.prj.biz.action.headquartersPC.homepage;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.druid.support.json.JSONUtils;
+import com.prj.biz.action._base.BaseAction;
+import com.prj.biz.bean.agent.Agent;
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.consumers.Consumers;
+import com.prj.biz.bean.consumersaccount.ConsumersAccount;
+import com.prj.biz.bean.sysuser.SysUser;
+import com.prj.biz.service.agent.AgentService;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.codeareas.codeAreasService;
+import com.prj.biz.service.consumers.ConsumersService;
+import com.prj.biz.service.consumersaccount.ConsumersAccountService;
+import com.prj.biz.service.memberstatistics.MemberStatisticsService;
+import com.prj.core.constant.SysConstants;
+import com.prj.utils.UfdmDateUtil;
+
+/**
+ * 描述: 系统用户管理控制类<br>
+ * 
+ * @author 胡义振
+ */
+@Controller
+@RequestMapping("/homepage")
+public class HomepageAction extends BaseAction {
+	private static final long serialVersionUID = 1L;
+	
+	@Resource
+	private AgentService agentService;
+	
+	@Resource
+	private BusinessInformationService businessInformationService;
+	
+	@Resource
+	private ConsumersAccountService consumersAccountService;
+	
+	@Resource
+	private ConsumersService consumersService;
+	
+	@Resource
+	private MemberStatisticsService memberStatisticsService;
+	
+	@Resource
+	private codeAreasService codeAreasService;
+
+	/**
+	 * @Description: 跳转到首页信息页面
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 * @date 2017年7月6日
+	 * @author 1936
+	 */
+	@RequestMapping("/doEnHomepageList")
+	public ModelAndView doEnHomepageList(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+			
+			SysUser sysUsers = (SysUser) (SecurityUtils.getSubject().getSession().getAttribute(SysConstants.SESSION_SYS_USER));
+			Agent agent=new Agent();
+			BusinessInformation businessInformation=new BusinessInformation();
+			Consumers consumers=new Consumers();
+			ConsumersAccount consumersAccount=new ConsumersAccount();
+			/**
+			 * 本月新增
+			 * 
+			 */
+			//代理商数量
+			int agentNum1=0;
+			//商家数量
+			int businessNum1=0;
+			//消费商数量
+			int xfBusinessNum1=0;
+			//消费者数量
+			int consumersNum1=0;
+			//消费者账户
+			int consumersAcountNum1=0;
+			
+			//总部登录
+			if("0".equals(sysUsers.getUserState())){
+				//代理商
+				agent.setCreateDate(UfdmDateUtil.getCurrentDate2());
+				List<Agent> agents=agentService.doGetList(agent);
+				agentNum1=agents.size();
+				//商家
+				businessInformation.setCreateDate(UfdmDateUtil.getCurrentDate2());
+				List<BusinessInformation> businessInformations=businessInformationService.doGetList(businessInformation);
+				businessNum1=businessInformations.size();
+				//消费商
+				consumers.setIsXfconsumers("1");
+				consumers.setCreateDate(UfdmDateUtil.getCurrentDate2());
+				List<Consumers> consumers2=consumersService.doGetList(consumers);
+				xfBusinessNum1=consumers2.size();
+				//消费者
+				consumers.setIsXfconsumers("0");
+				consumers.setCreateDate(UfdmDateUtil.getCurrentDate2());
+				List<Consumers> consumers3=consumersService.doGetList(consumers);
+				consumersNum1=consumers3.size();
+				//消费者账户
+				consumersAccount.setCreateDate(UfdmDateUtil.getCurrentDate2());
+				List<ConsumersAccount> consumersAccounts=consumersAccountService.doGetList(consumersAccount);
+				consumersAcountNum1=consumersAccounts.size();
+				
+				
+				
+			}
+			//代理商登录
+			if("1".equals(sysUsers.getUserState())){
+				//商家
+				businessInformation.setHigherAgentId(sysUsers.getMerchantsId());
+				businessInformation.setCreateDate(UfdmDateUtil.getCurrentDate2());
+				List<BusinessInformation> businessInformations=businessInformationService.doGetList(businessInformation);
+				businessNum1=businessInformations.size();
+				//消费商
+				consumers.setAgentId(sysUsers.getMerchantsId());
+				consumers.setIsXfconsumers("1");
+				consumers.setCreateDate(UfdmDateUtil.getCurrentDate2());
+				List<Consumers> consumers2=consumersService.doGetList(consumers);
+				xfBusinessNum1=consumers2.size();
+				
+				
+				
+			}
+			//商家登录
+			if("2".equals(sysUsers.getUserState())){
+				//商家
+				businessInformation.setFounder(sysUsers.getId());
+				businessInformation.setCreateDate(UfdmDateUtil.getCurrentDate2());
+				List<BusinessInformation> businessInformations=businessInformationService.doGetList(businessInformation);
+				businessNum1=businessInformations.size();
+				//锁定的消费者账号
+				consumersAccount.setBusinessInformationId(sysUsers.getMerchantsId());
+				consumersAccount.setLocalDate(UfdmDateUtil.getCurrentDate2());
+				List<ConsumersAccount> consumersAccounts=consumersAccountService.doGetList(consumersAccount);
+				consumersAcountNum1=consumersAccounts.size();
+			}
+			//本月新增会员总数
+			int monthMemberGurrent=agentNum1+businessNum1+xfBusinessNum1+consumersNum1+consumersAcountNum1;
+			
+		return new ModelAndView("/headquarters/homepage/homepageList");
+	}
+	/**
+	 * 描述: 今日及昨日新增会员
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-18
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping("/doReadTodayMemberList")
+	@ResponseBody
+	public Object doReadTodayMemberList() throws Exception{
+		Map<String, List> map = new HashMap<String, List>();
+		/**
+		 * 今日及昨日新增会员
+		 * 
+		 */
+		int agentNum=0;
+		//商家数量
+		int businessNum=0;
+		//消费商数量
+		int xfBusinessNum=0;
+		//消费者数量
+		int consumersNum=0;
+		//消费者账户
+		int consumersAcountNum=0;
+		
+		int agentNum1=0;
+		//商家数量
+		int businessNum1=0;
+		//消费商数量
+		int xfBusinessNum1=0;
+		//消费者数量
+		int consumersNum1=0;
+		//消费者账户
+		int consumersAcountNum1=0;
+		
+		//昨日新增 扇形图X,Y轴
+		List szx=new ArrayList();
+		
+		//今日新增 扇形图X,Y轴
+		List sjx=new ArrayList();
+		
+		SysUser sysUsers = (SysUser) (SecurityUtils.getSubject().getSession().getAttribute(SysConstants.SESSION_SYS_USER));
+		Agent agent=new Agent();
+		BusinessInformation businessInformation=new BusinessInformation();
+		Consumers consumers=new Consumers();
+		ConsumersAccount consumersAccount=new ConsumersAccount();
+		//总部登录
+		if("0".equals(sysUsers.getUserState())){
+			//代理商
+			agent.setCreateDate(UfdmDateUtil.getCurrentDate());
+			List<Agent> agents=agentService.doGetList(agent);
+			agentNum=agents.size();
+			
+			agent.setCreateDate(UfdmDateUtil.getBefoDateByDays());
+			List<Agent> agents1=agentService.doGetList(agent);
+			agentNum1=agents1.size();
+			szx.add(agentNum1, "代理商");
+			sjx.add(agentNum, "代理商");
+			//商家
+			businessInformation.setCreateDate(UfdmDateUtil.getCurrentDate());
+			List<BusinessInformation> businessInformations=businessInformationService.doGetList(businessInformation);
+			businessNum=businessInformations.size();
+			
+			businessInformation.setCreateDate(UfdmDateUtil.getBefoDateByDays());
+			List<BusinessInformation> businessInformations1=businessInformationService.doGetList(businessInformation);
+			businessNum1=businessInformations1.size();
+			szx.add(businessNum1, "商家");
+			sjx.add(businessNum, "商家");
+			//消费商
+			consumers.setIsXfconsumers("1");
+			consumers.setCreateDate(UfdmDateUtil.getCurrentDate());
+			List<Consumers> consumers2=consumersService.doGetList(consumers);
+			xfBusinessNum=consumers2.size();
+			
+			consumers.setCreateDate(UfdmDateUtil.getBefoDateByDays());
+			List<Consumers> consumers4=consumersService.doGetList(consumers);
+			xfBusinessNum1=consumers4.size();
+			
+			szx.add(xfBusinessNum1, "消费商");
+			sjx.add(xfBusinessNum, "消费商");
+			//消费者
+			consumers.setIsXfconsumers("0");
+			consumers.setCreateDate(UfdmDateUtil.getCurrentDate());
+			List<Consumers> consumers3=consumersService.doGetList(consumers);
+			consumersNum=consumers3.size();
+			
+			consumers.setCreateDate(UfdmDateUtil.getBefoDateByDays());
+			List<Consumers> consumers5=consumersService.doGetList(consumers);
+			consumersNum1=consumers5.size();
+			
+			szx.add(consumersNum1, "消费者");
+			sjx.add(consumersNum, "消费者");
+			//消费者账户
+			consumersAccount.setCreateDate(UfdmDateUtil.getCurrentDate());
+			List<ConsumersAccount> consumersAccounts=consumersAccountService.doGetList(consumersAccount);
+			consumersAcountNum=consumersAccounts.size();
+			
+			consumersAccount.setCreateDate(UfdmDateUtil.getBefoDateByDays());
+			List<ConsumersAccount> consumersAccounts1=consumersAccountService.doGetList(consumersAccount);
+			consumersAcountNum1=consumersAccounts1.size();
+			
+			szx.add(consumersAcountNum1, "消费者账户");
+			sjx.add(consumersAcountNum, "消费者账户");
+			
+		}
+		//代理商登录
+		if("1".equals(sysUsers.getUserState())){
+			//商家
+			businessInformation.setHigherAgentId(sysUsers.getMerchantsId());
+			businessInformation.setCreateDate(UfdmDateUtil.getCurrentDate());
+			List<BusinessInformation> businessInformations=businessInformationService.doGetList(businessInformation);
+			businessNum=businessInformations.size();
+			
+			businessInformation.setCreateDate(UfdmDateUtil.getBefoDateByDays());
+			List<BusinessInformation> businessInformations1=businessInformationService.doGetList(businessInformation);
+			businessNum1=businessInformations1.size();
+			
+			szx.add(businessNum1, "商家");
+			sjx.add(businessNum, "商家");
+			//消费商
+			consumers.setAgentId(sysUsers.getMerchantsId());
+			consumers.setIsXfconsumers("1");
+			consumers.setCreateDate(UfdmDateUtil.getCurrentDate());
+			List<Consumers> consumers2=consumersService.doGetList(consumers);
+			xfBusinessNum=consumers2.size();
+			
+			consumers.setCreateDate(UfdmDateUtil.getBefoDateByDays());
+			List<Consumers> consumers4=consumersService.doGetList(consumers);
+			xfBusinessNum1=consumers4.size();
+			
+			szx.add(xfBusinessNum1, "消费商");
+			sjx.add(xfBusinessNum, "消费商");
+			
+		}
+		//商家登录
+		if("2".equals(sysUsers.getUserState())){
+			//商家
+			businessInformation.setFounder(sysUsers.getId());
+			businessInformation.setCreateDate(UfdmDateUtil.getCurrentDate());
+			List<BusinessInformation> businessInformations=businessInformationService.doGetList(businessInformation);
+			businessNum=businessInformations.size();
+			
+			businessInformation.setCreateDate(UfdmDateUtil.getBefoDateByDays());
+			List<BusinessInformation> businessInformations1=businessInformationService.doGetList(businessInformation);
+			businessNum1=businessInformations1.size();
+			
+			szx.add(businessNum1, "商家");
+			sjx.add(businessNum, "商家");
+			//锁定的消费者账号
+			consumersAccount.setBusinessInformationId(sysUsers.getMerchantsId());
+			consumersAccount.setLocalDate(UfdmDateUtil.getCurrentDate());
+			List<ConsumersAccount> consumersAccounts=consumersAccountService.doGetList(consumersAccount);
+			consumersAcountNum=consumersAccounts.size();
+			
+			consumersAccount.setLocalDate(UfdmDateUtil.getBefoDateByDays());
+			List<ConsumersAccount> consumersAccounts1=consumersAccountService.doGetList(consumersAccount);
+			consumersAcountNum1=consumersAccounts1.size();
+			
+			szx.add(consumersAcountNum1, "消费者账户");
+			sjx.add(consumersAcountNum, "消费者账户");
+		}
+		//今日新增会员总数
+		int memberGurrent=agentNum+businessNum+xfBusinessNum+consumersNum+consumersAcountNum;
+		//昨日新增
+		int memberGurrentF=agentNum1+businessNum1+xfBusinessNum1+consumersNum1+consumersAcountNum1;
+		//柱形图 y
+		List ay=new ArrayList();
+		ay.add(memberGurrentF);
+		ay.add(memberGurrent);
+		
+		map.put("ay", ay);
+		map.put("szx", szx);
+		map.put("sjx", sjx);
+		
+		return JSONUtils.toJSONString(map) ;
+		
+	}
+			
+
+}

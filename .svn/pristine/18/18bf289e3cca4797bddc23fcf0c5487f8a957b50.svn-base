@@ -1,0 +1,54 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<title>请付款</title>
+<style>
+    *{margin: 0px;padding: 0px;font-family:'Microsoft Yahei';}
+    input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;-webkit-border-radius:0px;border-radius:0px;border:none;-webkit-appearance:none;-webkit-tap-highlight-color:rgba(0, 0, 0, 0);font-size:100%;outline:0}
+    input, select{vertical-align:middle}
+    input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance: none !important;margin:0;display:none}
+    body{background: #ededed;font-size: 14px;}
+    section,.contactInformation{border-radius: 3px;}
+    .contactInformation,button{text-align: center;}
+    section{background: #fff;margin: 15px; box-sizing: border-box;margin-top: 6%;}
+    .contactInformation{background: #fbfbfb;padding: 10px 0px 20px 0px;color: #8a8a8a;}
+    .contactInformation img{height: 50px;width: 50px;margin-bottom: 5px;}
+    .transferAmount{padding: 25px;box-sizing: border-box;}
+    .payMoney{margin: 15px 0px;border-bottom: 1px solid #ddd;}
+    .payMoney em{font-style: normal;display: inline-block;font-size: 28px; margin-left: -5px;}
+    .payMoney input{font-size: 40px;width: 75%;font-weight: bold;margin-bottom: 5px;margin-left: 5px;}
+    button{width: 100%;height: 45px;line-height: 45px;color: #fff;background: #1aac19;border: none;border-radius: 5px;font-size: 18px;margin: 6% 0px;}
+    
+</style>
+</head>
+<body>
+<form action="$!webPath/api/doWeixinPay.htm" method="post" id="ListForm">
+<input type="hidden" id = "storeId" name = "storeId" value="$!{storeId}">
+<input type="hidden" id = "code" name = "code" value="$!{code}">
+    <section>
+        <div class="contactInformation"> 
+            <img src="http://img2.imgtn.bdimg.com/it/u=3877181383,2953432979&fm=26&gp=0.jpg" />
+            <p>向个人用户"<span>$!{storeName}</span>"转账</p>
+        </div>
+        <div class="transferAmount">
+            <p>转账金额</p>
+            <p class="payMoney"><em>￥</em><input type="text" name = "amount"/></p>
+            <button type="submit">确认支付</button>
+        </div>
+    </section>
+</form>
+ 
+</body>
+</html>

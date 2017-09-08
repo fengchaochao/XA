@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.advertising.AdvertisingDao">
+
+    <resultMap id="advertisingResult" type="com.prj.biz.bean.advertising.Advertising">
+		<result property="id" column="id" />
+		<result property="headline" column="headline" />
+		<result property="createDate" column="create_date" />
+		<result property="context" column="context" />
+		<result property="userId" column="user_id" />
+		<result property="checkState" column="check_state" />
+		<result property="releaseRange" column="release_range" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,headline,create_date,context,user_id,check_state,release_range
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND a.ID = #{id} 
+	       </if>
+		    <if test="headline!=null and headline!='' ">
+		        AND a.headline like '%${headline}%'
+		    </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        AND a.create_date = #{createDate}
+		    </if>
+		    <if test="context!=null and context!='' ">
+		        AND a.context = #{context}
+		    </if>
+		    <if test="userId!=null and userId!='' ">
+		        AND a.user_id = #{userId}
+		    </if>
+		    <if test="checkState!=null and checkState!='' and checkState!='5'.toString() ">
+		        AND a.check_state = #{checkState}
+		    </if>
+		    <if test="checkState == '5'.toString() ">
+		        AND a.check_state &gt;= '2' and a.check_state &lt;= '3'
+		    </if>
+		    <if test="releaseRange!=null and releaseRange!='' ">
+		        AND a.release_range = #{releaseRange}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="advertisingResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_ADVERTISING 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="advertisingResult" parameterType="com.prj.biz.bean.advertising.Advertising" >
+		select a.*,b.vendor_name as vendorName,c.area_name as areaName from xa_advertising a
+		LEFT JOIN xa_business_information b on a.user_id = b.id
+		LEFT JOIN code_areas c on a.release_range = c.area_id 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectByUser" resultMap="advertisingResult" parameterType="com.prj.biz.bean.advertising.Advertising" >
+		select
+			a.*
+		from 
+			 XA_ADVERTISING a
+		<include refid="query_where" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.advertising.Advertising">
+		select
+		    count(a.ID)
+		from 
+			 XA_ADVERTISING a
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.advertising.Advertising">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_ADVERTISING 
+			(id,headline,create_date,context,user_id,check_state,release_range)
+		VALUES 
+			(#{id},#{headline},#{createDate},#{context},#{userId},"1",#{releaseRange})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_ADVERTISING 
+			(id,headline,create_date,context,user_id,check_state,release_range)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{headline},#{createDate},#{context},#{userId},#{checkState},#{releaseRange})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.advertising.Advertising">
+     UPDATE XA_ADVERTISING
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="headline!=null and headline!='' ">
+				headline = #{headline},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="context!=null and context!='' ">
+				context = #{context},
+			</if>
+			<if test="userId!=null and userId!='' ">
+				user_id = #{userId},
+			</if>
+			<if test="checkState!=null and checkState!='' ">
+				check_state = #{checkState},
+			</if>
+			<if test="releaseRange!=null and releaseRange!='' ">
+				release_range = #{releaseRange},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_ADVERTISING
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="headline!=null and headline!='' ">
+				headline = #{headline},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="context!=null and context!='' ">
+				context = #{context},
+			</if>
+			<if test="userId!=null and userId!='' ">
+				user_id = #{userId},
+			</if>
+			<if test="checkState!=null and checkState!='' ">
+				check_state = #{checkState},
+			</if>
+			<if test="releaseRange!=null and releaseRange!='' ">
+				release_range = #{releaseRange},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_ADVERTISING WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_ADVERTISING
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.codeareas.codeAreasDao">
+
+    <resultMap id="codeareasResult" type="com.prj.biz.bean.codeareas.codeAreas">
+		<result property="areaId" column="area_id" />
+		<result property="parentId" column="parent_id" />
+		<result property="areaName" column="area_name" />
+		<result property="areaType" column="area_type" />
+		<result property="agentState" column="agent_state" />
+		<result property="agentId" column="agent_id" />
+		<result property="agent.id" column="id" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		a.area_id,a.parent_id,a.area_name,a.area_type,a.agent_state,a.agent_id
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+		    <if test="areaId!=null and areaId!='' ">
+		        AND a.area_id = #{areaId}
+		    </if>
+		    <if test="parentId!=null and parentId!='' ">
+		        AND a.parent_id = #{parentId}
+		    </if>
+		    <if test="areaName!=null and areaName!='' ">
+		        AND a.area_name = #{areaName}
+		    </if>
+		    <if test="areaType!=null and areaType!='' ">
+		        AND a.area_type = #{areaType}
+		    </if>
+		    <if test="agentState!=null and agentState!='' ">
+		        AND a.agent_state = #{agentState}
+		    </if>
+		    <if test="agentId!=null and agentId!='' ">
+		        AND INSTR(a.agent_id, #{agentId}) > 0
+		    </if>
+	    </where>
+	</sql>
+	<select id="selectCountyList" resultMap="codeareasResult" >
+		select 
+		    <include refid="Base_Column_List" /> 
+		from
+		    code_areas a 
+		where 
+		    a.area_type = 0
+	</select>
+	<select id="selectProvinceList" resultMap="codeareasResult" >
+		select 
+		    <include refid="Base_Column_List" /> 
+		from
+		    code_areas a 
+		where 
+		    a.area_type = 1
+	    ORDER BY
+			convert(a.area_name USING gbk) COLLATE gbk_chinese_ci asc
+	</select>
+	<select id="selectCityList" resultMap="codeareasResult" >
+		select 
+		    <include refid="Base_Column_List" />  
+		from
+		    code_areas a 
+		where 
+		    a.area_type = 2
+		 ORDER BY
+			convert(a.area_name USING gbk) COLLATE gbk_chinese_ci asc   
+	</select>
+	<select id="selectRegionList" resultMap="codeareasResult" >
+		select 
+		    <include refid="Base_Column_List" /> 
+		from
+		    code_areas a 
+		where 
+		    a.area_type = 3
+	     ORDER BY
+			convert(a.area_name USING gbk) COLLATE gbk_chinese_ci asc
+	</select>
+	
+	<select id="selectById" resultMap="codeareasResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 CODE_AREAS a
+		where 
+			a.area_id = #{areaId}
+	</select>
+	
+	<select id="selectList" resultMap="codeareasResult" parameterType="com.prj.biz.bean.codeareas.codeAreas" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 CODE_AREAS a
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.codeareas.codeAreas">
+		select
+		    count(a.area_id)
+		from 
+			 CODE_AREAS a
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.codeareas.codeAreas">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO CODE_AREAS 
+			(area_id,parent_id,area_name,area_type,agent_state,agent_id)
+		VALUES 
+			(#{areaId},#{parentId},#{areaName},#{areaType},#{agentState},#{agentId})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO CODE_AREAS 
+			(area_id,parent_id,area_name,area_type,agent_state,agent_id)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(#{areaId},#{parentId},#{areaName},#{areaType},#{agentState},#{agentId})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.codeareas.codeAreas">
+     UPDATE CODE_AREAS
+	     <set>
+			<if test="areaId!=null and areaId!='' ">
+				area_id = #{areaId},
+			</if>
+			<if test="parentId!=null and parentId!='' ">
+				parent_id = #{parentId},
+			</if>
+			<if test="areaName!=null and areaName!='' ">
+				area_name = #{areaName},
+			</if>
+			<if test="areaType!=null and areaType!='' ">
+				area_type = #{areaType},
+			</if>
+			<if test="agentState!=null and agentState!='' ">
+				agent_state = #{agentState},
+			</if>
+			<if test="agentId!=null and agentId!='' ">
+				agent_id = #{agentId},
+			</if>
+		</set>
+		    where 
+	            area_id = #{areaId}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  CODE_AREAS
+	    <set>
+			<if test="areaId!=null and areaId!='' ">
+				area_id = #{areaId},
+			</if>
+			<if test="parentId!=null and parentId!='' ">
+				parent_id = #{parentId},
+			</if>
+			<if test="areaName!=null and areaName!='' ">
+				area_name = #{areaName},
+			</if>
+			<if test="areaType!=null and areaType!='' ">
+				area_type = #{areaType},
+			</if>
+			<if test="agentState!=null and agentState!='' ">
+				agent_state = #{agentState},
+			</if>
+			<if test="agentId!=null and agentId!='' ">
+				agent_id = #{agentId},
+			</if>
+    	</set>
+		    where 
+			    area_id = #{areaId}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM CODE_AREAS WHERE area_id = #{areaId}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			CODE_AREAS
+		where 
+			area_id IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{areaId}  
+        </foreach>  
+	</delete>
+	
+</mapper>

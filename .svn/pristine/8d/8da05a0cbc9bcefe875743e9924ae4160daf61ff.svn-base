@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.redenvelope.RedEnvelopeDao">
+
+    <resultMap id="redenvelopeResult" type="com.prj.biz.bean.redenvelope.RedEnvelope">
+		<result property="id" column="id" />
+		<result property="createDate" column="create_date" />
+		<result property="createTime" column="create_time" />
+		<result property="totalPrice" column="total_price" />
+		<result property="number" column="number" />
+		<result property="redEnvelopeState" column="red_envelope_state" />
+		<result property="redEnvelopeType" column="red_envelope_type" />
+		<result property="founderId" column="founder_id" />
+		<result property="minPrice" column="min_price" />
+		<result property="maxPrice" column="max_price" />
+		<result property="expirationDate" column="expirationDate" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,create_date,create_time,total_price,number,red_envelope_state,
+		red_envelope_type,min_price,max_price,founder_id,expirationDate
+	</sql>
+		
+	<sql id="query_where">
+	    where 1=1
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        AND create_date = #{createDate}
+		    </if>
+			 <if test="beginDate != null and beginDate!= ''">
+				AND  date_format(create_date,'%Y-%m-%d') &gt;= date_format(#{beginDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != null and endDate!= ''">
+				AND  date_format(create_date,'%Y-%m-%d') &lt;= date_format(#{endDate},'%Y-%m-%d')
+			</if>
+		    <if test="createTime!=null and createTime!='' ">
+		        AND create_time = #{createTime}
+		    </if>
+		    <if test="totalPrice!=null and totalPrice!='' ">
+		        AND total_price = #{totalPrice}
+		    </if>
+		    <if test="number!=null and number!='' ">
+		        AND number = #{number}
+		    </if>
+		    <if test="redEnvelopeState!=null and redEnvelopeState!='' ">
+		        AND red_envelope_state = #{redEnvelopeState}
+		    </if>
+		     <if test="redEnvelopeState=='4'.toString() ">
+		        AND red_envelope_state &lt; '2'
+		    </if>
+		    <if test="redEnvelopeType!=null and redEnvelopeType!='' ">
+		        AND red_envelope_type = #{redEnvelopeType}
+		    </if>
+		    <if test="minPrice!=null and minPrice!='' ">
+		        AND min_price = #{minPrice}
+		    </if>
+		    <if test="maxPrice!=null and maxPrice!='' ">
+		        AND max_price = #{maxPrice}
+		    </if>
+		    <if test="founderId!=null and founderId!='' ">
+		        AND founder_id = #{founderId}
+		    </if>
+		    <if test="expirationDate!=null and expirationDate!='' ">
+		        AND expirationDate = #{expirationDate}
+		    </if>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="redenvelopeResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_RED_ENVELOPE 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="redenvelopeResult" parameterType="com.prj.biz.bean.redenvelope.RedEnvelope" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_RED_ENVELOPE 
+		<include refid="query_where" /> 
+		and (red_envelope_state='0' or red_envelope_state='1')
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.redenvelope.RedEnvelope">
+		select
+		    count(ID)
+		from 
+			 XA_RED_ENVELOPE 
+		<include refid="query_where" /> 
+		and (red_envelope_state='0' or red_envelope_state='1') 
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.redenvelope.RedEnvelope">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_RED_ENVELOPE 
+			(id,create_date,create_time,total_price,number,red_envelope_state,red_envelope_type,min_price,max_price,founder_id,expirationDate)
+		VALUES 
+			(#{id},#{createDate},#{createTime},#{totalPrice},#{number},#{redEnvelopeState},#{redEnvelopeType},#{minPrice},#{maxPrice},#{founderId},#{expirationDate})
+    </insert> 
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_RED_ENVELOPE 
+			(id,create_date,create_time,total_price,number,red_envelope_state,red_envelope_type,min_price,max_price)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{createDate},#{createTime},#{totalPrice},#{number},#{redEnvelopeState},#{redEnvelopeType},#{minPrice},#{founderId})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.redenvelope.RedEnvelope">
+     UPDATE XA_RED_ENVELOPE
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="createTime!=null and createTime!='' ">
+				create_time = #{createTime},
+			</if>
+			<if test="totalPrice!=null and totalPrice!='' ">
+				total_price = #{totalPrice},
+			</if>
+			<if test="number!=null and number!='' ">
+				number = #{number},
+			</if>
+			<if test="redEnvelopeState!=null and redEnvelopeState!='' ">
+				red_envelope_state = #{redEnvelopeState},
+			</if>
+			<if test="redEnvelopeType!=null and redEnvelopeType!='' ">
+				red_envelope_type = #{redEnvelopeType},
+			</if>
+			<if test="minPrice!=null and minPrice!='' ">
+				min_price = #{minPrice},
+			</if>
+			<if test="maxPrice!=null and maxPrice!='' ">
+				max_price = #{maxPrice},
+			</if>
+			<if test="founderId!=null and founderId!='' ">
+		        founder_id = #{founderId},
+		    </if>
+			<if test="expirationDate!=null and expirationDate!='' ">
+		        expirationDate = #{expirationDate},
+		    </if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_RED_ENVELOPE
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="createTime!=null and createTime!='' ">
+				create_time = #{createTime},
+			</if>
+			<if test="totalPrice!=null and totalPrice!='' ">
+				total_price = #{totalPrice},
+			</if>
+			<if test="number!=null and number!='' ">
+				number = #{number},
+			</if>
+			<if test="redEnvelopeState!=null and redEnvelopeState!='' ">
+				red_envelope_state = #{redEnvelopeState},
+			</if>
+			<if test="redEnvelopeType!=null and redEnvelopeType!='' ">
+				red_envelope_type = #{redEnvelopeType},
+			</if>
+			<if test="minPrice!=null and minPrice!='' ">
+				min_price = #{minPrice},
+			</if>
+			<if test="maxPrice!=null and maxPrice!='' ">
+				max_price = #{maxPrice},
+			</if>
+			<if test="founderId!=null and founderId!='' ">
+		        founder_id = #{founderId},
+		    </if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_RED_ENVELOPE WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_RED_ENVELOPE
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

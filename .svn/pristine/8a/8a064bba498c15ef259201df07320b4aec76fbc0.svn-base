@@ -1,0 +1,132 @@
+package com.prj.biz.api.memberCenter;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.prj.biz.bean.leavingmessage.LeavingMessage;
+import com.prj.biz.service.advertising.AdvertisingService;
+import com.prj.biz.service.businessclassification.BusinessClassificationService;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.codeareas.codeAreasService;
+import com.prj.biz.service.consumersaccount.ConsumersAccountService;
+import com.prj.biz.service.goods.GoodsService;
+import com.prj.biz.service.goodsclassification.GoodsClassificationService;
+import com.prj.biz.service.goodsevaluate.GoodsEvaluateService;
+import com.prj.biz.service.goodsspecifications.GoodsSpecificationsService;
+import com.prj.biz.service.leavingmessage.LeavingMessageService;
+import com.prj.biz.service.order.OrderService;
+import com.prj.biz.service.sysuser.SysUserService;
+import com.prj.biz.service.transactionrecords.TransactionRecordsService;
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+import com.prj.utils.UfdmDateUtil;
+
+/**
+ * @author: Fengc
+ * @date:2017-7-18 下午2:48:33
+ * @version :0.0.1
+ * @dis:App会员中心API_ACTION,
+ */
+@Controller
+@RequestMapping("/api")
+public class MemberCenterAction {
+
+	@Autowired
+	private BusinessInformationService businessInformationService;
+
+	@Autowired
+	private ConsumersAccountService consumersAccountService;
+	
+	@Autowired
+	private SysUserService sysUserService;
+	
+	@Autowired
+	private BusinessClassificationService businessClassificationService;
+	
+	@Autowired
+	private GoodsService goodsService;
+	
+	@Autowired
+	private GoodsClassificationService goodsClassificationService;
+	
+	@Autowired
+	private GoodsSpecificationsService goodsSpecificationsService;
+	
+	@Autowired
+	private GoodsEvaluateService goodsEvaluateService;
+	
+	@Autowired
+	private AdvertisingService advertisingService;
+	
+	@Autowired
+	private OrderService orderService;
+	
+	@Autowired
+	private TransactionRecordsService transactionRecordsService;
+	
+	@Autowired
+	private codeAreasService codeAreasService;
+	
+	@Autowired
+	private LeavingMessageService leavingMessageService;
+
+	/**
+	 * 在线客服->
+	 * 
+	 * @param request
+	 * @param response
+	 * @param userId
+	 *            用户ID
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnLeavingMessageList")
+	@ResponseBody
+	public  RespBean<RespPagination<LeavingMessage>> doEnLeavingMessageList(String sellerId,String userType) {
+		RespBean<RespPagination<LeavingMessage>> respBean = new RespBean<RespPagination<LeavingMessage>>();
+		RespPagination<LeavingMessage> respPagination = new RespPagination<LeavingMessage>();
+		try {
+			//今日锁定的消费者
+			LeavingMessage leavingMessage = new LeavingMessage();
+			leavingMessage.setUserId(sellerId);
+			leavingMessage.setOrder("asc");
+			leavingMessage.setOrderName("leavingMessage_date");
+			List<LeavingMessage> messages = leavingMessageService.doGetAllList(leavingMessage);
+			Integer total = leavingMessageService.doGetTotal(leavingMessage);
+			respPagination.setTotal(total);
+			respPagination.setRows(messages);
+			
+		} catch (Exception e) {
+		}
+		
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 * 在线客服 -发送留言
+	 * @param request
+	 * @param response
+	 * @param leavingMessage 客服留言对象
+	 * @return
+	 */
+	@RequestMapping(value = "/doEnSaveLeavingMessage",produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public RespBean<LeavingMessage> doEnSaveLeavingMessage(LeavingMessage leavingMessage) {
+		RespBean<LeavingMessage> respBean = new RespBean<LeavingMessage>();
+		try {
+			leavingMessage.setStatus("1");
+			leavingMessage.setLeavingmessageDate(UfdmDateUtil.getCurrentTime());
+			leavingMessageService.doSave(leavingMessage);
+			respBean.setBody(leavingMessage);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return respBean;
+	}
+	
+}

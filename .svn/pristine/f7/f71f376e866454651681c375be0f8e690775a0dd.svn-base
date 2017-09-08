@@ -1,0 +1,59 @@
+package com.prj.task;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.prj.biz.service.redenvelope.RedEnvelopeService;
+
+@Service
+public class TaskService {
+
+	@Autowired
+	RedEnvelopeService envelopeService;
+
+	@Autowired
+	com.prj.biz.service.redenveloperecord.RedEnvelopeRecordService redEnvelopeRecordService;
+
+	/**
+	 * 每隔2秒查看是否有红包需要发放。
+	 * @throws Exception
+	 */
+	public void invokeTask() throws Exception {
+
+		/*List<RedEnvelope> redEnvelopes = envelopeService.doGetList(null);
+
+		for (RedEnvelope redEnvelope : redEnvelopes) {
+			if (true) {
+				RedEnvelopeRecord envelopeRecord = new RedEnvelopeRecord();
+				envelopeRecord.setRedEnvelopeId(redEnvelope.getId());
+
+				List<RedEnvelopeRecord> envelopeRecords = redEnvelopeRecordService
+						.doGetList(envelopeRecord);
+				String key = "RedPacket"+ redEnvelope.getId();
+				
+				for (RedEnvelopeRecord redEnvelopeRecord : envelopeRecords) {
+					RedisUtil.getJedis().lpush(key.getBytes(),ObjectUtil.objectToBytes(redEnvelopeRecord));
+				}
+			}
+		}*/
+		
+	}
+	/**
+	 * 每天1点统计前一天的会员、订单增加情况，并存入redis
+	 * @throws Exception
+	 */
+	public void invokeTask1() throws Exception {
+		System.out.println("invokeTask1");
+	
+	}
+	
+	/**
+	 * 每月1日缓存上月订单及会员信息至redis
+	 * @throws Exception
+	 */
+	public void invokeTask2() throws Exception {
+		System.out.println("invokeTask1");
+		
+	}
+
+}

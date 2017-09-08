@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.goodsdivided.GoodsDividedDao">
+
+    <resultMap id="goodsdividedResult" type="com.prj.biz.bean.goodsdivided.GoodsDivided">
+		<result property="id" column="id" />
+		<result property="customerAccounts" column="customer_accounts" />
+		<result property="vendorName" column="vendor_name" />
+		<result property="customerDivided" column="customer_divided" />
+		<result property="agentDivided" column="agent_divided" />
+		<result property="platformDivided" column="platform_divided" />
+		<result property="refereesDivided" column="referees_divided" />
+		<result property="otherDivided" column="other_divided" />
+		<result property="consumptionAmount" column="consumption_amount" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,customer_accounts,vendor_name,customer_divided,agent_divided,platform_divided,referees_divided,other_divided,consumption_amount
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="customerAccounts!=null and customerAccounts!='' ">
+		        AND customer_accounts = #{customerAccounts}
+		    </if>
+		    <if test="vendorName!=null and vendorName!='' ">
+		        AND vendor_name = #{vendorName}
+		    </if>
+		    <if test="customerDivided!=null and customerDivided!='' ">
+		        AND customer_divided = #{customerDivided}
+		    </if>
+		    <if test="agentDivided!=null and agentDivided!='' ">
+		        AND agent_divided = #{agentDivided}
+		    </if>
+		    <if test="platformDivided!=null and platformDivided!='' ">
+		        AND platform_divided = #{platformDivided}
+		    </if>
+		    <if test="refereesDivided!=null and refereesDivided!='' ">
+		        AND referees_divided = #{refereesDivided}
+		    </if>
+		    <if test="otherDivided!=null and otherDivided!='' ">
+		        AND other_divided = #{otherDivided}
+		    </if>
+		    <if test="consumptionAmount!=null and consumptionAmount!='' ">
+		        AND consumption_amount = #{consumptionAmount}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="goodsdividedResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_GOODS_DIVIDED 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="goodsdividedResult" parameterType="com.prj.biz.bean.goodsdivided.GoodsDivided" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_GOODS_DIVIDED 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.goodsdivided.GoodsDivided">
+		select
+		    count(ID)
+		from 
+			 XA_GOODS_DIVIDED 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.goodsdivided.GoodsDivided">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_GOODS_DIVIDED 
+			(id,customer_accounts,vendor_name,customer_divided,agent_divided,platform_divided,referees_divided,other_divided,consumption_amount)
+		VALUES 
+			(#{id},#{customerAccounts},#{vendorName},#{customerDivided},#{agentDivided},#{platformDivided},#{refereesDivided},#{otherDivided},#{consumptionAmount})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_GOODS_DIVIDED 
+			(id,customer_accounts,vendor_name,customer_divided,agent_divided,platform_divided,referees_divided,other_divided,consumption_amount)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{customerAccounts},#{vendorName},#{customerDivided},#{agentDivided},#{platformDivided},#{refereesDivided},#{otherDivided},#{consumptionAmount})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.goodsdivided.GoodsDivided">
+     UPDATE XA_GOODS_DIVIDED
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="customerAccounts!=null and customerAccounts!='' ">
+				customer_accounts = #{customerAccounts},
+			</if>
+			<if test="vendorName!=null and vendorName!='' ">
+				vendor_name = #{vendorName},
+			</if>
+			<if test="customerDivided!=null and customerDivided!='' ">
+				customer_divided = #{customerDivided},
+			</if>
+			<if test="agentDivided!=null and agentDivided!='' ">
+				agent_divided = #{agentDivided},
+			</if>
+			<if test="platformDivided!=null and platformDivided!='' ">
+				platform_divided = #{platformDivided},
+			</if>
+			<if test="refereesDivided!=null and refereesDivided!='' ">
+				referees_divided = #{refereesDivided},
+			</if>
+			<if test="otherDivided!=null and otherDivided!='' ">
+				other_divided = #{otherDivided},
+			</if>
+			<if test="consumptionAmount!=null and consumptionAmount!='' ">
+				consumption_amount = #{consumptionAmount},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_GOODS_DIVIDED
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="customerAccounts!=null and customerAccounts!='' ">
+				customer_accounts = #{customerAccounts},
+			</if>
+			<if test="vendorName!=null and vendorName!='' ">
+				vendor_name = #{vendorName},
+			</if>
+			<if test="customerDivided!=null and customerDivided!='' ">
+				customer_divided = #{customerDivided},
+			</if>
+			<if test="agentDivided!=null and agentDivided!='' ">
+				agent_divided = #{agentDivided},
+			</if>
+			<if test="platformDivided!=null and platformDivided!='' ">
+				platform_divided = #{platformDivided},
+			</if>
+			<if test="refereesDivided!=null and refereesDivided!='' ">
+				referees_divided = #{refereesDivided},
+			</if>
+			<if test="otherDivided!=null and otherDivided!='' ">
+				other_divided = #{otherDivided},
+			</if>
+			<if test="consumptionAmount!=null and consumptionAmount!='' ">
+				consumption_amount = #{consumptionAmount},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_GOODS_DIVIDED WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_GOODS_DIVIDED
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

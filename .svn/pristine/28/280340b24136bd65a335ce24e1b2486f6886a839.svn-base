@@ -1,0 +1,14 @@
+package com.prj.biz.service.localuser;
+
+import com.prj.biz.bean.localuser.LocalUser;
+import com.prj.biz.service._base.BaseService;
+
+/**
+ * 描述: 锁定用户表 Service 接口<br>
+ * @author Liang
+ * @date 2017-07-18
+ */
+public interface LocalUserService extends BaseService<LocalUser>{
+	
+
+}

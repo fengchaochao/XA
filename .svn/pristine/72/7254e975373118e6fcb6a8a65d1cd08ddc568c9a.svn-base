@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.sharerecord.ShareRecordDao">
+
+    <resultMap id="sharerecordResult" type="com.prj.biz.bean.sharerecord.ShareRecord">
+		<result property="id" column="id" />
+		<result property="userId" column="user_id" />
+		<result property="goodsId" column="goods_id" />
+		<result property="shareFee" column="share_fee" />
+		<result property="createDate" column="create_date" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		a.id,a.user_id,a.goods_id,a.share_fee,a.create_date
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND a.ID = #{id} 
+	       </if>
+		    <if test="userId!=null and userId!='' ">
+		        AND a.user_id = #{userId}
+		    </if>
+		    <if test="goodsId!=null and goodsId!='' ">
+		        AND a.goods_id = #{goodsId}
+		    </if>
+		    <if test="shareFee!=null and shareFee!='' ">
+		        AND a.share_fee = #{shareFee}
+		    </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        AND a.create_date like concat('%',#{createDate},'%')
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="sharerecordResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_SHARE_RECORD a
+		where 
+			a.ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="sharerecordResult" parameterType="com.prj.biz.bean.sharerecord.ShareRecord" >
+		select
+			a.*,
+			b.commodity_name goodsName
+		from 
+			 XA_SHARE_RECORD a
+		LEFT JOIN xa_goods b ON a.goods_id=b.id
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.sharerecord.ShareRecord">
+		select
+		    count(a.ID)
+		from 
+			 XA_SHARE_RECORD a
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.sharerecord.ShareRecord">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_SHARE_RECORD 
+			(id,user_id,goods_id,share_fee,create_date)
+		VALUES 
+			(#{id},#{userId},#{goodsId},#{shareFee},now())
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_SHARE_RECORD 
+			(id,user_id,goods_id,share_fee,create_date)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{userId},#{goodsId},#{shareFee},now())
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.sharerecord.ShareRecord">
+     UPDATE XA_SHARE_RECORD
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="userId!=null and userId!='' ">
+				user_id = #{userId},
+			</if>
+			<if test="goodsId!=null and goodsId!='' ">
+				goods_id = #{goodsId},
+			</if>
+			<if test="shareFee!=null and shareFee!='' ">
+				share_fee = #{shareFee},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_SHARE_RECORD
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="userId!=null and userId!='' ">
+				user_id = #{userId},
+			</if>
+			<if test="goodsId!=null and goodsId!='' ">
+				goods_id = #{goodsId},
+			</if>
+			<if test="shareFee!=null and shareFee!='' ">
+				share_fee = #{shareFee},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_SHARE_RECORD WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_SHARE_RECORD
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

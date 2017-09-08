@@ -1,0 +1,222 @@
+package com.prj.biz.bean.consumers;
+
+import com.prj.biz.bean._base.BaseEntity;
+import com.prj.biz.bean.agent.Agent;
+
+/** 
+ * 描述: 消费者/消费商表 实体类<br>
+ * @author Liang
+ * @date 2017-07-19
+ * 
+ */
+public class Consumers extends BaseEntity  
+{
+
+    private static final long	serialVersionUID	= 1L;
+
+    //  
+    private String id;
+    // 消费者/消费商编号 
+    private String customerNumber;
+    // 昵称 
+    private String nickName;
+    // 性别 
+    private String customerSex;
+    // 生日 
+    private String birthday;
+    //电话
+    private String phone;
+    // 地址 
+    private String address;
+    // 是否消费商 1.是 ; 0.否 
+    private String isXfconsumers;
+    // 消费商状态0-正常 1-停用
+    private String merchantsState;
+    
+    /**
+     * 消费商
+     */
+    
+    // 上级代理商id 
+    private String agentId;
+    // 消费商姓名 
+    private String userName;
+    // 身份证号 
+    private String idCard;
+    // 消费商地址 
+    private String userAddress;
+    // 身份证照片 
+    private String idPhoto;
+    // 注册时间 
+    private String createDate;
+   
+    //
+    private Agent agent;
+
+    //总消费金额
+    private int totalPrice;
+    //锁定用户数
+    private int localUser;
+    // 推荐商家数 
+    private int recommendedBusiness;
+    //起始日期
+    private String beginDate;
+    //结束日期
+    private String endDate;
+
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    public String getCustomerNumber() {
+        return customerNumber;
+    }
+    public void setCustomerNumber(String customerNumber) {
+        this.customerNumber = customerNumber;
+    }
+
+
+    public String getNickName() {
+        return nickName;
+    }
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+
+    public String getCustomerSex() {
+        return customerSex;
+    }
+    public void setCustomerSex(String customerSex) {
+        this.customerSex = customerSex;
+    }
+
+
+    public String getBirthday() {
+        return birthday;
+    }
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+
+    public String getAddress() {
+        return address;
+    }
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+
+    public String getIsXfconsumers() {
+        return isXfconsumers;
+    }
+    public void setIsXfconsumers(String isXfconsumers) {
+        this.isXfconsumers = isXfconsumers;
+    }
+
+
+    public String getMerchantsState() {
+        return merchantsState;
+    }
+    public void setMerchantsState(String merchantsState) {
+        this.merchantsState = merchantsState;
+    }
+
+
+    public String getAgentId() {
+        return agentId;
+    }
+    public void setAgentId(String agentId) {
+        this.agentId = agentId;
+    }
+
+
+    public String getUserName() {
+        return userName;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+
+    public String getIdCard() {
+        return idCard;
+    }
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
+
+
+    public String getUserAddress() {
+        return userAddress;
+    }
+    public void setUserAddress(String userAddress) {
+        this.userAddress = userAddress;
+    }
+
+
+    public String getIdPhoto() {
+        return idPhoto;
+    }
+    public void setIdPhoto(String idPhoto) {
+        this.idPhoto = idPhoto;
+    }
+
+
+    public String getCreateDate() {
+        return createDate;
+    }
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
+
+
+	public Agent getAgent() {
+		return agent;
+	}
+	public void setAgent(Agent agent) {
+		this.agent = agent;
+	}
+	public int getTotalPrice() {
+		return totalPrice;
+	}
+	public void setTotalPrice(int totalPrice) {
+		this.totalPrice = totalPrice;
+	}
+	public int getLocalUser() {
+		return localUser;
+	}
+	public void setLocalUser(int localUser) {
+		this.localUser = localUser;
+	}
+	public int getRecommendedBusiness() {
+		return recommendedBusiness;
+	}
+	public void setRecommendedBusiness(int recommendedBusiness) {
+		this.recommendedBusiness = recommendedBusiness;
+	}
+	public String getBeginDate() {
+		return beginDate;
+	}
+	public void setBeginDate(String beginDate) {
+		this.beginDate = beginDate;
+	}
+	public String getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+}

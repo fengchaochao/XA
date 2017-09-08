@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    					http://www.springframework.org/schema/beans/spring-beans.xsd  
+                        http://www.springframework.org/schema/aop
+                        http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+        				http://www.springframework.org/schema/context 
+        				http://www.springframework.org/schema/context/spring-context-4.0.xsd  
+        				http://www.springframework.org/schema/mvc 
+        				http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+
+	<!-- user数据库ds -->
+	<bean id="etbcDruidDataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+		<property name="driverClassName" value="${etbcdb.driver}" />
+		<property name="url" value="${etbcdb.url}" />
+		<property name="username" value="${etbcdb.username}" />
+		<property name="password" value="${etbcdb.password}" />
+		<!-- 初始化连接大小 -->
+		<property name="initialSize" value="${common.initialSize}"></property>
+		<!-- 连接池最大数量 -->
+		<property name="maxActive" value="${common.maxActive}"></property>
+		<!-- 连接池最小空闲 -->
+		<property name="minIdle" value="${common.minIdle}"></property>
+		<!-- 获取连接最大等待时间 -->
+		<property name="maxWait" value="${common.maxWait}"></property>
+		<!-- 定时对线程池链接进行检查 -->
+		<property name= "testWhileIdle"  value="${common.whileIdle}"></property>
+		<!--检查时间 -->
+		<property name= "timeBetweenEvictionRunsMillis" value="${common.evictTime}"></property>
+		<!-- 连接时间失效后重连机制 -->
+		<property name="validationQuery" value="${common.testSql}"/>	
+		<!-- 检查有效链接 -->
+		<property name= "numTestsPerEvictionRun"  value="${common.evictNum}"></property>
+		<!-- 连接池过滤 -->
+		<property name="proxyFilters">
+			<list>
+				<ref bean="etbc-stat-filter" />
+				<ref bean="etbc-wall-filter" />
+				<ref bean="etbc-log-filter" />
+			</list>
+		</property>
+	</bean>
+  
+	<bean id="etbc-stat-filter" class="com.alibaba.druid.filter.stat.StatFilter" />
+	
+    <bean id="etbc-wall-config" class="com.alibaba.druid.wall.WallConfig">  
+        <property name="multiStatementAllow" value="true" />  
+    </bean>
+    
+	<bean id="etbc-wall-filter" class="com.alibaba.druid.wall.WallFilter">
+		<property name="dbType" value="mysql" />
+		<property name="logViolation" value="true" />
+		<property name="config" ref="etbc-wall-config" />
+	</bean>
+
+	<bean id="etbc-log-filter" class="com.alibaba.druid.filter.logging.Log4jFilter">
+		<property name="statementExecutableSqlLogEnable" value="true" />
+		<property name="dataSourceLogEnabled" value="false" />
+		<property name="connectionLogEnabled" value="false" />
+		<property name="statementLogEnabled" value="false" />
+		<property name="resultSetLogEnabled" value="false" />
+	</bean>
+ 
+	<bean id="etbcSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="etbcDruidDataSource" />
+        <!-- 自动扫描 mybatis 目录下的所有SQL映射的xml文件 -->
+        <property name="mapperLocations" value="classpath*:core/mybatis/etbcdb/**/mybatis-*.xml"  />
+    </bean>
+    
+ 	<bean id="etbcSqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="etbcSqlSessionFactory" />
+    </bean>
+    
+    <bean id="etbcTxManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
+    	<property name="dataSource" ref="etbcDruidDataSource" />  
+	</bean> 
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.prj.biz.dao.etbcdb" />
+        <property name="sqlSessionFactoryBeanName" value="etbcSqlSessionFactory" />
+    </bean>
+
+</beans>

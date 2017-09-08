@@ -1,0 +1,64 @@
+package com.prj.biz.bean.goodsspecifications;
+
+import com.prj.biz.bean._base.BaseEntity;
+
+/** 
+ * 描述: 商品规格表 实体类<br>
+ * @author Liang
+ * @date 2017-07-13
+ * 
+ */
+public class GoodsSpecifications extends BaseEntity  
+{
+
+    private static final long	serialVersionUID	= 1L;
+
+    //  
+    private String id;
+    // 规格名称 
+    private String specificationsName;
+    // 库存 
+    private Integer inventory;
+    // 价格 
+    private double price;
+    // 商品id 
+    private String goodsId;
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    public String getSpecificationsName() {
+        return specificationsName;
+    }
+    public void setSpecificationsName(String specificationsName) {
+        this.specificationsName = specificationsName;
+    }
+
+
+    public Integer getInventory() {
+        return inventory;
+    }
+    public void setInventory(Integer inventory) {
+        this.inventory = inventory;
+    }
+
+
+    public double getPrice() {
+		return price;
+	}
+	public void setPrice(double price) {
+		this.price = price;
+	}
+	public String getGoodsId() {
+        return goodsId;
+    }
+    public void setGoodsId(String goodsId) {
+        this.goodsId = goodsId;
+    }
+    
+
+}

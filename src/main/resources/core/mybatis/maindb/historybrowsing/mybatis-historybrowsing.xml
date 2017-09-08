@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.historybrowsing.HistoryBrowsingDao">
+
+    <resultMap id="historybrowsingResult" type="com.prj.biz.bean.historybrowsing.HistoryBrowsing">
+		<result property="id" column="id" />
+		<result property="goodsId" column="goods_id" />
+		<result property="businessId" column="business_id" />
+		<result property="browserId" column="browser_id" />
+		<result property="creattime" column="creattime" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,goods_id,business_id,browser_id,creattime
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND a.ID = #{id} 
+	       </if>
+		    <if test="goodsId!=null and goodsId!='' ">
+		        AND a.goods_id = #{goodsId}
+		    </if>
+		    <if test="businessId!=null and businessId!='' ">
+		        AND a.business_id = #{businessId}
+		    </if>
+		    <if test="browserId!=null and browserId!='' ">
+		        AND a.browser_id = #{browserId}
+		    </if>
+		    <if test="creattime!=null and creattime!='' ">
+		        AND a.creattime = #{creattime}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="historybrowsingResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_HISTORY_BROWSING 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="historybrowsingResult" parameterType="com.prj.biz.bean.historybrowsing.HistoryBrowsing" >
+		SELECT
+		    a.*,b.commodity_name goodsName,
+		    c.vendor_name vendorName,
+			d.area_name provinces,
+			e.area_name city,
+			f.area_name area,
+			c.address,
+			b.commodity_images goodsImages,
+			b.goods_photos goodsPhotos 
+		from XA_HISTORY_BROWSING a 
+		LEFT JOIN xa_goods b on a.goods_id = b.id
+		LEFT JOIN xa_business_information c on c.id = a.business_id
+		LEFT JOIN code_areas d ON c.provinces_id = d.area_id
+		LEFT JOIN code_areas e ON c.city_id = e.area_id
+		LEFT JOIN code_areas f ON c.area_id = f.area_id
+		<include refid="query_where" /> 
+		ORDER BY a.creattime desc
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.historybrowsing.HistoryBrowsing">
+		select
+		    count(a.ID)
+		from 
+			 XA_HISTORY_BROWSING a
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.historybrowsing.HistoryBrowsing">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_HISTORY_BROWSING 
+			(id,goods_id,business_id,browser_id,creattime)
+		VALUES 
+			(#{id},#{goodsId},#{businessId},#{browserId},now())
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_HISTORY_BROWSING 
+			(id,goods_id,business_id,browser_id,creattime)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{goodsId},#{businessId},#{browserId},#{creattime})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.historybrowsing.HistoryBrowsing">
+     UPDATE XA_HISTORY_BROWSING
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="goodsId!=null and goodsId!='' ">
+				goods_id = #{goodsId},
+			</if>
+			<if test="businessId!=null and businessId!='' ">
+				business_id = #{businessId},
+			</if>
+			<if test="browserId!=null and browserId!='' ">
+				browser_id = #{browserId},
+			</if>
+				creattime = now(),
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_HISTORY_BROWSING
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="goodsId!=null and goodsId!='' ">
+				goods_id = #{goodsId},
+			</if>
+			<if test="businessId!=null and businessId!='' ">
+				business_id = #{businessId},
+			</if>
+			<if test="browserId!=null and browserId!='' ">
+				browser_id = #{browserId},
+			</if>
+			<if test="creattime!=null and creattime!='' ">
+				creattime = #{creattime},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_HISTORY_BROWSING WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_HISTORY_BROWSING
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

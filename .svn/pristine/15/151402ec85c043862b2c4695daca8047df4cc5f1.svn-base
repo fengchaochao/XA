@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.shoppingcart.ShoppingCartDao">
+
+    <resultMap id="shoppingcartResult" type="com.prj.biz.bean.shoppingcart.ShoppingCart">
+		<result property="id" column="id" />
+		<result property="businessId" column="business_id" />
+		<result property="goodsId" column="goods_id" />
+		<result property="number" column="number" />
+		<result property="purchaserId" column="purchaser_id" />
+		<result property="creattime" column="creattime" />
+		<result property="specificationsId" column="specifications_id" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		a.id,a.business_id,a.goods_id,a.number,a.purchaser_id,a.creattime,a.specificationsId
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND a.ID = #{id} 
+	       </if>
+		    <if test="businessId!=null and businessId!='' ">
+		        AND a.business_id = #{businessId}
+		    </if>
+		    <if test="goodsId!=null and goodsId!='' ">
+		        AND a.goods_id = #{goodsId}
+		    </if>
+		    <if test="number!=null and number!='' ">
+		        AND a.number = #{number}
+		    </if>
+		    <if test="purchaserId!=null and purchaserId!='' ">
+		        AND a.purchaser_id = #{purchaserId}
+		    </if>
+		    <if test="creattime!=null and creattime!='' ">
+		        AND a.creattime = #{creattime}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="shoppingcartResult" parameterType="java.lang.String">
+		select a.*,d.price price from xa_shopping_cart a 
+		LEFT JOIN xa_goods c on c.id = a.goods_id
+		LEFT JOIN xa_goods_specifications d on a.specifications_id = d.id
+		where 
+			a.ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="shoppingcartResult" parameterType="com.prj.biz.bean.shoppingcart.ShoppingCart" >
+		SELECT 
+			a.*,
+			b.vendor_name vendorName,
+			c.commodity_images goodsImages,
+			c.goods_photos goodsPhotos,
+			c.commodity_name goodsName,
+			c.goods_state status,
+			d.specifications_name specificationsName,
+			d.price price,
+			e.category_name categoryName
+		from xa_shopping_cart a 
+		LEFT JOIN xa_business_information b on b.id = a.business_id
+		LEFT JOIN xa_goods c on c.id = a.goods_id
+		LEFT JOIN xa_goods_specifications d on a.specifications_id = d.id
+		LEFT JOIN xa_goods_classification e on e.id = c.commodity_type_id 
+		<include refid="query_where" /> 
+		ORDER BY  c.goods_state ASC, a.creattime desc 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.shoppingcart.ShoppingCart">
+		select
+		    count(a.ID)
+		from 
+			 XA_SHOPPING_CART a
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.shoppingcart.ShoppingCart">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_SHOPPING_CART 
+			(id,business_id,goods_id,number,purchaser_id,creattime,specifications_id)
+		VALUES 
+			(#{id},#{businessId},#{goodsId},#{number},#{purchaserId},now(),#{specificationsId})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_SHOPPING_CART 
+			(id,business_id,goods_id,number,purchaser_id,creattime)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{businessId},#{goodsId},#{number},#{purchaserId},#{creattime})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.shoppingcart.ShoppingCart">
+     UPDATE XA_SHOPPING_CART
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="businessId!=null and businessId!='' ">
+				business_id = #{businessId},
+			</if>
+			<if test="goodsId!=null and goodsId!='' ">
+				goods_id = #{goodsId},
+			</if>
+			<if test="number!=null and number!='' ">
+				number = #{number},
+			</if>
+			<if test="purchaserId!=null and purchaserId!='' ">
+				purchaser_id = #{purchaserId},
+			</if>
+			<if test="creattime!=null and creattime!='' ">
+				creattime = #{creattime},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_SHOPPING_CART
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="businessId!=null and businessId!='' ">
+				business_id = #{businessId},
+			</if>
+			<if test="goodsId!=null and goodsId!='' ">
+				goods_id = #{goodsId},
+			</if>
+			<if test="number!=null and number!='' ">
+				number = #{number},
+			</if>
+			<if test="purchaserId!=null and purchaserId!='' ">
+				purchaser_id = #{purchaserId},
+			</if>
+			<if test="creattime!=null and creattime!='' ">
+				creattime = #{creattime},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_SHOPPING_CART WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_SHOPPING_CART
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

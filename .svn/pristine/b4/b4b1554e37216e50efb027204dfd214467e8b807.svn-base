@@ -1,0 +1,99 @@
+@charset "utf-8";
+body, button, input, select,
+textarea,div,em,span,p,h1,h2,h3,h4,h5,h6,ul,li,td,th{color:#333;font-family: Microsoft Yahei;}
+span,em{display:inline-block;font-style:normal;}
+button{outline:none;}
+body{background:#f2f3f5;}
+#mainContent{
+    width: 99%;
+    margin: 0 0 0 1%;
+    padding-top:25px;
+    padding-left:10px;
+    background:#fff;
+}
+/*com lawyer  */
+.comLawyer{position: fixed;width: 100%;height: 100%;background: #000;z-index: -1;
+    opacity: 0.3;top: 0px;left: 0px;display: none;}
+ 
+/* 页面弹框中底部按钮居中*/
+.navbar-btn{text-align:center;}
+.col-sm-2{}
+
+/*页面headline  */
+.pageHeadline{height:50px;line-height: 50px;}
+.leftNotice{font-size:16px;}
+.pageHeadline p{display:inline-block;float:right;margin:0px;}
+.pageHeadline p input[type="button"]{height:25px;line-height:25px;padding: 0px 20px;outline: none;
+    border: none;border-radius: 3px;margin-left:20px;cursor: pointer;}
+.startBtn{background: #ccc;}
+.closeBtn{background: #ff9c65;color:#fff;}
+.pageHeadline p .startBtn[type="button"]{margin-left:50px;}
+.pageHeadline em{margin:0px 10px;}
+
+/* headerBtn 公用按钮颜色  */
+.greenBtn,.orangeBtn{border:none;float:right;background:#4db988;color:#fff;height: 30px;
+    line-height: 30px;margin-top: 11px;border-radius: 3px;padding: 0px 15px;cursor: pointer;}
+.greenBtn:hover,.greenBtn:active{background:#44b07f;}
+.orangeBtn{background:#f97c51;}
+.orangeBtn:hover,.orangeBtn:active{background:#ea6e43;}
+
+/*flRight--Btn 修改--保存--取消--  */
+.flRight input[type="button"],.greenReplyBtn[type="button"]{height:25px;line-height:25px;padding: 0px 20px;outline: none;
+    background:none;border: none;border-radius: 50px;margin-left:20px;cursor: pointer;
+    border:1px solid #ddd;}
+.flRight .blueModifyBtn[type="button"]{border-color:#2370d8;color:#2370d8;}/* 修改 */
+.flRight .greenPreserveBtn[type="button"]{border-color:#3cac7b;color:#3cac7b;}/* 保存 */
+.flRight .orangeCancelBtn[type="button"]{border-color:#f96868;color:#f96868;}/* 取消 */
+.flRight .orangeDefaultBtn[type="button"]{border-color:#fdad01;color:#fdad01;}/* 默认 */
+.greenReplyBtn[type="button"]{border-color:#3cac7b;color:#3cac7b;}/* 回复 */
+
+/*弹层公用Btn(无弧度) 确定----取消 */
+.confirm,.cancelBtn,.referBtn,.keepBtn{background: none;border: none;margin: 10px;color: #fff;border-radius: 5px;
+    padding: 5px 25px;}
+.confirm {background: #3ab2c3;}/* 确定 蓝色 */
+.cancelBtn {background: #f86868;}/* 取消 红色 */
+.referBtn {background: #3cac7b;}/* 提交 绿色 */
+.keepBtn {background: #fdad01;}/* 保存 橙色 */
+
+/*footerBtn 公用按钮颜色 （ 有弧度的大按钮 ）   确认---取消---返回 */
+.greenBtnRad,.redBtnRad,.yellowReturnRad{display: inline-block; height: 40px;line-height: 40px;
+    min-width:140px;border-radius: 50px;background: #45be89;outline: none;border: none;
+    color:#fff;margin:0px 30px;font-size:16px;}
+.greenBtnRad:hover,.greenBtnRad:active{background: #3cac7b;}
+.redBtnRad{background: #f95151;}/*取消*/
+.redBtnRad:hover,.redBtnRad:active{background: #e44848;}
+.yellowReturnRad{background: #f97c51;}/*返回*/
+.yellowReturnRad:hover,.yellowReturnRad:active{background: #ea6e43;}
+
+/* 公用字体颜色---查看---启用---停用 --- 默认*/
+.blueText,.greenText,.redText,.orangeText,.cyanText,.purpleText,.grayText{border:none;background:none;outline: none;}
+.blueText,.blueText:hover,.blueText:active{color:#236adc;}/* 查看---蓝色 */
+.greenText,.greenText:hover,.greenText:active{color:#3cac7b;}/* 启用--绿色*/
+.redText,.redText:hover,.redText:active{color:#f74f4c;}/* 停用--红色*/
+.orangeText,.orangeText:hover,.orangeText:active{color:#fdad01;}/* 默认--橙色 */
+.cyanText,.cyanText:hover,.cyanText:active{color:#55c5c4;}/* 交易记录--蓝绿色 */
+.purpleText,.purpleText:hover,.purpleText:active{color:#7051b8;}/* 提交审核--紫色 */
+.grayText,.grayText:hover,.grayText:active{color:#ccc;}/* 禁止触发--灰色 */
+
+
+
+/*页面body部分的位置  */
+.mainContant{width:98.5%;margin-left:1.5%;box-sizing: border-box;overflow: hidden;}
+.whiteBox{background:#fff;padding:10px 20px;margin-bottom:20px;box-sizing: border-box;}
+
+/* Time 页面公用时间样式  */
+.chooseTimeCom{display:inline-block;width:350px;float:left;}
+.chooseTimeCom div{display:inline-block;width:130px;margin-left:8px;}
+
+/*页面上传图片--图片按钮的样式  */
+.swfupload,.uploadify-button-text{height:90px!important;width:130px!important;}
+.swfupload{background: url("../../img/login/up.png") no-repeat;color:#fff;
+background-size:100% auto;}
+.uploadify{margin-top:38px;vertical-align: top;}
+div#file_upload,div#file_upload1,div#file_upload2{display:inline-block;height: 90px!important;}
+.uploadify-queue-item{margin-top:15px;}
+.uploadify-button-text{display:none;}
+#material,#material1,#material2{display:inline;}
+
+/*5--设置管理菜单下分页面中--单位的css  */
+.unitBusinessEdit{ float:right;margin-right:-20px;margin-top:-26px;}

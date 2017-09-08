@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.prj.biz.dao.maindb.permission.PerUserRoleDao"> 
+
+    <resultMap id="perUserRoleRlt" type="com.prj.biz.bean.permission.PerUserRole">
+	    <result column="ID" jdbcType="VARCHAR" property="id" />
+	    <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+	    <result column="ROLE_ID" jdbcType="VARCHAR" property="roleId" />
+    </resultMap>
+    
+   <select id="selectById" resultMap="perUserRoleRlt" parameterType="java.lang.String">
+		<![CDATA[
+		select 
+            ID,USER_ID,ROLE_ID
+        from 
+            PER_USER_ROLE 
+        where ID = #{id} 
+        ]]>
+	</select>
+	
+	<sql id="userRole_where">
+	    <where>
+			<if test="userId!=null and userId!='' ">
+				USER_ID = #{userId}
+			</if>
+			<if test="roleId!=null and roleId!='' ">
+				ROLE_ID = #{roleId}
+			</if>
+	    </where>
+	</sql>
+   
+   <select id="selectList" resultMap="perUserRoleRlt" parameterType="java.util.HashMap">
+		<![CDATA[
+		select 
+            ID,USER_ID,ROLE_ID
+        from 
+            PER_USER_ROLE 
+        ]]>
+        <include refid="userRole_where" />
+	</select>
+
+	<select id="selectTotal" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+	<![CDATA[
+		select count(ID) from PER_USER_ROLE 
+    ]]>
+        <include refid="userRole_where" />
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.permission.PerUserRole">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	insert into PER_USER_ROLE 
+		(
+            ID,
+            USER_ID,
+            ROLE_ID
+		)
+		values 
+		(
+		    #{id},
+		    #{userId},
+		    #{roleId}
+		)
+	</insert>
+	
+	<delete id="deleteUserRole" parameterType="java.lang.String"> 
+		delete from PER_USER_ROLE where ID = #{id}
+	</delete>
+	
+	<delete id="deleteUserRoleByUserId" parameterType="java.lang.String"> 
+		delete from PER_USER_ROLE where USER_ID = #{userId}
+	</delete>
+	
+	<delete id="deleteUserRoleByRoleId" parameterType="java.lang.String"> 
+		delete from PER_USER_ROLE where ROLE_ID = #{roleId}
+	</delete>
+	
+	<delete id="deleteUserRoleByUserIdAndRoleId" parameterType="com.prj.biz.bean.permission.PerUserRole" > 
+		delete from PER_USER_ROLE where USER_ID = #{userId}  and ROLE_ID = #{roleId}
+	</delete>
+	
+</mapper>

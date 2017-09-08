@@ -1,0 +1,23 @@
+package com.prj.utils.ping;
+
+public class PayConfiger {
+
+	public static String appId = "app_zDevDOm5aDmTbXvH";
+	public static String apiKey = "sk_live_Xr1OmLG0i9O888ybbPun1WP4";
+	public static String privateKey = "-----BEGIN RSA PRIVATE KEY-----\n"
+			+ "MIICXAIBAAKBgQCyN+MZ+xDgPuvzbPtBXdacM2Bwzw/96cabco2RrXe6egCx7L6Z\n"
+			+ "lW1orSCbnY4H4ubFFDcnLTsmg8tQBX+WBblVNW9SOxjSVX1UK5yBW4hVxDdQ3rF4\n"
+			+ "DXjDZge9j6OF0pBWpbIEdr4So43MOLmQckP6s7j4qwyqqDVJBAbSHbUFRwIDAQAB\n"
+			+ "AoGAUaB5Ww/8ZclMBt2WoxTY1AhQFrswJuspNU+deejK2tVAdj3p+qxPRU9ujPf3\n"
+			+ "8rLBYejlbgMwgW6B86/hBRSwEovXPjpbb5CRXvyw+2Bv1Fez9oCucvHyo0dvVVbX\n"
+			+ "dTXKEKHGur1w3Tz8F8CX6ADd86L6yUGBdXLGx93eqM765UECQQDlDyfWFC5pdwq3\n"
+			+ "zem8qYxHM1l2CkHeAON757ONEKFhOQmcqiOuuIDHRX75qYMZRTC3b/Tktl7N++XL\n"
+			+ "zOALKsEnAkEAxy3w0EaBsEQSOKUieDNFs4+pWbhdm/rcqiFuYWdns+mCi2CWTOy8\n"
+			+ "zYIcM5yhf4cE27pzSEv8WQYiY5J9wVnu4QJAFsRk30BuRIlShWZwHxJzIPiXocXv\n"
+			+ "OhO4iK5FCHZos/MpY2r91PX9xtC/iC0zHKXl67WzD7CYx7yL4K/ibPm47QJBALxu\n"
+			+ "0QEpgu3wKFDgoVCYKRvsEKopyp2TYgmuIRATVL+XbYJQeUEDQscljWqihwLwCH+b\n"
+			+ "0A6YnH7YV9Zds40leOECQDBgb5Sg7DV05+/K/Ok7mvaWSUdmVEvqJoa1ihhyQtd6\n"
+			+ "CQIki0nlBUOkvQlZBUPOhKlXQ4vU1tldurfQqIFhXTA=\n"
+			+ "-----END RSA PRIVATE KEY-----";
+
+}

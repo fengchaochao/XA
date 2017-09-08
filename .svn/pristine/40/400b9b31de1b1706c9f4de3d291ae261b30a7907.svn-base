@@ -1,0 +1,124 @@
+/**
+ * Copyright© 2003-2013 天尔软件, All Rights Reserved <br/>
+ * 描述: 业务文件 <br/>
+ * @author Liang
+ * @date 2017-07-18
+ * @version 1.0
+ */
+package com.prj.biz.action.headquartersPC.consumers;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.prj.biz.bean.consumers.Consumers;
+import com.prj.biz.service.consumers.ConsumersService;
+import com.prj.biz.action._base.BaseAction;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+
+
+
+/** 
+ * 描述: 消费者 Action 类<br>
+ * @author Liang
+ * @date 2017-07-18
+ */
+@RestController
+@RequestMapping("/headquarters/consumers")
+public class ConsumersAction extends BaseAction
+{
+	private static final long	serialVersionUID	= 1L;
+	
+	@Resource
+	private ConsumersService consumersService;
+
+	/**
+	 * 描述: 进入列表显示页面
+	 * @auther Liang
+	 * @date 2017-07-18
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doEnConsumersList")
+    public ModelAndView doEnConsumersListAction(HttpServletRequest request,HttpServletResponse response) throws Exception
+	{
+		return new ModelAndView("/headquarters/consumers/consumersList");
+	}
+	
+	/**
+	 * 描述: 分页查询信息
+	 * @auther Liang
+	 * @date 2017-07-18
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadConsumersList")
+	@ResponseBody
+	public RespBean<RespPagination<Consumers>> doReadConsumersList(Consumers consumers) throws Exception{
+		RespBean<RespPagination<Consumers>> respBean = new RespBean<RespPagination<Consumers>>();
+		RespPagination<Consumers> respPagination = new RespPagination<Consumers>();
+		Integer total = consumersService.doGetTotal(consumers);
+		List<Consumers> consumersList = consumersService.doGetList(consumers);
+		respPagination.setTotal(total);
+		respPagination.setRows(consumersList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 进入编辑页面
+	 * @auther Liang
+	 * @date 2017-07-18
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnConsumersEdit")
+	public ModelAndView doEnConsumersEdit(String consumersId) throws Exception{
+		Consumers consumers = consumersService.doGetById(consumersId);
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("consumers", consumers);
+		return new ModelAndView("/headquarters/consumers/consumersEdit",model);
+	}
+	
+	/**
+	 * 描述: 编辑保存
+	 * @auther Liang
+	 * @date 2017-07-18
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEditConsumers")
+	public RespBean<Consumers> doEditConsumers(Consumers consumers) throws Exception{
+		RespBean<Consumers> respBean = new RespBean<Consumers>();
+		consumersService.doModById(consumers);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 删除
+	 * @auther Liang
+	 * @date 2017-07-18
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doDelConsumers")
+	@ResponseBody
+	public RespBean<String> doDelConsumersAction(String consumersIds) throws Exception{
+		RespBean<String> respBean = new RespBean<String>();
+		consumersService.doRmByIds(consumersIds);
+		respBean.setBody("删除成功");
+		return respBean;
+	}
+	
+}

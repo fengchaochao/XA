@@ -1,0 +1,628 @@
+package com.prj.biz.service._impl.about;
+
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.pingplusplus.model.Transfer;
+import com.prj.biz.bean.bankwithdrawal.BankWithdrawal;
+import com.prj.biz.bean.businessclassification.BusinessClassification;
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.consumers.Consumers;
+import com.prj.biz.bean.consumersaccount.ConsumersAccount;
+import com.prj.biz.bean.distribution.Distribution;
+import com.prj.biz.bean.goodsspecifications.GoodsSpecifications;
+import com.prj.biz.bean.order.Order;
+import com.prj.biz.bean.sysuser.SysUser;
+import com.prj.biz.bean.transactionrecords.TransactionRecords;
+import com.prj.biz.bean.transferrecord.TransferRecord;
+import com.prj.biz.service.RebateCalculation.RebateCalculationService;
+import com.prj.biz.service.bankwithdrawal.BankWithdrawalService;
+import com.prj.biz.service.businessclassification.BusinessClassificationService;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.consumers.ConsumersService;
+import com.prj.biz.service.consumersaccount.ConsumersAccountService;
+import com.prj.biz.service.distribution.DistributionService;
+import com.prj.biz.service.goodsspecifications.GoodsSpecificationsService;
+import com.prj.biz.service.order.OrderService;
+import com.prj.biz.service.sysuser.SysUserService;
+import com.prj.biz.service.transactionrecords.TransactionRecordsService;
+import com.prj.biz.service.transferrecord.TransferRecordService;
+import com.prj.utils.UfdmDateUtil;
+import com.prj.utils.ping.TransferExample;
+
+/**
+ * @author: Fengc
+ * @date:2017-8-29 下午6:49:22
+ * @version :0.0.1
+ * @dis:
+ */
+
+@Service
+public class RebateCalculationServiceImpl implements RebateCalculationService{
+
+	@Autowired
+	private DistributionService distributionService;
+
+	@Autowired
+	private ConsumersAccountService consumersAccountService;
+
+	@Autowired
+	private OrderService orderService;
+
+	@Autowired
+	private BusinessInformationService businessInformationService;
+
+	@Autowired
+	private BusinessClassificationService businessClassificationService;
+
+	@Autowired
+	private ConsumersService consumersService;
+
+	@Autowired
+	private SysUserService sysUserService;
+
+	@Autowired
+	private GoodsSpecificationsService goodsSpecificationsService;
+
+	@Autowired
+	private TransactionRecordsService transactionRecordsService;
+	
+	@Autowired
+	private TransferRecordService transferRecordService;
+	
+	@Autowired
+	private BankWithdrawalService bankWithdrawalService;
+	
+	@Override
+	public void transferRecord(Order order) throws Exception{
+		// 开始转账到商户
+		SysUser sysUser = new SysUser();
+		sysUser.setMerchantsId(order.getBusinessId());
+		List<SysUser> sysUsers = sysUserService.doGetList(sysUser);
+		if(sysUsers.size()>0){
+			BankWithdrawal bankWithdrawal=new BankWithdrawal();
+			bankWithdrawal.setUserId(sysUsers.get(0).getId());
+			bankWithdrawal.setAccountType("2");
+			List<BankWithdrawal> bankWithdrawals=bankWithdrawalService.doGetList(bankWithdrawal);
+			double moneys=Double.parseDouble(order.getMoney())-Double.parseDouble(order.getBonus());
+			System.out.println(moneys);
+			Date date = new Date();
+			
+			try {
+				Transfer transfer=TransferExample.getTranfer("alipay", "b2c", moneys*100, "您收到转账"+moneys+"元", bankWithdrawals.get(0).getBrankName(),bankWithdrawals.get(0).getBrankNumber(),order.getOrderNumber());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				TransferRecord transferRecord=new TransferRecord();
+				transferRecord.setMoney(String.valueOf(moneys));
+				transferRecord.setStatus("0");
+				transferRecord.setCreattime(UfdmDateUtil.getCurrentTime());
+				transferRecord.setAccountNumber(bankWithdrawals.get(0).getId());
+				transferRecord.setBusinessId(order.getBusinessId());
+				transferRecord.setOrderNumber(order.getOrderNumber());
+				transferRecordService.doSave(transferRecord);
+				
+			}
+			TransferRecord transferRecord=new TransferRecord();
+			transferRecord.setMoney(String.valueOf(moneys));
+			transferRecord.setStatus("2");
+			transferRecord.setCreattime(UfdmDateUtil.getCurrentTime());
+			transferRecord.setAccountNumber(bankWithdrawals.get(0).getId());
+			transferRecord.setBusinessId(order.getBusinessId());
+			transferRecord.setOrderNumber(order.getOrderNumber());
+			transferRecordService.doSave(transferRecord);
+		}
+		
+		
+		
+		
+	}
+	
+	/**
+	 * 引流消费者消费抽成(当该消费者被商家A锁定的时候，去商家B购买商品)
+	 * 
+	 * @param orderId
+	 *            订单id
+	 * @param consumersAccountId
+	 *            消费者账号ID
+	 * @param bussinessId
+	 *            商品对应的商家ID
+	 */
+	@Override
+	public void pumpingCalculation(String orderId, String consumersAccountId,
+			String bussinessId) throws Exception {
+		// 判断是否是该商家锁定的
+		ConsumersAccount consumersAccount = new ConsumersAccount();
+		consumersAccount.setBusinessInformationId(bussinessId);
+		consumersAccount.setId(consumersAccountId);
+		List<ConsumersAccount> consumersAccounts = consumersAccountService
+				.doGetList(consumersAccount);
+		Order order = orderService.doGetById(orderId);
+		float price = Float.parseFloat(order.getMoney());
+		BusinessInformation businessInformation = businessInformationService
+				.doGetById(bussinessId);
+		ConsumersAccount xfconsumersAccount = consumersAccountService
+				.doGetById(consumersAccountId);
+		// 平台抽成
+		List<Distribution> distributions = distributionService.doGetList(null);
+
+		DecimalFormat decimalFormat = new DecimalFormat(".00");// 构造方法的字符格式这里如果小数不足2位,会以0补足.
+		if (consumersAccounts.size() > 0) {
+			order.setIsBonus("0");
+		} else {
+			order.setIsBonus("1");
+			// 没有被该商家锁定的时候,先查找改账号被锁定的商家
+			BusinessInformation LocalbBusinessInformation = businessInformationService
+					.doGetById(xfconsumersAccount.getBusinessInformationId());
+			if (LocalbBusinessInformation != null) {
+				// 如果该商家设置了抽成分配比例则用该商家自己设置的,如果没有设置的时候则使用该商家对应的商家分类里面的抽成比例
+				if (!StringUtils.isEmpty(LocalbBusinessInformation.getDrainageConsumption())) {
+					float boun = Float.parseFloat(LocalbBusinessInformation.getDrainageConsumption()) / 100;
+					float a = price * boun;
+					order.setBonus(decimalFormat.format(a));
+					if (distributions.size() > 0) {
+						// 代理商分成
+						String agentBount = decimalFormat.format(a * (Float.parseFloat(distributions.get(0).getAgent())/100));
+						order.setAgentBonus(agentBount);
+						// 平台分成
+						String platform = decimalFormat.format(a* (Float.parseFloat(distributions.get(0).getPlatform())/100));
+						// 锁定者
+						String lockingPeople = decimalFormat.format(a*( Float.parseFloat(distributions.get(0).getLockingPeople())/100));
+						// 其他
+						String other = decimalFormat.format(a* (Float.parseFloat(distributions.get(0).getOther())/100));
+						order.setOtherBonus(other);
+						// 推荐人
+						String referees = decimalFormat.format(a* (Float.parseFloat(distributions.get(0).getReferees())/100));
+						// 如果推荐人为空的话，则分给平台
+						if (StringUtils.isEmpty(businessInformation.getFounder())|| "0".equals(businessInformation.getSource())) {
+							order.setPlantBonus(decimalFormat.format(Float.parseFloat(platform)+ Float.parseFloat(referees)));
+						} else {
+							order.setPlantBonus(platform);
+							order.setRemmBonus(referees);
+							SysUser sysUser2 = sysUserService.doGetById(businessInformation.getFounder());
+							sysUser2.setAccountBalance(decimalFormat.format(Float.parseFloat(sysUser2.getAccountBalance())+ Float.parseFloat(referees)));
+							sysUserService.doModById(sysUser2);
+						}
+						// 如果锁定的商家停用的时候，则分给平台
+						if ("1".equals(LocalbBusinessInformation
+								.getBusinessState())) {
+							order.setPlantBonus(decimalFormat.format(Float.parseFloat(platform)+ Float.parseFloat(lockingPeople)));
+						} else {
+							order.setPlantBonus(platform);
+							order.setLocalBonus(lockingPeople);
+							SysUser sysUser = new SysUser();
+							sysUser.setMerchantsId(LocalbBusinessInformation.getId());
+							List<SysUser> sysUsers = sysUserService.doGetList(sysUser);
+							if (sysUsers.size() > 0) {
+								sysUsers.get(0).setAccountBalance(decimalFormat.format(Float.parseFloat(sysUsers.get(0).getAccountBalance())+ Float.parseFloat(lockingPeople)));
+								sysUserService.doModById(sysUsers.get(0));
+							}
+
+						}
+
+					}
+				} else {
+					BusinessClassification businessClassification = businessClassificationService.doGetById(businessInformation.getMerchantsClassificationId());
+					if (!StringUtils.isEmpty(businessClassification.getConsumption())) {
+						float boun = Float.parseFloat(businessClassification.getConsumption()) / 100;
+						float a = price * boun;
+						order.setBonus(decimalFormat.format(a));
+						if (distributions.size() > 0) {
+							// 代理商分成
+							String agentBount = decimalFormat.format(a * (Float.parseFloat(distributions.get(0).getAgent())/100));
+							order.setAgentBonus(agentBount);
+							// 平台分成
+							String platform = decimalFormat.format(a* (Float.parseFloat(distributions.get(0).getPlatform())/100));
+							// 锁定者
+							String lockingPeople = decimalFormat.format(a* (Float.parseFloat(distributions.get(0).getLockingPeople())/100));
+
+							// 其他
+							String other = decimalFormat.format(a* (Float.parseFloat(distributions.get(0).getOther())/100));
+							order.setOtherBonus(other);
+							// 推荐人
+							String referees = decimalFormat.format(a*( Float.parseFloat(distributions.get(0).getReferees())/100));
+							// 如果推荐人为空的话，则分给平台
+							if (StringUtils.isEmpty(businessInformation.getFounder())|| "0".equals(businessInformation.getSource())) {
+								order.setPlantBonus(decimalFormat.format(Float.parseFloat(platform)+ Float.parseFloat(referees)));
+							} else {
+								order.setPlantBonus(platform);
+								order.setRemmBonus(referees);
+								SysUser sysUser2 = sysUserService.doGetById(businessInformation.getFounder());
+								sysUser2.setAccountBalance(decimalFormat.format(Float.parseFloat(sysUser2.getAccountBalance())+ Float.parseFloat(referees)));
+								sysUserService.doModById(sysUser2);
+							}
+							// 如果锁定的商家停用的时候，则分给平台
+							if ("1".equals(LocalbBusinessInformation.getBusinessState())) {
+								order.setPlantBonus(decimalFormat.format(Float.parseFloat(platform)+ Float.parseFloat(lockingPeople)));
+							} else {
+								order.setPlantBonus(platform);
+								order.setLocalBonus(lockingPeople);
+								SysUser sysUser = new SysUser();
+								sysUser.setMerchantsId(LocalbBusinessInformation.getId());
+								List<SysUser> sysUsers = sysUserService.doGetList(sysUser);
+								if (sysUsers.size() > 0) {
+									sysUsers.get(0).setAccountBalance(decimalFormat.format(Float.parseFloat(sysUsers.get(0).getAccountBalance())+ Float.parseFloat(lockingPeople)));
+									sysUserService.doModById(sysUsers.get(0));
+								}
+							}
+
+						}
+					}
+
+				}
+			} else {
+				// 查找消费商
+				Consumers consumers = consumersService.doGetById(bussinessId);
+				if (consumers != null) {
+					BusinessClassification businessClassification = new BusinessClassification();
+					businessClassification.setCategoryName("消费商");
+					List<BusinessClassification> businessClassifications = businessClassificationService
+							.doGetList(businessClassification);
+					if (businessClassifications.size() > 0) {
+						businessClassification = businessClassifications.get(0);
+					}
+
+					if (!StringUtils.isEmpty(businessClassification
+							.getConsumption())) {
+						float boun = Float.parseFloat(businessClassification.getConsumption()) / 100;
+						float a = price * boun;
+						order.setBonus(decimalFormat.format(a));
+						if (distributions.size() > 0) {
+							// 代理商分成
+							String agentBount = decimalFormat
+									.format(a * (Float.parseFloat(distributions
+											.get(0).getAgent())/100));
+							order.setAgentBonus(String.valueOf(agentBount));
+							// 平台分成
+							String platform = decimalFormat.format(a
+									* (Float.parseFloat(distributions.get(0)
+											.getPlatform())/100));
+							// 锁定者
+							String lockingPeople = decimalFormat.format(a
+									* (Float.parseFloat(distributions.get(0)
+											.getLockingPeople())/100));
+
+							// 其他
+							String other = decimalFormat
+									.format(a
+											* (Float.parseFloat(distributions
+													.get(0).getOther())/100));
+							order.setOtherBonus(other);
+							// 推荐人
+							String referees = decimalFormat.format(a
+									* (Float.parseFloat(distributions.get(0)
+											.getReferees())/100));
+							// 消费商没有推荐人，推荐抽成则人给平台
+							order.setPlantBonus(decimalFormat.format(Float
+									.parseFloat(platform)
+									+ Float.parseFloat(referees)));
+							// 如果锁定的商家停用的时候，则分给平台
+							if ("1".equals(consumers.getMerchantsState())) {
+								order.setPlantBonus(decimalFormat.format(Float
+										.parseFloat(platform)
+										+ Float.parseFloat(lockingPeople)));
+							} else {
+								order.setPlantBonus(platform);
+								order.setLocalBonus(lockingPeople);
+								SysUser sysUser = new SysUser();
+								sysUser.setMerchantsId(consumers.getId());
+								List<SysUser> sysUsers = sysUserService
+										.doGetList(sysUser);
+								if (sysUsers.size() > 0) {
+									sysUsers.get(0)
+											.setAccountBalance(
+													decimalFormat.format(Float
+															.parseFloat(sysUsers
+																	.get(0)
+																	.getAccountBalance())
+															+ Float.parseFloat(lockingPeople)));
+									sysUserService.doModById(sysUsers.get(0));
+								}
+							}
+
+						}
+					}
+				}
+			}
+
+		}
+		order.setConsumerAccount(consumersAccountId);
+		orderService.doModById(order);
+	}
+
+	/**
+	 * 分配锁定抽成(当该消费者没有被商家锁定的时候)
+	 * 
+	 * @param orderId
+	 *            订单ID
+	 * @param payAccount
+	 *            支付账号
+	 * @param bussinessId
+	 *            订单商品对应的店铺ID
+	 * @param consumersId
+	 *            消费者ID及当前用户对应的merchantsId
+	 * @param accountType
+	 *            账号类型1-微信用户 2-支付宝用户
+	 * @throws Exception
+	 */
+	@Override
+	public void lockedDraw(String orderId, String payAccount,
+			String bussinessId, String consumersId, String accountType)
+			throws Exception {
+		System.out.println("========进入分成========");
+		System.out.println("orderId==" + orderId);
+		System.out.println("bussinessId==" + bussinessId);
+		System.out.println("consumersId==" + consumersId);
+		System.out.println("accountType==" + accountType);
+		Order order = orderService.doGetById(orderId);
+		float price = Float.parseFloat(order.getMoney());
+		BusinessInformation businessInformation = businessInformationService
+				.doGetById(bussinessId);
+
+		// 平台抽成
+		List<Distribution> distributions = distributionService.doGetList(null);
+		DecimalFormat decimalFormat = new DecimalFormat(".00");// 构造方法的字符格式这里如果小数不足2位,会以0补足.
+
+		ConsumersAccount consumersAccount = new ConsumersAccount();
+		consumersAccount.setUserAccount(payAccount);
+		if (!StringUtils.isEmpty(consumersId)) {
+			consumersAccount.setConsumersId(consumersId);
+		}
+		System.out.println("========进入分成11========");
+		List<ConsumersAccount> consumersAccounts = consumersAccountService
+				.doGetList(consumersAccount);
+		// 判断是被消费商锁定还是商家锁定
+		BusinessClassification businessClassification = new BusinessClassification();
+		String businessType = "";
+		if (businessInformation != null) {
+			businessType = "0";
+			businessClassification = businessClassificationService
+					.doGetById(businessInformation
+							.getMerchantsClassificationId());
+		} else {
+			businessType = "1";
+			businessClassification.setCategoryName("消费商");
+			List<BusinessClassification> businessClassifications = businessClassificationService
+					.doGetList(businessClassification);
+			if (businessClassifications.size() > 0) {
+				businessClassification = businessClassifications.get(0);
+			}
+		}
+		System.out.println("========进入分成22========");
+		/**
+		 * 判断该支付账号是否存在，如果存在的时候，判断是否被锁定，如果没有被锁定，则改商家锁定改消费者账号并计算抽成，
+		 * 如果改支付账号不存在，则先生成一条账号信息，然后锁定bussinessId商家，并计算抽成
+		 */
+		if (consumersAccounts.size() > 0) {
+			if ("0".equals(consumersAccounts.get(0).getIsLocalState())) {
+				// 锁定商家
+				consumersAccounts.get(0).setBusinessInformationId(bussinessId);
+				consumersAccounts.get(0).setIsLocalState("1");
+				consumersAccounts.get(0).setLocalDate(UfdmDateUtil.getCurrentTime());
+				consumersAccounts.get(0).setLocalType(businessType);
+				consumersAccountService.doModById(consumersAccounts.get(0));
+				consumersAccount = consumersAccounts.get(0);
+				
+			}
+		} else {
+			// 生成会员编号
+			int i = (int) (Math.random() * 900) + 100;
+			String code = "HLX" + UfdmDateUtil.getCurrentDate1()+ UfdmDateUtil.getCurrentSimpleTime1() + i;
+			System.out.println("=====插入consumersAccount=====");
+			consumersAccount.setBusinessInformationId(bussinessId);
+			consumersAccount.setUserType(accountType);
+			consumersAccount.setAccountState("0");
+			consumersAccount.setIsLocalState("1");
+			consumersAccount.setLocalDate(UfdmDateUtil.getCurrentTime());
+			consumersAccount.setLocalType(businessType);
+			consumersAccount.setUserNumber(code);
+			consumersAccountService.doSave(consumersAccount);
+			
+		}
+		System.out.println("========进入分成333========");
+		order.setIsBonus("1");
+		// 判断bussinessId为商家还是消费商
+		if (businessInformation != null) {
+			// 开始计算抽成
+			float boun = Float.parseFloat(businessClassification
+					.getFirstLockInto()) / 100;
+			float a = price * boun;
+			order.setBonus(decimalFormat.format(a));
+			if (distributions.size() > 0) {
+				// 代理商分成
+				String agentBount = decimalFormat
+						.format(a * (Float.parseFloat(distributions.get(0)
+								.getAgent())/100));
+				order.setAgentBonus(agentBount);
+				// 平台分成
+				String platform = decimalFormat.format(a
+						* (Float.parseFloat(distributions.get(0).getPlatform())/100));
+				// 锁定者
+				String lockingPeople = decimalFormat.format(a
+						* (Float.parseFloat(distributions.get(0)
+								.getLockingPeople())/100));
+
+				// 其他
+				String other = decimalFormat.format(a
+						* (Float.parseFloat(distributions.get(0).getOther())/100));
+				order.setOtherBonus(other);
+				// 推荐人
+				String referees = decimalFormat.format(a
+						* (Float.parseFloat(distributions.get(0).getReferees())/100));
+				// 如果推荐人为空的话，则分给平台
+				if (StringUtils.isEmpty(businessInformation.getFounder())
+						|| "0".equals(businessInformation.getSource())) {
+					order.setPlantBonus(decimalFormat.format(Float
+							.parseFloat(platform) + Float.parseFloat(referees)));
+				} else {
+					order.setPlantBonus(platform);
+					order.setRemmBonus(referees);
+					SysUser sysUser2 = sysUserService
+							.doGetById(businessInformation.getFounder());
+					sysUser2.setAccountBalance(decimalFormat.format(Float
+							.parseFloat(sysUser2.getAccountBalance())
+							+ Float.parseFloat(referees)));
+					sysUserService.doModById(sysUser2);
+				}
+				// 如果锁定的商家停用的时候，则分给平台
+				if ("1".equals(businessInformation.getBusinessState())) {
+					order.setPlantBonus(decimalFormat.format(Float
+							.parseFloat(platform)
+							+ Float.parseFloat(lockingPeople)));
+				} else {
+					order.setPlantBonus(platform);
+					order.setLocalBonus(lockingPeople);
+					SysUser sysUser = new SysUser();
+					sysUser.setMerchantsId(businessInformation.getId());
+					List<SysUser> sysUsers = sysUserService.doGetList(sysUser);
+					if (sysUsers.size() > 0) {
+						sysUsers.get(0).setAccountBalance(
+								decimalFormat.format(Float.parseFloat(sysUsers.get(0)
+										.getAccountBalance())
+										+ Float.parseFloat(lockingPeople)));
+						sysUserService.doModById(sysUsers.get(0));
+					}
+				}
+
+			}
+		} else {
+			// 查找消费商
+			Consumers consumers = consumersService.doGetById(bussinessId);
+			// 开始计算抽成
+			float boun = Float.parseFloat(businessClassification
+					.getFirstLockInto()) / 100;
+			float a = price * boun;
+			order.setBonus(String.valueOf(a));
+			if (distributions.size() > 0) {
+				// 代理商分成
+				String agentBount = decimalFormat
+						.format(a * (Float.parseFloat(distributions.get(0)
+								.getAgent())/100));
+				order.setAgentBonus(agentBount);
+				// 平台分成
+				String platform = decimalFormat.format(a
+						* (Float.parseFloat(distributions.get(0).getPlatform())/100));
+				// 锁定者
+				String lockingPeople = decimalFormat.format(a
+						* (Float.parseFloat(distributions.get(0)
+								.getLockingPeople())/100));
+
+				// 其他
+				String other = decimalFormat.format(a
+						* (Float.parseFloat(distributions.get(0).getOther())/100));
+				order.setOtherBonus(other);
+				// 推荐人
+				String referees = decimalFormat.format(a
+						* (Float.parseFloat(distributions.get(0).getReferees())/100));
+				// 消费商没有推荐人，推荐抽成则人给平台
+				order.setPlantBonus(decimalFormat.format(Float.parseFloat(platform)
+						+ Float.parseFloat(referees)));
+				// 如果锁定的商家停用的时候，则分给平台
+				if ("1".equals(consumers.getMerchantsState())) {
+					order.setPlantBonus(decimalFormat.format(Float
+							.parseFloat(platform)
+							+ Float.parseFloat(lockingPeople)));
+				} else {
+					order.setPlantBonus(platform);
+					order.setLocalBonus(lockingPeople);
+					SysUser sysUser = new SysUser();
+					sysUser.setMerchantsId(consumers.getId());
+					List<SysUser> sysUsers = sysUserService.doGetList(sysUser);
+					if (sysUsers.size() > 0) {
+						sysUsers.get(0).setAccountBalance(
+								decimalFormat.format(Float.parseFloat(sysUsers.get(0)
+										.getAccountBalance())
+										+ Float.parseFloat(lockingPeople)));
+						sysUserService.doModById(sysUsers.get(0));
+					}
+				}
+
+			}
+		}
+		order.setConsumerAccount(consumersAccount.getId());
+		orderService.doModById(order);
+		System.out.println("========分成结束========");
+	}
+
+	/**
+	 * 支付成功之后 更新库存
+	 * 
+	 * @param orderId
+	 *            订单ID
+	 * @param
+	 * @throws Exception
+	 */
+	@Override
+	public void updateInvetry(String orderId) throws Exception {
+
+		TransactionRecords transactionRecords = new TransactionRecords();
+		transactionRecords.setOrderNo(orderId);
+		List<TransactionRecords> transactionRecordsList = transactionRecordsService.doGetList(transactionRecords);
+		if (transactionRecordsList.size() > 0) {
+			for (int i = 0; i < transactionRecordsList.size(); i++) {
+				GoodsSpecifications goodsSpecifications = goodsSpecificationsService.doGetById(transactionRecordsList.get(i).getGoodsUnitId());
+				goodsSpecifications.setInventory(goodsSpecifications.getInventory()- Integer.parseInt(transactionRecordsList.get(i).getTransactionNum()));
+				goodsSpecificationsService.doModById(goodsSpecifications);
+
+			}
+		}
+	}
+	@Override
+	public Object doGetById(String paramId) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Object> doGetList(Object paramObject) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer doGetTotal(Object paramObject) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int doSave(Object paramObject) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int doSaveBatch(List<Object> listObject) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int doModById(Object paramObject) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int doModBatchById(List<Object> listObject) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int doRmById(String paramId) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int doRmByIds(String paramIds) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

@@ -1,0 +1,184 @@
+/**
+ * Copyright© 2003-2013 天尔软件, All Rights Reserved <br/>
+ * 描述: 业务文件 <br/>
+ * @author Liang
+ * @date 2017-07-12
+ * @version 1.0
+ */
+package com.prj.biz.action.headquartersPC.businessinformation;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.prj.biz.bean.agent.Agent;
+import com.prj.biz.bean.businessclassification.BusinessClassification;
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.codeareas.codeAreas;
+import com.prj.biz.bean.consumersaccount.ConsumersAccount;
+import com.prj.biz.bean.sysuser.SysUser;
+import com.prj.biz.service.agent.AgentService;
+import com.prj.biz.service.businessclassification.BusinessClassificationService;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.codeareas.codeAreasService;
+import com.prj.biz.service.sysuser.SysUserService;
+import com.prj.biz.action._base.BaseAction;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+import com.prj.core.constant.SysConstants;
+import com.prj.utils.UfdmDateUtil;
+import com.prj.utils.UfdmMd5Util;
+import com.prj.utils.qrCodeUtli.MatrixToImageWriter;
+
+/**
+ * 描述: 推荐商家（总部）信息 Action 类<br>
+ * 
+ * @author Liang
+ * @date 2017-07-12
+ */
+@RestController
+@RequestMapping("/headquarters/recommendBusinessInformation")
+public class RecommendBusinessInformationAction extends BaseAction {
+	private static final long serialVersionUID = 1L;
+
+	@Resource
+	private BusinessInformationService businessInformationService;
+
+	@Resource
+	private BusinessClassificationService businessClassificationService;
+
+	@Resource
+	private codeAreasService codeAreasService;
+
+	@Resource
+	private SysUserService sysUserService;
+	
+	@Resource
+	private AgentService agentService;
+
+	/**
+	 * 描述: 进入列表显示页面(总部)
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnRecommendBusinessInformationList")
+	public ModelAndView doEnRecommendBusinessInformationListAction(
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		return new ModelAndView("/headquarters/recommendBusinessinformation/businessInformationList");
+	}
+
+	/**
+	 * 描述: 分页查询信息
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadRecommendBusinessInformationList")
+	@ResponseBody
+	public RespBean<RespPagination<BusinessInformation>> doReadRecommendBusinessInformationList(
+			BusinessInformation businessInformation) throws Exception {
+		RespBean<RespPagination<BusinessInformation>> respBean = new RespBean<RespPagination<BusinessInformation>>();
+		RespPagination<BusinessInformation> respPagination = new RespPagination<BusinessInformation>();
+		Integer total = businessInformationService.doEnRecommendedBusinessTotal(businessInformation);
+		List<BusinessInformation> businessInformationList = businessInformationService.doEnRecommendedBusinessAllList(businessInformation);
+		for (int i = 0; i < businessInformationList.size(); i++) {
+			String address=businessInformationList.get(i).getProvinces()+"省"+businessInformationList.get(i).getCity()+businessInformationList.get(i).getAddress();
+			businessInformationList.get(i).setAddress(address);
+		}
+		respPagination.setTotal(total);
+		respPagination.setRows(businessInformationList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 * 描述: 进入列表显示页面(代理商)
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnAgentShowBusinessInformationList")
+	public ModelAndView doEnAgentShowBusinessInformationList(
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		return new ModelAndView("/headquarters/recommendBusinessinformation/agentShowbusinessInformationList");
+	}
+	/**
+	 * 描述: 分页查询信息
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadAgentShowBusinessInformationList")
+	@ResponseBody
+	public RespBean<RespPagination<BusinessInformation>> doReadAgentShowBusinessInformationList(BusinessInformation businessInformation) throws Exception {
+		RespBean<RespPagination<BusinessInformation>> respBean = new RespBean<RespPagination<BusinessInformation>>();
+		RespPagination<BusinessInformation> respPagination = new RespPagination<BusinessInformation>();
+		businessInformation.setEffectState("1");
+		Integer total = businessInformationService.doEnRecommendedBusinessTotal(businessInformation);
+		List<BusinessInformation> businessInformationList = businessInformationService.doEnRecommendedBusinessAllList(businessInformation);
+		for (int i = 0; i < businessInformationList.size(); i++) {
+			String address=businessInformationList.get(i).getProvinces()+"省"+businessInformationList.get(i).getCity()+businessInformationList.get(i).getAddress();
+			businessInformationList.get(i).setAddress(address);
+		}
+		respPagination.setTotal(total);
+		respPagination.setRows(businessInformationList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 * 描述:新建商家
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-12
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnBusinessInformationEdit")
+	public ModelAndView doEnBusinessInformationEdit(String businessInformationId,String flag)
+			throws Exception {
+		BusinessInformation businessInformation = businessInformationService
+				.doGetById(businessInformationId);
+		Map<String, Object> model = new HashMap<String, Object>();
+		List<BusinessClassification> businessClassificationList = businessClassificationService
+				.doGetList(null);
+		String[] businessLicensePhoto = businessInformation
+				.getBusinessIcensePhoto().split(",");
+
+		String[] idNoPhoto = businessInformation.getIdPhoto().split(",");
+
+		model.put("businessClassificationList", businessClassificationList);
+		model.put("businessInformation", businessInformation);
+		model.put("idNoPhoto", idNoPhoto);
+		model.put("countryList", codeAreasService.selectCountyList());
+		model.put("provinceList", codeAreasService.selectProvinceList());
+		model.put("cityList", codeAreasService.selectCityList());
+		model.put("areaList", codeAreasService.selectRegionList());
+		model.put("businessLicensePhoto", businessLicensePhoto);
+		model.put("flag", flag);
+		return new ModelAndView("/headquarters/recommendBusinessinformation/businessInformationAdd",model);
+	}
+
+
+
+}

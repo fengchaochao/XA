@@ -1,0 +1,478 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<base href="<%=basePath%>">
+<%@ include file="/WEB-INF/views/common/headCommon.jsp"%>
+<title>首页</title>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="This is my page">
+<link href="js/_base/bootstrap.css" rel="stylesheet" />
+<style>
+body .graphicBox {display: inline-block;height:320px ;width: 23.3%;	}
+.salesOrders .graphicBox{background: #fff!important;padding:10px;margin-right: 15px;}
+.salesOrders .graphicBox:last-child{margin-right:0px;}
+
+.newMembership{background: #fff;padding: 15px;box-sizing: border-box;margin-bottom:20px;}
+.newMembership .graphicBox{margin-right:8.5%;}
+a{float:right;cursor:pointer;}
+.frBox{display: inline-block;width: 68px;margin-left: -75px;vertical-align: top;
+position: relative;z-index: 999999999;margin-top: 10px;}
+.frBox a{float:left;cursor:pointer;}
+
+.newMembership #container14,.newMembership #container15,.newMembership #container24,.newMembership #container25{
+    width:27%;margin-right:6%;}
+</style>
+<body style="width:98.5%;margin-left:1.5%;box-sizing: border-box;">
+    <!--start pageHeadline -->
+    <div class="pageHeadline">
+       <span class="leftNotice">销售额/订单数统计</span>
+    </div>
+    <!--end pageHeadline -->
+    <div class="salesOrders">
+        
+        <!-- 今昨日销售额柱状图  -->
+	    <div id="container11" class="graphicBox"></div>
+	    <!-- 上本月销售额柱状图  -->
+	    <div id="container21" class="graphicBox"></div>
+	    <div class="frBox"><a class="blueText" onclick="sale();">进入>></a></div>
+	    <!-- 今昨日订单数 柱状图 -->
+	    <div id="container12" class="graphicBox"></div>
+	    <!-- 上本月订单数 柱状图 -->
+	    <div id="container22" class="graphicBox"></div> 
+	    <div class="frBox"><a class="blueText" onclick="order();">进入>></a></div>
+    </div>
+    
+    
+    <!--start pageHeadline -->
+    <div class="pageHeadline">
+       <span class="leftNotice">新增会员数统计</span>
+    </div>
+    <!--end pageHeadline -->
+    
+    <div class="newMembership">
+        <p><span>日新增会员</span><a class="blueText" onclick="dateMember();">进入>></a></p>
+        <!-- 今昨日新增会员柱状图 -->
+        <div id="container13" class="graphicBox"></div>
+        <!-- 今日新增会员成分扇形图 -->
+	    <div id="container14" class="graphicBox"></div>
+	    <!-- 昨日新增会员成分扇形图 -->
+	    <div id="container15" class="graphicBox"></div>
+	        
+    </div>
+    
+    <div class="newMembership">
+        <p><span>月新增会员</span><a class="blueText" onclick="monthMember();">进入>></a></p>
+	    <!-- 上月新增会员柱状图 -->
+	    <div id="container23" class="graphicBox"></div>
+	    <!-- 本月新增会员成分扇形图 -->
+	    <div id="container24" class="graphicBox"></div>
+	    <!-- 上月新增会员成分扇形图  -->
+	    <div id="container25" class="graphicBox"></div>
+    </div>
+	<script type="text/javascript" src='<spring:url value="/js/echarts/echarts-res.js"/>'></script>
+	
+	<script type="text/javascript">
+		var dom11 = document.getElementById("container11");
+		var myChart11 = echarts.init(dom11);
+		var app = {};
+		option11 = null;
+		
+		var dom12 = document.getElementById("container12");
+		var myChart12 = echarts.init(dom12);
+		var app = {};
+		option12 = null;
+		
+		var dom21 = document.getElementById("container21");
+		var myChart21 = echarts.init(dom21);
+		var app = {};
+		option21 = null;
+		
+		var dom22 = document.getElementById("container22");
+		var myChart22 = echarts.init(dom22);
+		var app = {};
+		option22 = null;
+		
+		$.ajax({
+				type: "POST",
+				url : '<spring:url value="/homepage/doReadSalesList" />',
+				dataType: "json",
+				async: false,
+				success: function(data){
+					option11 = {
+						title : {
+							text : '销售额统计'
+						},
+						tooltip : {},
+						xAxis : {
+							data : [ "昨日销售额", "今日销售额" ]
+						},
+						yAxis : {
+							show : false
+						},
+						series : [ {
+							name : '销售额',
+							type : 'bar',
+							barWidth: '40%',
+							itemStyle : {
+								normal : {
+									color : function(params) {
+										var colorList = [ '#c9d0d6', '#fe899b', '#FCCE10',
+												'#E87C25', '#27727B', '#FE8463', '#9BCA63',
+												'#FAD860', '#F3A43B', '#60C0DD', '#D7504B',
+												'#C6E579', '#F4E001', '#F0805A', '#26C0C0' ];
+										return colorList[params.dataIndex]
+									},
+									label : {
+										show : true,
+										position : 'top',
+										formatter : '{c}'
+									}
+								}
+							},
+							data : data.todaySales
+						} ]
+					};
+					if (option11 && typeof option11 === "object") {
+						myChart11.setOption(option11, true);
+					}
+					option12 = {
+						title : {
+							text : '订单数统计'
+						},
+						tooltip : {},
+						xAxis : {
+							data : [ "昨日订单数", "今日订单数" ]
+						},
+						yAxis : {
+							show : false
+						},
+						series : [ {
+							name : '订单数',
+							type : 'bar',
+							barWidth: '40%',
+							itemStyle : {
+								normal : {
+									color : function(params) {
+										var colorList = [ '#c9d0d6', '#6ff1e5', '#FCCE10',
+												'#E87C25', '#27727B', '#FE8463', '#9BCA63',
+												'#FAD860', '#F3A43B', '#60C0DD', '#D7504B',
+												'#C6E579', '#F4E001', '#F0805A', '#26C0C0' ];
+										return colorList[params.dataIndex]
+									},
+									label : {
+										show : true,
+										position : 'top',
+										formatter : '{c}'
+									}
+								}
+							},
+							data : data.todayOrderNum
+						} ]
+					};;
+					if (option12 && typeof option12 === "object") {
+						myChart12.setOption(option12, true);
+					}
+					option21 = {
+						title : {
+							text : '月销售额统计'
+						},
+						tooltip : {},
+						xAxis : {
+							data : [ "上月销售额", "本月销售额" ]
+						},
+						yAxis : {
+							show : false
+						},
+						series : [ {
+							name : '月销售额',
+							type : 'bar',
+							barWidth: '40%',
+							itemStyle : {
+								normal : {
+									color : function(params) {
+										var colorList = [ '#c9d0d6', '#f9a978', '#FCCE10',
+                                                '#E87C25', '#27727B', '#FE8463', '#9BCA63',
+                                                '#FAD860', '#F3A43B', '#60C0DD', '#D7504B',
+                                                '#C6E579', '#F4E001', '#F0805A', '#26C0C0' ];
+										return colorList[params.dataIndex]
+									},
+									label : {
+										show : true,
+										position : 'top',
+										formatter : '{c}'
+									}
+								}
+							},
+							data : data.monthSale
+						} ]
+					};
+					if (option21 && typeof option21 === "object") {
+						myChart21.setOption(option21, true);
+					}
+					option22 = {
+						title : {
+							text : '月订单数统计'
+						},
+						tooltip : {},
+						xAxis : {
+							data : [ "上月订单数", "本月订单数" ]
+						},
+						yAxis : {
+							show : false
+						},
+						series : [ {
+							name : '订单数',
+							type : 'bar',
+							barWidth: '40%',
+							itemStyle : {
+								normal : {
+									color : function(params) {
+										var colorList = [ '#c9d0d6', '#4ed7df', '#FCCE10',
+												'#E87C25', '#27727B', '#FE8463', '#9BCA63',
+												'#FAD860', '#F3A43B', '#60C0DD', '#D7504B',
+												'#C6E579', '#F4E001', '#F0805A', '#26C0C0' ];
+										return colorList[params.dataIndex]
+									},
+									label : {
+										show : true,
+										position : 'top',
+										formatter : '{c}'
+									}
+								}
+							},
+							data : data.monthOrderNum
+						} ]
+					};;
+					if (option22 && typeof option22 === "object") {
+						myChart22.setOption(option22, true);
+					}
+				}
+		});
+		
+		// -----------------------------------------------------
+		
+		
+		// -----------------------------------------------------
+			/**昨日 及今日新增*/
+		var dom13 = document.getElementById("container13");
+		var myChart13 = echarts.init(dom13);
+		var app13 = {};
+		option13 = null;
+		
+		var dom14 = document.getElementById("container14");
+		var myChart14 = echarts.init(dom14);
+		var app14 = {};
+		option14 = null;
+		
+		var dom15 = document.getElementById("container15");
+		var myChart15 = echarts.init(dom15);
+		var app15 = {};
+		option15 = null;
+		$.ajax({
+				type: "POST",
+				url : '<spring:url value="/homepage/doReadTodayMemberList" />',
+				dataType: "json",
+				async: false,
+				success: function(data){
+					option13 = {
+						title : {
+							text : '新增会员统计'
+						},
+						tooltip : {},
+						xAxis : {
+							data : [ "昨日新增", "今日新增" ]
+						},
+						yAxis : {
+							show : false
+						},
+						series : [ {
+							name : '新增会员',
+							type : 'bar',
+							barWidth: '40%',
+							itemStyle : {
+								normal : {
+									color : function(params) {
+										var colorList = [ '#c9d0d6', '#49dbda', '#FCCE10',
+                                                '#E87C25', '#27727B', '#FE8463', '#9BCA63',
+                                                '#FAD860', '#F3A43B', '#60C0DD', '#D7504B',
+                                                '#C6E579', '#F4E001', '#F0805A', '#26C0C0'];
+										return colorList[params.dataIndex]
+									},
+									label : {
+										show : true,
+										position : 'top',
+										formatter : '{c}'
+									}
+								}
+							},
+							data : data.ay
+						} ]
+					};;
+					if (option13 && typeof option13 === "object") {
+						myChart13.setOption(option13, true);
+					}
+					option14 = {
+						title : {
+							text : '昨日新增会员统计'
+						},
+						tooltip : {},
+						color:['#73c9c8', '#f77c77','#fbc702','#8ed5b7','#af94e1'],
+						series : [ {
+							name : '新增会员',
+							type : 'pie',
+							radius : '53%',
+							data : data.sz
+						} ]
+					};
+					if (option14 && typeof option14 === "object") {
+						myChart14.setOption(option14, true);
+					}
+					option15 = {
+						title : {
+							text : '今日新增会员统计'
+						},
+						tooltip : {},
+						color:['#73c9c8', '#f77c77','#fbc702','#8ed5b7','#af94e1'],
+						series : [ {
+							name : '新增会员',
+							type : 'pie',
+							radius : '53%',
+							data : data.sj
+						} ]
+					};
+					if (option15 && typeof option15 === "object") {
+						myChart15.setOption(option15, true);
+					}
+				}
+				
+		});
+		// -----------------------------------------------------
+		
+		// -----------------------------------------------------
+		var dom23 = document.getElementById("container23");
+		var myChart23 = echarts.init(dom23);
+		var app23 = {};
+		option23 = null;
+		
+		var dom24 = document.getElementById("container24");
+		var myChart24 = echarts.init(dom24);
+		var app24 = {};
+		option24 = null;
+		
+		var dom25 = document.getElementById("container25");
+		var myChart25 = echarts.init(dom25);
+		var app25 = {};
+		option25 = null;
+		
+		$.ajax({
+				type: "POST",
+				url : '<spring:url value="/homepage/doReadMonthMemberList" />',
+				dataType: "json",
+				async: false,
+				success: function(data){
+					option23 = {
+						title : {
+							text : '月新增会员统计'
+						},
+						tooltip : {},
+						xAxis : {
+							data : [ "上月新增会员", "本月新增会员" ]
+						},
+						yAxis : {
+							show : false
+						},
+						series : [ {
+							name : '新增会员',
+							type : 'bar',
+							barWidth: '40%',
+							itemStyle : {
+								normal : {
+									color : function(params) {
+										var colorList = [ '#c9d0d6', '#2ccd97', '#FCCE10',
+												'#E87C25', '#27727B', '#FE8463', '#9BCA63',
+												'#FAD860', '#F3A43B', '#60C0DD', '#D7504B',
+												'#C6E579', '#F4E001', '#F0805A', '#26C0C0' ];
+										return colorList[params.dataIndex]
+									},
+									label : {
+										show : true,
+										position : 'top',
+										formatter : '{c}'
+									}
+								}
+							},
+							data : data.ay
+						} ]
+					};;
+					if (option23 && typeof option23 === "object") {
+						myChart23.setOption(option23, true);
+					}
+					option24 = {
+						title : {
+							text : '上月新增会员统计'
+						},
+						tooltip : {},
+						color:['#73c9c8', '#f77c77','#fbc702','#8ed5b7','#af94e1'],
+						series : [ {
+							name : '新增会员',
+							type : 'pie',
+							radius : '53%',
+							data : data.sz
+						} ]
+					};
+					if (option24 && typeof option24 === "object") {
+						myChart24.setOption(option24, true);
+					}
+					option25 = {
+						title : {
+							text : '本月新增会员统计'
+						},
+						tooltip : {},
+						color:['#73c9c8', '#f77c77','#fbc702','#8ed5b7','#af94e1'], 
+						series : [ {
+							name : '新增会员',
+							type : 'pie',
+							radius : '53%',
+							data : data.sj
+						} ]
+					};
+					if (option25 && typeof option25 === "object") {
+						myChart25.setOption(option25, true);
+					}
+				}
+			});
+		// -----------------------------------------------------
+		//日新增会员
+		function dateMember(){
+			window.location.href='<spring:url value="/headquarters/memberStatistics/doEnMemberStatisticsList" />';
+		} 
+		//月新增会员
+		function monthMember(){
+			window.location.href='<spring:url value="/headquarters/memberStatistics/doEnMonthMemberStatisticsList" />';
+		} 
+		//销售额统计
+		function sale(){
+			window.location.href='<spring:url value="/headquarters/salesStatistics/doEnSalesStatisticsList" />?flag=1';
+		} 
+		//订单
+		function order(){
+			window.location.href='<spring:url value="/headquarters/orderStatistics/doOrderStatisticsList" />?flag=1';
+		} 
+
+		// -----------------------------------------------------
+	</script>
+</body>
+</html>

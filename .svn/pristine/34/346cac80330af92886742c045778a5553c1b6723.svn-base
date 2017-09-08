@@ -1,0 +1,59 @@
+package com.prj.biz.service._impl.messagedetail;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.prj.biz.bean.message.UserMessageEntiy;
+import com.prj.biz.bean.messagedetail.MessageDetail;
+import com.prj.biz.dao.maindb.messagedetail.MessageDetailDao;
+import com.prj.biz.service._impl._base.BaseServiceImpl;
+import com.prj.biz.service.messagedetail.MessageDetailService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+/**
+ * 
+ * 描述: 消息明细 Service 实现<br>
+ * @author Jiang
+ * @date 2017-07-25
+ */
+@Service
+public class MessageDetailServiceImpl extends BaseServiceImpl<MessageDetailDao,MessageDetail> implements MessageDetailService
+{
+
+	@Autowired
+	private MessageDetailDao messageDetailDao;
+	
+	@Override
+	public List<UserMessageEntiy> doGetMessageDetailList(
+			List<MessageDetail> messageDetail) {
+		List<UserMessageEntiy> messageDetailList = new ArrayList<UserMessageEntiy>();
+		for (int i = 0; i < messageDetail.size(); i++) {
+			UserMessageEntiy messageEntiy = null;
+			if(messageDetail.get(i).getUserType().intValue() == 1){
+				messageEntiy= messageDetailDao.doGetMessageDetailOne(messageDetail.get(i));
+			}else{
+				messageEntiy = messageDetailDao.doGetMessageDetailTwo(messageDetail.get(i));
+			}
+			messageDetailList.add(messageEntiy);
+		}
+		return messageDetailList;
+	}
+
+	/**
+	 * 描述: 查询全部可推送用户
+	 * @auther Jiang
+	 * @date 2017-07-25
+	 * @returns
+	 * @throws Exception
+	 */
+/*	@Override
+	public List<UserMessageEntiy> doGetMessageUserAllList() {
+		
+		List<UserMessageEntiy> messageEntityList = messageDetailDao.doGetInformationUserAllList();
+		
+		return null;
+	}*/
+	
+
+}

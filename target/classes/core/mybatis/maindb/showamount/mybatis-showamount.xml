@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.showamount.ShowAmountDao">
+
+    <resultMap id="showamountResult" type="com.prj.biz.bean.showamount.ShowAmount">
+		<result property="id" column="id" />
+		<result property="isShowAmount" column="is_show_amount" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,is_show_amount
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="isShowAmount!=null and isShowAmount!='' ">
+		        AND is_show_amount = #{isShowAmount}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="showamountResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_SHOW_AMOUNT 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="showamountResult" parameterType="com.prj.biz.bean.showamount.ShowAmount" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_SHOW_AMOUNT 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.showamount.ShowAmount">
+		select
+		    count(ID)
+		from 
+			 XA_SHOW_AMOUNT 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.showamount.ShowAmount">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_SHOW_AMOUNT 
+			(id,is_show_amount)
+		VALUES 
+			(#{id},#{isShowAmount})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_SHOW_AMOUNT 
+			(id,is_show_amount)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{isShowAmount})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.showamount.ShowAmount">
+     UPDATE XA_SHOW_AMOUNT
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="isShowAmount!=null and isShowAmount!='' ">
+				is_show_amount = #{isShowAmount},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_SHOW_AMOUNT
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="isShowAmount!=null and isShowAmount!='' ">
+				is_show_amount = #{isShowAmount},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_SHOW_AMOUNT WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_SHOW_AMOUNT
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

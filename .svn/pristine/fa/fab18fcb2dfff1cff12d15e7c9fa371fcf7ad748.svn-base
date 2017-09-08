@@ -1,0 +1,77 @@
+/* 初始基本设置 */
+*{margin: 0; padding: 0; list-style: none;}
+#mainContent{
+    width: 99%;
+    margin: 0 0 0 1%;
+}
+a{color: #000; text-decoration: none;}
+.panel-heading,#mainMenu{ background: #4c4743;}
+a:hover{ text-decoration: none;}
+.navbar-default{border:none;}
+.title{
+	width: 100%;
+    height: 42px; 
+    font-size: 14px; 
+    line-height: 42px;
+    background: url("../../img/login/anrow-right.png") no-repeat 90% 18px;
+    overflow: hidden; 
+    text-indent: 1em;
+    cursor: pointer;}
+.list{
+	width: 100%;
+    z-index: 999; 
+    display: none;}
+.list a{ width: 100%; height: 100%;display: inline-block;}
+.list li{width: 100%; height: 42px; line-height: 42px; font-size: 14px;
+    color: #666; position: relative; z-index: 999; cursor: pointer;}
+.list li a{ text-indent: 1.8em;}
+.list li:hover,.list li.active{background: #33302d; color: #d6d1ce;}
+.list li:hover a,.list li.active a{color: #d6d1ce;}
+.title a,.list a{padding-left:6px; box-sizing: border-box;color:#d6d1ce;}
+.list a{padding-left:28px;}
+
+/* 初始基本设置 */
+#navigationDiv{margin-bottom:0px;height:60px;line-height:60px;background:#fff;
+    border-bottom:1px solid #ddd;
+    }
+#navigationDiv a{color:#ff7223;}
+#content{margin-top:40px;background:#f2f3f5;}
+.container-fluid{padding-left:0px;height:0px;}
+#sidebar{padding:0px;padding-top:20px;}
+.titleBox i{display:inline-block;width:20px;height: 42px;
+    background: url(../../img/login/homes.png) no-repeat center 12px;vertical-align: middle;}
+.titleBox:nth-child(2) i{background: url(../../img/login/ueser.png) no-repeat center 12px;}
+.titleBox:nth-child(3) i{background: url(../../img/login/tongji.png) no-repeat center 12px;}
+.titleBox:nth-child(4) i{background: url(../../img/login/goods.png) no-repeat center 12px;}
+.titleBox:nth-child(5) i{background: url(../../img/login/set.png) no-repeat center 12px;}
+.titleBox:nth-child(6) i{background: url(../../img/login/kefu.png) no-repeat center 12px;}
+.titleBox:nth-child(7) i{background: url(../../img/login/pingtai.png) no-repeat center 12px;}
+.titleBox:nth-child(8) i{background: url(../../img/login/huodng.png) no-repeat center 12px;}
+.titleBox:nth-child(9) i{background: url(../../img/login/system.png) no-repeat center 12px;}
+    
+    
+/*默认选中左侧菜单第一个子菜单  */   
+#mainMenu .titleBox:nth-child(1) .list{display:block;}
+#mainMenu .titleBox:nth-child(1) .title{width: 100%;
+    height: 42px; 
+    font-size: 14px; 
+    line-height: 42px;
+    background: url("../../img/login/anrow-down.png") no-repeat 90% 18px;
+    overflow: hidden; 
+    text-indent: 1em;
+    cursor: pointer;}
+    
+ /* 调整logo部分 */ 
+ .menuLeft{width:18%;margin-top: 60px;}
+.contentRight{width:82%;}
+
+ #logoUl{background:#ff7223;padding:0px;margin:0px;width:18%;    margin-right: -15px;
+    margin-left: -9px;height:120px;line-height:120px;}
+ .navbar-nav .dropdown-big,.navbar-nav .dropdown-big a{width:100%;padding:0px;margin:0px;} 
+#navigationDiv .open{font-size:18px;float: right;margin-right: 20px;color:#fff;}
+.pull-right{margin-top:2px;}
+.userImg em{display:inline-block;width:25px;height:25px;
+background: url("../../img/login/login_user.png") no-repeat;background-size: 100% auto;
+vertical-align: middle;margin-right: 10px;margin-top: -4px;}    
+    
+    

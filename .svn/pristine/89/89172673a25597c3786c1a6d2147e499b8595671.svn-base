@@ -1,0 +1,55 @@
+package com.prj.biz.api.easemob.server;
+
+
+import com.prj.biz.api.easemob.server.example.api.impl.EasemobIMUsers;
+
+import io.swagger.client.model.RegisterUsers;
+
+public class PropKit {
+
+	//huanxin_client_secret
+	//huanxin_ client_id
+	
+	
+	
+	/**
+	 * 注册后申请环信账号
+	 */
+	public static void registerHunxin(String phone,String password){
+		RegisterUsers user  = new RegisterUsers();
+		//创建环信账号
+		io.swagger.client.model.User payload = new io.swagger.client.model.User().username(phone).password(password);
+		user.add(payload);
+		EasemobIMUsers ease = new EasemobIMUsers();
+		//注册环信账号
+		Object result = ease.createNewIMUserSingle(user);
+		System.out.println(result);
+	}
+	
+	/**
+	 * 登陆
+	 * @param phone
+	 * @param password
+	 */
+	public static void denglu(String phone,String password){
+		
+	}
+	
+	
+	/**
+	 * 获取用户
+	 * @param phone
+	 * @param password
+	 */
+	public static void selectAll(){
+		EasemobIMUsers ease = new EasemobIMUsers();
+		//注册环信账号
+		Object result = ease.getIMUsersBatch(Long.parseLong("10"),"0");
+		System.out.println(result);
+	}
+	
+	public static void main(String[] args) {
+		//registerHunxin("123", "123456");
+		selectAll();
+	}
+}

@@ -1,0 +1,96 @@
+package com.prj.biz.bean.friend;
+
+import com.prj.biz.bean._base.BaseEntity;
+import java.util.Date;
+
+/** 
+ * 描述: 好友列表 实体类<br>
+ * @author Liang
+ * @date 2017-08-26
+ * 
+ */
+public class Friend extends BaseEntity  
+{
+
+    private static final long	serialVersionUID	= 1L;
+
+    //  
+    private String id;
+    // 本人id 
+    private String zuserId;
+    // 好友id 
+    private String buserId;
+    // 状态 1申请好友 2同意  3拒绝
+    private String status;
+    // 申请好友时间 
+    private String creattime;
+    // 好友名称
+    private String friendName;
+    // 好友头像
+    private String personPhoto;
+    // 被加好友的环信id
+    private String phone;
+    
+
+
+    public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public String getPersonPhoto() {
+		return personPhoto;
+	}
+	public void setPersonPhoto(String personPhoto) {
+		this.personPhoto = personPhoto;
+	}
+	public String getFriendName() {
+		return friendName;
+	}
+	public void setFriendName(String friendName) {
+		this.friendName = friendName;
+	}
+	public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    public String getZuserId() {
+        return zuserId;
+    }
+    public void setZuserId(String zuserId) {
+        this.zuserId = zuserId;
+    }
+
+
+    public String getBuserId() {
+        return buserId;
+    }
+    public void setBuserId(String buserId) {
+        this.buserId = buserId;
+    }
+
+
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+
+    public String getCreattime() {
+        return creattime;
+    }
+    public void setCreattime(String creattime) {
+        this.creattime = creattime;
+    }
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+}

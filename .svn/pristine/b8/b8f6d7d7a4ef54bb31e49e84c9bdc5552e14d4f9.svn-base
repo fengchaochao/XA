@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.consumersaccount.ConsumersAccountDao">
+
+    <resultMap id="consumersaccountResult" type="com.prj.biz.bean.consumersaccount.ConsumersAccount">
+		<result property="id" column="id" />
+		<result property="userType" column="user_type" />
+		<result property="userAccount" column="user_account" />
+		<result property="consumers.id" column="id" />
+		<result property="consumersId" column="consumers_id" />
+		<result property="businessInformationId" column="businessInformation_id" />
+		<result property="accountState" column="account_state" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,user_type,user_account,consumers_id,businessInformation_id,account_state
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="userType!=null and userType!='' ">
+		        AND user_type = #{userType}
+		    </if>
+		    <if test="userAccount!=null and userAccount!='' ">
+		        AND user_account = #{userAccount}
+		    </if>
+		    <if test="consumersId!=null and consumersId!='' ">
+		        AND consumers_id = #{consumersId}
+		    </if>
+		    <if test="businessInformationId!=null and businessInformationId!='' ">
+		        AND businessInformation_id = #{businessInformationId}
+		    </if>
+		    <if test="accountState!=null and accountState!='' ">
+		        AND account_state = #{accountState}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="consumersaccountResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_CONSUMERS_ACCOUNT 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="consumersaccountResult" parameterType="com.prj.biz.bean.consumersaccount.ConsumersAccount" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_CONSUMERS_ACCOUNT 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.consumersaccount.ConsumersAccount">
+		select
+		    count(ID)
+		from 
+			 XA_CONSUMERS_ACCOUNT 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.consumersaccount.ConsumersAccount">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_CONSUMERS_ACCOUNT 
+			(id,user_type,user_account,consumers_id,businessInformation_id,account_state)
+		VALUES 
+			(#{id},#{userType},#{userAccount},#{consumersId},#{businessInformationId},#{accountState})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_CONSUMERS_ACCOUNT 
+			(id,user_type,user_account,consumers_id,businessInformation_id,account_state)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{userType},#{userAccount},#{consumersId},#{businessInformationId},#{accountState})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.consumersaccount.ConsumersAccount">
+     UPDATE XA_CONSUMERS_ACCOUNT
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="userType!=null and userType!='' ">
+				user_type = #{userType},
+			</if>
+			<if test="userAccount!=null and userAccount!='' ">
+				user_account = #{userAccount},
+			</if>
+			<if test="consumersId!=null and consumersId!='' ">
+		         consumers_id = #{consumersId},
+		    </if>
+		    <if test="businessInformationId!=null and businessInformationId!='' ">
+		         businessInformation_id = #{businessInformationId},
+		    </if>
+		     <if test="accountState!=null and accountState!='' ">
+		         account_state = #{accountState},
+		    </if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_CONSUMERS_ACCOUNT
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="userType!=null and userType!='' ">
+				user_type = #{userType},
+			</if>
+			<if test="userAccount!=null and userAccount!='' ">
+				user_account = #{userAccount},
+			</if>
+			<if test="consumersId!=null and consumersId!='' ">
+		         consumers_id = #{consumersId},
+		    </if>
+		    <if test="businessInformationId!=null and businessInformationId!='' ">
+		         businessInformation_id = #{businessInformationId},
+		    </if>
+		    <if test="accountState!=null and accountState!='' ">
+		         account_state = #{accountState},
+		    </if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_CONSUMERS_ACCOUNT WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_CONSUMERS_ACCOUNT
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

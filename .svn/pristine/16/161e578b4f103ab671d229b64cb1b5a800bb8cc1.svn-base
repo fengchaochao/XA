@@ -1,0 +1,46 @@
+/** 
+ * @Description: TODO
+ * @date 2016年1月20日 
+ * @author 1936
+ */
+package tutorial.redis;
+
+import org.apache.commons.lang.StringUtils;
+
+/**
+ * @Description: TODO
+ * @date 2016年1月20日
+ * @author 1936
+ */
+public class RedisTest {
+
+	public static void main(String[] args) {
+
+		/**
+		 * 模拟抢红包
+		 */
+		// ① 定时器判断红包时间可用之后 将红包信息(红包ID、红包详情ID)插入到redis队列中
+
+		/*for (int i = 1; i <= 100; i++) {
+			RedisUtil.getJedis().lpush("RedPacket003", "00" + i);
+		}*/
+		if (!RedisUtil.getJedis().sismember("RedPacketDet-003", "张三")) {
+
+			String s = RedisUtil.getJedis().lpop("RedPacket003");
+			System.out.println("你成功领取了红包" + s);
+
+			if (StringUtils.isNotEmpty(s)) {
+
+				RedisUtil.getJedis().sadd("RedPacketDet-003", "张三"); // **
+																	// 给红包记录表插入领取人
+			} else {
+				System.out.println("该红包已经被领取完成!");
+			}
+
+		} else {
+			System.out.println("你已经领取过红包了！");
+		}
+
+	}
+
+}

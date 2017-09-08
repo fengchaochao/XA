@@ -1,0 +1,127 @@
+package com.prj.biz.bean.goodsevaluate;
+
+import com.prj.biz.bean._base.BaseEntity;
+import com.prj.biz.bean.consumers.Consumers;
+
+
+/** 
+ * 描述: 商品评价 实体类<br>
+ * @author Liang
+ * @date 2017-07-27
+ * 
+ */
+public class GoodsEvaluate extends BaseEntity  
+{
+
+    private static final long	serialVersionUID	= 1L;
+
+    // id 
+    private String id;
+    // 商品id 
+    private String goodsId;
+    // 消费者id 
+    private String consumerId;
+    // 评论内容 
+    private String evaluateContent;
+    // 回复评论 
+    private String replyContent;
+    // 评论时间 
+    private String evaluateDate;
+    // 回复时间 
+    private String replyDate;
+    //商品规格ID
+    private String goodsUnitId;
+
+    
+    //消费者
+    private Consumers consumers;
+    //状态 1：已评价 2：已回复
+    private String status;
+    //消费者名称
+    private String consumersName;
+    //消费者头像
+    private String consumersPhoto;
+    public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getEvaluateDate() {
+		return evaluateDate;
+	}
+	public void setEvaluateDate(String evaluateDate) {
+		this.evaluateDate = evaluateDate;
+	}
+	public String getReplyDate() {
+		return replyDate;
+	}
+	public void setReplyDate(String replyDate) {
+		this.replyDate = replyDate;
+	}
+	public Consumers getConsumers() {
+		return consumers;
+	}
+	public void setConsumers(Consumers consumers) {
+		this.consumers = consumers;
+	}
+	public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    public String getGoodsId() {
+        return goodsId;
+    }
+    public void setGoodsId(String goodsId) {
+        this.goodsId = goodsId;
+    }
+
+
+    public String getConsumerId() {
+        return consumerId;
+    }
+    public void setConsumerId(String consumerId) {
+        this.consumerId = consumerId;
+    }
+
+
+    public String getEvaluateContent() {
+        return evaluateContent;
+    }
+    public void setEvaluateContent(String evaluateContent) {
+        this.evaluateContent = evaluateContent;
+    }
+
+
+    public String getReplyContent() {
+        return replyContent;
+    }
+    public void setReplyContent(String replyContent) {
+        this.replyContent = replyContent;
+    }
+	public String getConsumersName() {
+		return consumersName;
+	}
+	public void setConsumersName(String consumersName) {
+		this.consumersName = consumersName;
+	}
+	public String getConsumersPhoto() {
+		return consumersPhoto;
+	}
+	public void setConsumersPhoto(String consumersPhoto) {
+		this.consumersPhoto = consumersPhoto;
+	}
+	public String getGoodsUnitId() {
+		return goodsUnitId;
+	}
+	public void setGoodsUnitId(String goodsUnitId) {
+		this.goodsUnitId = goodsUnitId;
+	}
+	
+
+    
+}

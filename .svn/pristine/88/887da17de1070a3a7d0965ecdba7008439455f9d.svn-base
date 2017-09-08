@@ -1,0 +1,180 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>添加用户</title>
+    <%@ include file="/WEB-INF/views/common/headCommon.jsp"%>
+    <link href='<spring:url value="/js/plugin/zTree/zTreeStyle/zTreeStyle.css" />' rel="stylesheet" />
+</head>
+<body style="background: #fff;">
+	<form id="submitForm" class="form-horizontal">
+		<div class="form-group" style="margin-top: 15px">
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="hidden" id="perDepartmentId"/>
+			<input type="hidden" id="perDepartmentName"/>
+			
+			<div class="form-group">
+			    <label class="col-sm-2 control-label" for="loginName"><font color="red">(*)</font>登录名</label>
+			    <div class="col-sm-10">
+				    <input type="text" class="form-control" id="loginName" />
+			    </div>
+			</div>
+			
+			<div class="form-group">
+			<label class="control-label col-sm-2" for="realName">姓名</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="realName" />
+			</div>
+			</div>
+			
+			<div class="form-group">
+			<label class="control-label col-sm-2" for="mobile">手机</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="mobile" />
+			</div>
+			</div>
+			
+			<div class="form-group">
+			<label class="control-label col-sm-2" for="userPass1"><font color="red">(*)</font>输入新密码</label>
+		    <div class="col-sm-10">
+				 <input type="password" class="form-control" id="userPass1" /> 
+			</div>
+			</div>
+			<div class="form-group">
+			<label class="control-label col-sm-2" for="userPass2">再次输入密码</label>
+			<div class="col-sm-10">
+			    <input type="password" class="form-control" id="userPass2" /> 
+			</div>
+			</div>
+			
+			<div class="form-group">
+			<label class="control-label col-sm-2" for="telephone">电话号码</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="telephone" />
+			</div>
+			</div>
+			
+			<div class="form-group">
+			<label class="control-label col-sm-2" for="email">电子邮件</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="email" />
+			</div>
+			</div>
+			
+			<div class="form-group">
+			    <label class="control-label col-sm-2" for="role">角色</label>
+			    <div class="col-sm-10">
+			        <div class="col-sm-12">
+			            <c:forEach var="role"  items="${perRoleList}">
+			                <input type="checkbox" name="hxRoleIds"  value="${role.id}" />
+			                ${role.roleName}
+			            </c:forEach>
+			        </div>
+			    </div>
+		    </div>
+		    
+		    <div class="form-group">
+			    <div class="navbar-btn col-sm-12">
+			    	<input type="button" value="添加" class="greenBtnRad" id="commit"/>
+			   		<input type="button" value="取消" class="redBtnRad col-sm-offset-1" id="cancel"/>
+			    </div>
+		    </div>
+		    
+		</div>
+	</form> 
+</body>
+
+<script type="text/javascript" src='<spring:url value="/js/plugin/zTree/jquery.ztree.core.min.3.5.2.js"/>'></script>
+<script type="text/javascript" src='<spring:url value="/js/plugin/zTree/jquery.ztree.excheck.min.3.5.2.js"/>'></script>
+
+<script>
+
+	var treeObj;
+	$(function() {
+		
+		$("#cancel").bind("click",function(){
+			closeWindow(window.name);
+		});
+		
+	});
+	var setting = {
+			check: {
+				enable: true,
+				chkStyle: "radio",
+				radioType: "all"
+			},
+			data: {
+				simpleData: {
+					enable: true
+				}
+			},
+			callback: {
+				onCheck: function (e, treeId, treeNode) {
+					$("#perDepartmentId").val(treeNode.id);
+					$("#perDepartmentName").val(treeNode.name);
+				}
+			}
+	};
+	var zNodes =[
+        <c:forEach var="item" items="${perDepartmentList}" varStatus="st">     
+		{ 
+			id : "${item.id}", 
+			pId : "${item.parentId}", 
+			name: "${item.departmentName}", 
+			open:true
+		},
+		</c:forEach>
+	];
+	
+	treeObj = $.fn.zTree.init($("#userDepartmentTree"),setting, zNodes);
+	
+	$("#commit").bind("click",function(){
+		
+		var newPass = "";
+		if($("#userPass1").val()==''){
+			top.layer.alert("新密码不能为空",{icon:2});
+			return;
+		}
+		if($("#userPass1").val()!=$("#userPass2").val()){
+			top.layer.alert("两次密码不一致",{icon:2});
+			return;
+		}
+		newPass = $("#userPass1").val();
+		
+		$.ajax({
+			type: "get",
+			url: '<spring:url value="/sysuser/doEditSysUser" />',
+			data:{
+				loginName:$("#loginName").val(),
+				loginPass:newPass,
+				realName:$("#realName").val(),
+				mobile:$("#mobile").val(),
+				telephone:$("#telephone").val(),
+				email:$("#email").val(),
+				hxRoleIds: function (){
+					var chk_value =[]; 
+					$('input[name="hxRoleIds"]:checked').each(function(){ 
+					    chk_value.push($(this).val()); 
+					}); 
+					return chk_value;
+				},
+			},
+			dataType: "json",
+			async: false,
+			success: function(data){
+				if("0000000"==data.head.respCode){
+					//关闭
+					parent.window.contFrame.window.beCalled(data);
+ 					closeWindow(window.name);
+				}
+				else{
+					top.layer.alert(data.head.respContent,{icon:2});
+				}
+			}
+		});
+	});	
+
+</script>
+</html>

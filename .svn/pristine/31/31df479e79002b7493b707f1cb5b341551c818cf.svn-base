@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.consumersaccount.ConsumersAccountDao">
+
+    <resultMap id="consumersaccountResult" type="com.prj.biz.bean.consumersaccount.ConsumersAccount">
+		<result property="id" column="id" />
+		<result property="userType" column="user_type" />
+		<result property="userAccount" column="user_account" />
+		<result property="consumers.id" column="id" />
+		<result property="consumers.customerNumber" column="customer_number" />
+		<result property="consumers.nickName" column="nick_name" />
+		<result property="businessInformation.id" column="id" />
+		<result property="consumersId" column="consumers_id" />
+		<result property="businessInformationId" column="businessInformation_id" />
+		<result property="accountState" column="account_state" />
+		<result property="localDate" column="local_date" />
+		<result property="isLocalState" column="is_localState" />
+		<result property="localType" column="local_type" />
+		<result property="createDate" column="create_date" />
+		<result property="userNumber" column="user_number" />
+		
+		<result property="personPhoto" column="personPhoto" />
+		
+		<result property="beginDate" column="beginDate" />
+		<result property="endDate" column="endDate" />
+		<result property="comsumersName" column="comsumersName" />
+		<result property="nickName" column="nickName" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		a.id,a.user_type,a.user_account,a.consumers_id,a.businessInformation_id,a.account_state,a.local_date,a.is_localState,a.local_type,a.create_date,a.user_number
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND a.ID = #{id} 
+	       </if>
+		    <if test="userType!=null and userType!='' ">
+		        AND a.user_type = #{userType}
+		    </if>
+		    <if test="userAccount!=null and userAccount!='' ">
+		        AND a.user_account = #{userAccount}
+		    </if>
+		    <if test="consumersId!=null and consumersId!='' ">
+		        AND a.consumers_id = #{consumersId}
+		    </if>
+		    <if test="businessInformationId!=null and businessInformationId!='' ">
+		        AND a.businessInformation_id = #{businessInformationId}
+		    </if>
+		    <if test="accountState!=null and accountState!='' ">
+		        AND a.account_state = #{accountState}
+		    </if>
+		    <if test="historyLocalDate!=null and historyLocalDate!='' ">
+		        AND a.local_date &lt;&gt; #{historyLocalDate}
+		    </if>
+		    <if test="localDate!=null and localDate!='' ">
+		        AND a.local_date like concat('%',#{localDate},'%') 
+		    </if>
+		    <if test="isLocalState!=null and isLocalState!='' ">
+		        AND a.is_localState = #{isLocalState}
+		    </if>
+		    <if test="localType!=null and localType!='' ">
+		        AND a.local_type = #{localType}
+		    </if>
+		    <if test="userNumber!=null and userNumber!='' ">
+		        AND a.user_number = #{userNumber}
+		    </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        AND a.create_date like concat('%',#{createDate},'%')
+		    </if>
+		    <if test="comsumersName!=null and comsumersName!='' ">
+		        AND a.comsumersName  like concat('%',#{comsumersName},'%') 
+		    </if>
+		     <if test="beginDate != null and beginDate!= ''"><!-- 开始时间-->
+				AND  date_format(a.local_date,'%Y-%m-%d') &gt;= date_format(#{beginDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != null and endDate!= ''"><!-- 结束时间 -->
+				AND  date_format(a.local_date,'%Y-%m-%d') &lt;= date_format(#{endDate},'%Y-%m-%d')
+			</if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="consumersaccountResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_CONSUMERS_ACCOUNT a
+		where 
+			a.ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="consumersaccountResult" parameterType="com.prj.biz.bean.consumersaccount.ConsumersAccount" >
+		SELECT
+			a.*
+		FROM
+			(
+			SELECT
+				CASE e.local_type
+			WHEN '0' THEN
+				(
+					SELECT
+						b.vendor_name
+					FROM
+						xa_business_information b
+					WHERE
+						e.businessInformation_id = b.id
+				)
+			WHEN '1' THEN
+				(
+					SELECT
+						c.nick_name
+					FROM
+						xa_consumers c
+					WHERE
+						e.businessInformation_id = c.id
+				)
+			END comsumersName,
+			e.id,
+			e.user_type,
+			e.user_account,
+			e.consumers_id,
+			e.businessInformation_id,
+			e.account_state,
+			e.local_date,
+			e.is_localState,
+			e.local_type,
+			e.create_date,
+			f.person_photo as personPhoto,
+			d.nick_name as nickName
+		FROM
+			xa_consumers_account e
+		LEFT JOIN xa_consumers d ON e.consumers_id = d.id
+		LEFT JOIN per_sys_user f ON e.id=f.merchants_id
+		) a
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectConsumerslocalUser" resultMap="consumersaccountResult" parameterType="com.prj.biz.bean.consumersaccount.ConsumersAccount" >
+		SELECT
+			a.*,
+			b.*,
+			c.nick_name  comsumersName
+		FROM
+			xa_consumers_account a
+		LEFT JOIN xa_consumers b ON b.id=a.consumers_id
+		LEFT JOIN xa_consumers c ON c.id=a.businessInformation_id
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectBusinesslocalUser" resultMap="consumersaccountResult" parameterType="com.prj.biz.bean.consumersaccount.ConsumersAccount" >
+		SELECT
+			a.*,
+			b.*,
+			c.*
+		FROM
+			xa_consumers_account a
+		LEFT JOIN xa_consumers b ON b.id=a.consumers_id
+		LEFT JOIN xa_business_information c ON c.id=a.businessInformation_id
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.consumersaccount.ConsumersAccount">
+		 SELECT
+			 count(a.ID)
+		FROM
+			(
+			SELECT
+				CASE e.local_type
+			WHEN '0' THEN
+				(
+					SELECT
+						b.vendor_name
+					FROM
+						xa_business_information b
+					WHERE
+						e.businessInformation_id = b.id
+				)
+			WHEN '1' THEN
+				(
+					SELECT
+						c.nick_name
+					FROM
+						xa_consumers c
+					WHERE
+						e.businessInformation_id = c.id
+				)
+			END comsumersName,
+			e.id,
+			e.user_type,
+			e.user_account,
+			e.consumers_id,
+			e.businessInformation_id,
+			e.account_state,
+			e.local_date,
+			e.is_localState,
+			e.local_type,
+			e.create_date,
+			d.nick_name 
+		FROM
+			xa_consumers_account e
+		LEFT JOIN xa_consumers d ON e.consumers_id = d.id
+		) a
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.consumersaccount.ConsumersAccount">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_CONSUMERS_ACCOUNT 
+			(id,user_type,user_account,consumers_id,businessInformation_id,account_state,local_date,is_localState,local_type,create_date,user_number)
+		VALUES 
+			(#{id},#{userType},#{userAccount},#{consumersId},#{businessInformationId},#{accountState},#{localDate},#{isLocalState},#{localType},now(),#{userNumber})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_CONSUMERS_ACCOUNT 
+			(id,user_type,user_account,consumers_id,businessInformation_id,account_state,local_date,is_localState,local_type,create_date,user_number)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{userType},#{userAccount},#{consumersId},#{businessInformationId},#{accountState},,#{localDate},#{isLocalState},#{localType},now(),#{userNumber})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.consumersaccount.ConsumersAccount">
+     UPDATE XA_CONSUMERS_ACCOUNT
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="userType!=null and userType!='' ">
+				user_type = #{userType},
+			</if>
+			<if test="userAccount!=null and userAccount!='' ">
+				user_account = #{userAccount},
+			</if>
+			<if test="consumersId!=null and consumersId!='' ">
+		         consumers_id = #{consumersId},
+		    </if>
+		    <if test="businessInformationId!=null and businessInformationId!='' ">
+		         businessInformation_id = #{businessInformationId},
+		    </if>
+		     <if test="accountState!=null and accountState!='' ">
+		         account_state = #{accountState},
+		    </if>
+		     <if test="localDate!=null and localDate!='' ">
+		         local_date = #{localDate},
+		    </if>
+		      <if test="isLocalState!=null and isLocalState!='' ">
+		         is_localState = #{isLocalState},
+		    </if>
+		    <if test="localType!=null and localType!='' ">
+		        local_type = #{localType},
+		    </if>
+		     <if test="createDate!=null and createDate!='' ">
+		        create_date = #{createDate},
+		    </if>
+		    <if test="userNumber!=null and userNumber!='' ">
+		        user_number = #{userNumber},
+		    </if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_CONSUMERS_ACCOUNT
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="userType!=null and userType!='' ">
+				user_type = #{userType},
+			</if>
+			<if test="userAccount!=null and userAccount!='' ">
+				user_account = #{userAccount},
+			</if>
+			<if test="consumersId!=null and consumersId!='' ">
+		         consumers_id = #{consumersId},
+		    </if>
+		    <if test="businessInformationId!=null and businessInformationId!='' ">
+		         businessInformation_id = #{businessInformationId},
+		    </if>
+		    <if test="accountState!=null and accountState!='' ">
+		         account_state = #{accountState},
+		    </if>
+		     <if test="localDate!=null and localDate!='' ">
+		         local_date = #{localDate},
+		    </if>
+		    <if test="isLocalState!=null and isLocalState!='' ">
+		         is_localState = #{isLocalState},
+		    </if>
+		    <if test="localType!=null and localType!='' ">
+		        local_type = #{localType},
+		    </if>
+		     <if test="createDate!=null and createDate!='' ">
+		        create_date = #{createDate},
+		    </if>
+		    <if test="userNumber!=null and userNumber!='' ">
+		        user_number = #{userNumber},
+		    </if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_CONSUMERS_ACCOUNT WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_CONSUMERS_ACCOUNT
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

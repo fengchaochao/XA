@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd 
+		http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+    
+    <!-- 配置Spring的ehCache -->
+    <bean id="springEhCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="configLocation">
+            <value>classpath:/core/cache/ehcache.xml</value>
+        </property>
+    </bean>
+    
+    <!-- 配置shiro的ehCache  -->
+    <bean id="shiroEhcacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager"> 
+       <!-- 使用Spring的缓存 -->
+       <property name="cacheManager" ref="springEhCacheManager"/> 
+    </bean> 
+
+    <!-- 定义ehCache的工厂，并设置所使用的Cache name -->
+    <bean id="springEhCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager">
+            <ref bean="springEhCacheManager" />
+        </property>
+        <property name="cacheName">
+            <value>springCache</value>
+        </property>
+    </bean>
+    
+    <!-- 设置 Cache拦截器 -->
+    <bean id="methodCacheInterceptor" class="com.icinfo.support.cache.MethodCacheInterceptor">
+        <property name="cache">
+           <ref bean="springEhCache" />
+        </property>
+    </bean>
+    
+    <!-- 使用Sping AOP 通知执行设置 Cache -->
+    <bean id="methodCachePointCut"  class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+            <ref bean="methodCacheInterceptor" />
+        </property>
+        <property name="patterns">
+            <list>
+                <value>.*AppInfoServiceImpl\.getAppInfoList</value>
+                <value>.*AppTypeServiceImpl\.getAppTypeList</value>
+                <value>.*PageUrlServiceImpl\.getPageUrl</value>
+            </list>
+        </property>
+    </bean>
+    
+    <!-- 清除 Cache拦截器 -->
+    <bean id="methodCacheAfterAdvice"  class="com.icinfo.support.cache.MethodCacheAfterAdvice">
+        <property name="cache">
+           <ref bean="springEhCache" />
+        </property>
+    </bean>
+
+    <!-- 使用Sping AOP 通知执行清除 Cache -->
+    <bean id="methodCachePointCutAdvice" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+           <ref bean="methodCacheAfterAdvice" />
+        </property>
+        <property name="patterns">
+            <list>
+                <value>.*AppInfoServiceImpl\.doSave</value>
+                <value>.*AppInfoServiceImpl\.doMod</value>
+                <value>.*AppInfoServiceImpl\.doRm</value>
+                <value>.*AppTypeServiceImpl\.doSave</value>
+                <value>.*AppTypeServiceImpl\.doMod</value>
+                <value>.*AppTypeServiceImpl\.doRm</value>
+                <value>.*PageUrlServiceImpl\.doSave</value>
+                <value>.*PageUrlServiceImpl\.doMod</value>
+                <value>.*PageUrlServiceImpl\.doRm</value>
+			</list>
+       </property>
+    </bean>
+</beans>

@@ -1,0 +1,32 @@
+package com.prj.biz.service.businessinformation;
+
+import java.util.List;
+
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.service._base.BaseService;
+
+/**
+ * 描述: 商家信息 Service 接口<br>
+ * @author Liang
+ * @date 2017-07-12
+ */
+public interface BusinessInformationService extends BaseService<BusinessInformation>{
+	/**
+	 * 查询列表
+	 * @param businessInformation
+	 * @return
+	 */
+	public List<BusinessInformation> selectAllList(BusinessInformation businessInformation);
+	/**
+	 * 消费商推荐商家列表
+	 * @param businessInformation
+	 * @return
+	 */
+	public List<BusinessInformation> doEnConsumersRecommendedList(BusinessInformation businessInformation);
+	/**
+	 * 商家推荐商家列表
+	 * @param businessInformation
+	 * @return
+	 */
+	public List<BusinessInformation> doEnBusinessRecommendedList(BusinessInformation businessInformation);
+}

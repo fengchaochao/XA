@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.memberstatistics.MemberStatisticsDao">
+
+    <resultMap id="memberstatisticsResult" type="com.prj.biz.bean.memberstatistics.MemberStatistics">
+		<result property="id" column="id" />
+		<result property="userno" column="userNo" />
+		<result property="username" column="userName" />
+		<result property="phone" column="phone" />
+		<result property="provincesId" column="provinces_id" />
+		<result property="cityId" column="city_id" />
+		<result property="areaId" column="area_id" />
+		<result property="address" column="address" />
+		<result property="states" column="states" />
+		<result property="createDate" column="create_date" />
+		<result property="localDate" column="local_date" />
+		<result property="provinces" column="provinces" />
+		<result property="city" column="city" />
+		<result property="area" column="area" />
+		<result property="higherAgentId" column="higher_agent_id" />
+		<result property="founder" column="founder" />
+		<result property="usertype" column="userType" />
+		<result property="month" column="month" />
+		<result property="localMonth" column="localMonth" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,userNo,userName,phone,provinces_id,city_id,area_id,address,states,create_date,local_date,provinces,city,area,higher_agent_id,founder,userType
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="userno!=null and userno!='' ">
+		        AND userNo = #{userno}
+		    </if>
+		    <if test="username!=null and username!='' ">
+		        AND userName = #{username}
+		    </if>
+		    <if test="phone!=null and phone!='' ">
+		        AND phone = #{phone}
+		    </if>
+		    <if test="provincesId!=null and provincesId!='' ">
+		        AND provinces_id = #{provincesId}
+		    </if>
+		    <if test="cityId!=null and cityId!='' ">
+		        AND city_id = #{cityId}
+		    </if>
+		    <if test="areaId!=null and areaId!='' ">
+		        AND area_id = #{areaId}
+		    </if>
+		    <if test="address!=null and address!='' ">
+		        AND address = #{address}
+		    </if>
+		    <if test="states!=null and states!='' ">
+		        AND states = #{states}
+		    </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        AND create_date like concat('%',#{createDate},'%')
+		    </if>
+		    <if test="localDate!=null and localDate!='' ">
+		        AND local_date like concat('%',#{localDate},'%')
+		    </if>
+		    <if test="provinces!=null and provinces!='' ">
+		        AND provinces = #{provinces}
+		    </if>
+		    <if test="city!=null and city!='' ">
+		        AND city = #{city}
+		    </if>
+		    <if test="area!=null and area!='' ">
+		        AND area = #{area}
+		    </if>
+		    <if test="higherAgentId!=null and higherAgentId!='' ">
+		        AND higher_agent_id = #{higherAgentId}
+		    </if>
+		    <if test="founder!=null and founder!='' ">
+		        AND founder = #{founder}
+		    </if>
+		    <if test="usertype!=null and usertype!='' ">
+		        AND userType = #{usertype}
+		    </if>
+		    <if test="month!=null and month!='' ">
+		        AND YEAR (create_date) = year(now()) AND MONTH (create_date) = #{month}  
+		    </if>
+		    <if test="localMonth!=null and localMonth!='' ">
+		        AND YEAR (local_date) = year(now()) AND MONTH (local_date) = #{localMonth}  
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="memberstatisticsResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_MEMBER_STATISTICS 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="memberstatisticsResult" parameterType="com.prj.biz.bean.memberstatistics.MemberStatistics" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_MEMBER_STATISTICS 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.memberstatistics.MemberStatistics">
+		select
+		    count(ID)
+		from 
+			 XA_MEMBER_STATISTICS 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.memberstatistics.MemberStatistics">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_MEMBER_STATISTICS 
+			(id,userNo,userName,phone,provinces_id,city_id,area_id,address,states,create_date,local_date,provinces,city,area,higher_agent_id,founder,userType)
+		VALUES 
+			(#{id},#{userno},#{username},#{phone},#{provincesId},#{cityId},#{areaId},#{address},#{states},#{createDate},#{localDate},#{provinces},#{city},#{area},#{higherAgentId},#{founder},#{usertype})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_MEMBER_STATISTICS 
+			(id,userNo,userName,phone,provinces_id,city_id,area_id,address,states,create_date,local_date,provinces,city,area,higher_agent_id,founder,userType)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{userno},#{username},#{phone},#{provincesId},#{cityId},#{areaId},#{address},#{states},#{createDate},#{localDate},#{provinces},#{city},#{area},#{higherAgentId},#{founder},#{usertype})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.memberstatistics.MemberStatistics">
+     UPDATE XA_MEMBER_STATISTICS
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="userno!=null and userno!='' ">
+				userNo = #{userno},
+			</if>
+			<if test="username!=null and username!='' ">
+				userName = #{username},
+			</if>
+			<if test="phone!=null and phone!='' ">
+				phone = #{phone},
+			</if>
+			<if test="provincesId!=null and provincesId!='' ">
+				provinces_id = #{provincesId},
+			</if>
+			<if test="cityId!=null and cityId!='' ">
+				city_id = #{cityId},
+			</if>
+			<if test="areaId!=null and areaId!='' ">
+				area_id = #{areaId},
+			</if>
+			<if test="address!=null and address!='' ">
+				address = #{address},
+			</if>
+			<if test="states!=null and states!='' ">
+				states = #{states},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="localDate!=null and localDate!='' ">
+				local_date = #{localDate},
+			</if>
+			<if test="provinces!=null and provinces!='' ">
+				provinces = #{provinces},
+			</if>
+			<if test="city!=null and city!='' ">
+				city = #{city},
+			</if>
+			<if test="area!=null and area!='' ">
+				area = #{area},
+			</if>
+			<if test="higherAgentId!=null and higherAgentId!='' ">
+				higher_agent_id = #{higherAgentId},
+			</if>
+			<if test="founder!=null and founder!='' ">
+				founder = #{founder},
+			</if>
+			<if test="usertype!=null and usertype!='' ">
+				userType = #{usertype},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_MEMBER_STATISTICS
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="userno!=null and userno!='' ">
+				userNo = #{userno},
+			</if>
+			<if test="username!=null and username!='' ">
+				userName = #{username},
+			</if>
+			<if test="phone!=null and phone!='' ">
+				phone = #{phone},
+			</if>
+			<if test="provincesId!=null and provincesId!='' ">
+				provinces_id = #{provincesId},
+			</if>
+			<if test="cityId!=null and cityId!='' ">
+				city_id = #{cityId},
+			</if>
+			<if test="areaId!=null and areaId!='' ">
+				area_id = #{areaId},
+			</if>
+			<if test="address!=null and address!='' ">
+				address = #{address},
+			</if>
+			<if test="states!=null and states!='' ">
+				states = #{states},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="localDate!=null and localDate!='' ">
+				local_date = #{localDate},
+			</if>
+			<if test="provinces!=null and provinces!='' ">
+				provinces = #{provinces},
+			</if>
+			<if test="city!=null and city!='' ">
+				city = #{city},
+			</if>
+			<if test="area!=null and area!='' ">
+				area = #{area},
+			</if>
+			<if test="higherAgentId!=null and higherAgentId!='' ">
+				higher_agent_id = #{higherAgentId},
+			</if>
+			<if test="founder!=null and founder!='' ">
+				founder = #{founder},
+			</if>
+			<if test="usertype!=null and usertype!='' ">
+				userType = #{usertype},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_MEMBER_STATISTICS WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_MEMBER_STATISTICS
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

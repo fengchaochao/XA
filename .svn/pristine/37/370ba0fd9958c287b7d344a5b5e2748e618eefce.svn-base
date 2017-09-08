@@ -1,0 +1,20 @@
+# Main datasource Config 
+maindb.driver=com.mysql.jdbc.Driver
+maindb.url=jdbc:mysql://10.101.2.3:3306/ufdm?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8
+maindb.username=root
+maindb.password=root
+
+# Other datasource Config 
+etbcdb.driver=com.mysql.jdbc.Driver
+etbcdb.url=jdbc:mysql://10.101.0.18:3306/etbc_trial?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8
+etbcdb.username=ecc
+etbcdb.password=goldcarddbqaecc
+
+common.initialSize=10
+common.maxActive=100
+common.minIdle=15
+common.maxWait=10000
+common.testSql=select 1 from dual
+common.whileIdle=true
+common.evictTime=600000
+common.evictNum=30

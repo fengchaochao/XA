@@ -1,0 +1,19 @@
+/** 
+ * @Description: TODO
+ * @date 2016年1月20日 
+ * @author 1936
+ */
+package tutorial.redis;
+
+/**
+ * @Description: TODO
+ * @date 2016年1月20日
+ * @author 1936
+ */
+public class RedisTest {
+
+	public static void main(String[] args) {
+		RedisUtil.getJedis().del("RedPacketIsExits97AEDA168E2E11E787EC70F3954881CC");
+	}
+
+}

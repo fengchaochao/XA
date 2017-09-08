@@ -1,0 +1,315 @@
+package com.prj.biz.api.user;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.prj.biz.bean.about.About;
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.consumers.Consumers;
+import com.prj.biz.bean.sysuser.SysUser;
+import com.prj.biz.enums.RespMessEnum;
+import com.prj.biz.service.about.AboutService;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.consumers.ConsumersService;
+import com.prj.biz.service.sysuser.SysUserService;
+import com.prj.core.bean.exp.UfdmException;
+import com.prj.core.bean.resp.RespBean;
+import com.prj.utils.JsonUtils;
+import com.prj.utils.UfdmMd5Util;
+
+/**
+ * @author: Fengc
+ * @date:2017-8-8 上午8:32:12
+ * @version :0.0.1
+ * @dis:Api用户信息
+ */
+@Controller
+@RequestMapping("/api")
+public class UserAction {
+
+	@Autowired
+	SysUserService userService;
+	
+	@Autowired
+	private BusinessInformationService businessInformationService;
+	
+	@Autowired
+	private ConsumersService consumersService;
+	@Autowired
+	private AboutService aboutService;
+
+	/**
+	 * App用户注册
+	 * 
+	 * @param userName
+	 * @param password
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/AppRegister")
+	@ResponseBody
+	public String AppRegister(String telephone, String password)
+			throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			SysUser sysUser = new SysUser();
+			sysUser.setTelephone(telephone);
+			// 登录
+			SysUser loginSysUser = userService.doGetSysUserForLogin(sysUser);
+
+			// 判断登录是否为空
+			if (loginSysUser == null || loginSysUser.getId() == null
+					|| "".equals(loginSysUser.getId())) {
+
+				sysUser.setLoginPass(UfdmMd5Util.MD5Encode(password));
+				sysUser.setUserStatus("0");
+				sysUser.setUserState("0");
+				userService.doSave(sysUser);
+
+				map.put("code", "1");
+				map.put("data", sysUser);
+				map.put("msg", "用户注册成功！！");
+			} else {
+				map.put("code", "1");
+				map.put("data", "该用户已存在！");
+				map.put("msg", "用户注册失败！");
+			}
+
+		} catch (Exception e) {
+			map.put("code", "0");
+			map.put("data", "");
+			map.put("msg", "系统异常！");
+		}
+
+		return JsonUtils.toJson(map);
+	}
+
+	/**
+	 * App用户修改密码
+	 * 
+	 * @param telephone
+	 * @param password
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/AppUpdatePassword")
+	@ResponseBody
+	public String AppUpdatePassword(String telephone, String password)
+			throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			SysUser sysUser = new SysUser();
+			sysUser.setTelephone(telephone);
+			// 登录
+			SysUser loginSysUser = userService.doGetSysUserForLogin(sysUser);
+
+			// 判断登录是否为空
+			if (loginSysUser == null || loginSysUser.getId() == null
+					|| "".equals(loginSysUser.getId())) {
+
+				map.put("code", "1");
+				map.put("data", "");
+				map.put("msg", "该手机号不存在！");
+			} else {
+				loginSysUser.setLoginPass(UfdmMd5Util.MD5Encode(password));
+				userService.doModById(loginSysUser);
+
+				map.put("code", "1");
+				map.put("data", "");
+				map.put("msg", "密码修改成功！");
+			}
+
+		} catch (Exception e) {
+			map.put("code", "0");
+			map.put("data", "");
+			map.put("msg", "系统异常！");
+		}
+
+		return JsonUtils.toJson(map);
+	}
+
+	/**
+	 * App判断手机号是否已存在
+	 * 
+	 * @param telephone
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/AppCheckPhone")
+	@ResponseBody
+	public String AppCheckPhone(String telephone) throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			SysUser sysUser = new SysUser();
+			sysUser.setTelephone(telephone);
+			// 登录
+			SysUser loginSysUser = userService.doGetSysUserForLogin(sysUser);
+
+			// 判断登录是否为空d
+			if (loginSysUser == null || loginSysUser.getId() == null
+					|| "".equals(loginSysUser.getId())) {
+
+				map.put("code", "1");
+				map.put("data", "");
+				map.put("msg", "该手机号已存在！");
+			} else {
+				map.put("code", "1");
+				map.put("data", "");
+				map.put("msg", "该手机号不存在！");
+			}
+
+		} catch (Exception e) {
+			map.put("code", "0");
+			map.put("data", "");
+			map.put("msg", "系统异常！");
+		}
+
+		return JsonUtils.toJson(map);
+
+	}
+
+	/**
+	 * App用户登录
+	 * 
+	 * @param userName
+	 * @param password
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/AppLogin")
+	@ResponseBody
+	public RespBean<Map<String, Object>> AppLogin(String telephone, String password) throws Exception {
+		RespBean<Map<String, Object>> respBean = new RespBean<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		SysUser sysUser = new SysUser();
+		// 密码MD5摘要
+		sysUser.setLoginPass(UfdmMd5Util.MD5Encode(password));
+		sysUser.setLoginName(telephone);
+		//sysUser.setTelephone(telephone);
+		// 登录ng
+		SysUser loginSysUser = userService.doGetSysUserForLogin(sysUser);
+
+		// 判断登录是否成功
+		if (loginSysUser == null || loginSysUser.getId() == null|| "".equals(loginSysUser.getId())) {
+			throw new UfdmException(RespMessEnum.RESP_CODE_0001002.getRespCode());
+		} else {
+				//判断只有商家，消费商，消费者可以登录App
+				if("0".equals(loginSysUser.getUserState())||"1".equals(loginSysUser.getUserState())){
+					throw new UfdmException(RespMessEnum.RESP_CODE_0001002.getRespCode());
+				}
+				//判断是否被停用
+				if (loginSysUser != null &&"1".equals(loginSysUser.getUserStatus()))	{			
+					throw new UfdmException(RespMessEnum.RESP_CODE_0001007.getRespCode());
+				}
+				//判断拿到商家或者消费商对应的信息
+				if("2".equals(loginSysUser.getUserState())){
+					BusinessInformation businessInformation=businessInformationService.doGetById(loginSysUser.getMerchantsId());
+					map.put("businessInformation", businessInformation);
+				}
+				//判断拿到商家或者消费商对应的信息
+				if("3".equals(loginSysUser.getUserState())){
+					Consumers businessInformation=consumersService.doGetById(loginSysUser.getMerchantsId());
+					map.put("businessInformation", businessInformation);
+				}
+				map.put("data", loginSysUser);
+		}
+		respBean.setBody(map);
+		return respBean;
+
+	}
+	
+	/**
+	 * App商家信息和会员信息
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/AppUserInfo")
+	@ResponseBody
+	public RespBean<Map<String, Object>> AppUserInfo(String userId) throws Exception {
+		RespBean<Map<String, Object>> respBean = new RespBean<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		//获取当前登录人的信息
+		SysUser sysUser = userService.doGetById(userId);
+		if(sysUser != null && !sysUser.equals("")){
+			//根据当前登录人的类型来获取当前登录人的详细信息
+			// 用户类型0-总部 1-代理商 2-商家  3-消费商 4-消费者 5-消费者账户
+			if(sysUser.getUserState().equals("2")){
+				//根据id获取商家详细信息
+				BusinessInformation businessInformation = businessInformationService.selectByIdInfo(sysUser.getMerchantsId());
+				if(businessInformation != null){
+					map.put("businessInformation", businessInformation);
+				}
+			}else if(sysUser.getUserState().equals("3") || sysUser.getUserState().equals("4")){
+				Consumers consumers = consumersService.selectByIdInfo(sysUser.getMerchantsId());
+				if(consumers != null){
+					map.put("businessInformation", consumers);
+				}
+			}
+		}
+		respBean.setBody(map);
+		return respBean;
+	}
+	
+	
+	/**
+	 * App会员修改昵称和个性签名（消费商、消费者）
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/AppUpdateConsumer")
+	@ResponseBody
+	public RespBean<Consumers> AppUpdateConsumer(Consumers consumers) throws Exception {
+		RespBean<Consumers> respBean = new RespBean<Consumers>();
+		consumersService.doModById(consumers);
+		respBean.setBody(consumers);
+		return respBean;
+	}
+	
+	/**
+	 * App修改商家店铺介绍
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/AppUpdateBusiness")
+	@ResponseBody
+	public RespBean<BusinessInformation> AppUpdateBusiness(BusinessInformation businessInformation) throws Exception {
+		RespBean<BusinessInformation> respBean = new RespBean<BusinessInformation>();
+		businessInformationService.doModById(businessInformation);
+		respBean.setBody(businessInformation);
+		return respBean;
+	}
+	
+	/**
+	 * App关于我们
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/AppAboutUs")
+	@ResponseBody
+	public RespBean<Map<String, Object>> AppAboutUs(About about) throws Exception {
+		RespBean<Map<String, Object>> respBean = new RespBean<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<About> aboutsList =  aboutService.doGetList(about);
+		map.put("aboutsList", aboutsList);
+		respBean.setBody(map);
+		return respBean;
+	}
+	
+	
+	
+
+}

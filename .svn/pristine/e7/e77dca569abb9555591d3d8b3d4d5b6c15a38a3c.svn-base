@@ -1,0 +1,55 @@
+log4j.rootLogger=info,stdout,info,debug,error
+
+# \u6807\u51c6\u8f93\u51fa
+log4j.logger.stdout=stdout
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=  %n %5p %d{yyyy-MM-dd  HH:mm:ss} %c{1}-%L :$: %m 
+
+# \u4e0d\u540c\u7ea7\u522b\u7684\u65e5\u5fd7\u5206\u522b\u4fdd\u5b58
+log4j.logger.info=info
+log4j.appender.info=org.apache.log4j.DailyRollingFileAppender 
+log4j.appender.info.layout=org.apache.log4j.PatternLayout 
+log4j.appender.info.layout.ConversionPattern=  %n %5p %d{yyyy-MM-dd  HH:mm:ss} %c{1}-%L :$: %m 
+log4j.appender.info.datePattern='.'yyyy-MM-dd
+log4j.appender.info.Threshold = INFO
+log4j.appender.info.append=true
+log4j.appender.info.File=logs/info.log 
+  
+log4j.logger.debug=debug
+log4j.appender.debug=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.debug.layout=org.apache.log4j.PatternLayout
+log4j.appender.debug.layout.ConversionPattern=  %n %5p %d{yyyy-MM-dd  HH:mm:ss} %c{1}-%L :$: %m 
+log4j.appender.debug.datePattern='.'yyyy-MM-dd
+log4j.appender.debug.Threshold = DEBUG
+log4j.appender.debug.append=true
+log4j.appender.debug.File=logs/debug.log
+
+log4j.logger.error=error
+log4j.appender.error=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.error.layout=org.apache.log4j.PatternLayout
+log4j.appender.error.layout.ConversionPattern=  %n %5p %d{yyyy-MM-dd  HH:mm:ss} %c{1}-%L :$: %m 
+log4j.appender.error.datePattern='.'yyyy-MM-dd
+log4j.appender.error.Threshold = ERROR
+log4j.appender.error.append=true
+log4j.appender.error.File=logs/error.log
+
+# druid\u65e5\u5fd7
+log4j.logger.druid.sql=info
+log4j.logger.druid.sql.DataSource=error
+log4j.logger.druid.sql.Connection=error
+log4j.logger.druid.sql.Statement=debug
+log4j.logger.druid.sql.ResultSet=error
+
+
+# \u81ea\u5b9a\u4e49\u65e5\u5fd7\u5b58\u653e\u6587\u4ef6
+log4j.logger.dataLogFile = INFO,dataLog
+log4j.appender.dataLog=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.dataLog.Threshold = INFO
+log4j.appender.dataLog.File=logs/dataLog.log
+log4j.appender.dataLog.layout=org.apache.log4j.PatternLayout
+log4j.appender.dataLog.layout.ConversionPattern = %n %m
+
+
+
+

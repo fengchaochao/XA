@@ -1,0 +1,142 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" style="height: 100%;">
+<head>
+    <title>系统用户登录</title>
+    <%@ include file="/WEB-INF/views/common/headCommon.jsp"%>
+    <style>
+body{font-family: '微软雅黑';}
+em,span,i{display: inline-block;}
+button,input{border:none;background:none;outline: none;}
+input {border:1px solid #ddd;font-size: 16px;height:40px;border-left:none;padding-left:10px;
+    width:280px;}
+p {margin: 0 0 18px;}
+.main{background:#f5f5f5;}
+.headlineTop{padding-left: 5%;margin-top: 40px;}
+.headlineTop img{margin:-12px 8px 0px 0px;}
+.headlineTop span{font-size:34px;}
+.bgCenter{width:100%;height:432px;text-align: center;margin-top:8%;
+  	background: url("../../img/login/bg.png") no-repeat center;background-size: 100%;}
+.tabBox{display: inline-block;background:#fff;padding:1.5% 5%;box-shadow: 1px 1px 10px #ddd;
+   margin-top: -.8%;}
+.rowOne{font-size:28px;text-align:left;}
+.rowOne span{width:13%;height:45px;background: url("../../img/login/lock.png") no-repeat;
+    background-size: 100% auto;vertical-align: middle;margin-right: 15px;}
+.rowTwo span{height:40px;width:40px;background: url("../../img/login/user.png") no-repeat ;
+    background-size: 100% auto;float: left;}
+.rowThree span{height:40px;width:40px;background: url("../../img/login/password.png") no-repeat ;
+    background-size: 100% auto;float: left;}
+.rowLast{margin-top:15px;text-align:center;}
+.rowLast button{width:216px;height:61px;background: url("../../img/login/btn.png") no-repeat ;
+    background-size: 100% auto;font-size:18px;color:#fff;padding-bottom: 3px;letter-spacing: 10px;}
+.rowLast button:active{background: url("../../img/login/btn1.png") no-repeat ;}
+
+    </style>
+</head>
+<body class="main">
+
+<form id="formSearch" class="form-horizontal">
+    <div class="container">
+        <div class="headlineTop">
+            <img src='<spring:url value="/img/login/logo.png" />' />
+            <span>嗨联后台管理系统</span>
+        </div>
+    </div>
+    <div class="bgCenter">
+        <div class="tabBox">
+            <p class="rowOne"><span></span>登录</p>
+            <p class="rowTwo"><span></span><input type="text" id="loginName" /></p>
+            <p class="rowThree"><span></span><input type="password" id="loginPass"/></p>
+            <p style="text-align:right;"><a style="color:#ff7223;cursor:pointer;" onclick="editRecord();">忘记密码?</a></p>
+            <p class="rowLast"><button type="button" id="btn_submit">登录</button></p>
+        </div>
+    </div>
+	<!-- <div class="row" style="margin-top: 7%;">
+			<div class="form-group">
+				<label for="username" class="control-label col-sm-5">用户名：</label>
+				<div class="col-sm-7">
+					<input type="text" id="loginName" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="userpswd" class="control-label col-sm-5">密&nbsp;码：</label>
+				<div class="col-sm-7">
+					<input type="password" id="loginPass"/>
+				</div>
+			</div>
+			
+			<div class="form-group">
+			    <div class="col-sm-offset-5 col-sm-1">
+			        <button type="button" class="btn btn-primary" id="btn_submit">登录</button>
+			    </div>
+			    <div class="checkbox col-sm-6">
+				    <label class="checkbox-inline">
+				        <input type="checkbox" id="rememberMe" /> 记住密码
+				    </label>
+			    </div>
+			</div>
+	</div> -->
+   </form>
+    <script type="text/javascript" src='<spring:url value="/js/plugin/bootstrap-table-1.10.1/bootstrap-table.min.1.10.1.js" />'></script>
+    <script type="text/javascript" src='<spring:url value="/js/plugin/bootstrap-table-1.10.1/locale/bootstrap-table-zh-CN.min.js" />'></script>
+	<script type="text/javascript">
+	$(function() {
+		//再跳转login界面时保持顶层显示
+		if (window.top != null && window.top.location != window.location) {
+            window.top.location = window.location;
+        }
+		
+		 $(document).keypress(function(e) {  
+			    // 回车键事件  
+			if(e.which == 13) {  
+				$("#btn_submit").click();
+		    }  
+		 }); 
+		 var u = navigator.userAgent, app = navigator.appVersion;
+		 if(u.indexOf('Android')!=-1||u.indexOf('iPhone')!=-1){
+		 	var inputs = $(".form-group");
+		 	for(var input in inputs){
+		 		$(input).addClass("text-center");
+		 	}
+		 }
+		 
+	});
+	$("#btn_submit").bind("click",function(){
+		
+		var rememberMe = false;
+		if($('#rememberMe').is(':checked')) {
+			rememberMe = true;
+		}
+		
+		$.ajax({
+			type: "get",
+			url: '<spring:url value="/sysuser/account/doSysUserLogin" />',
+			data:{
+				loginName:$("#loginName").val(),
+				loginPass:$("#loginPass").val(),
+				rememberMe:rememberMe,
+				guidStr:generateGuid()
+			},
+			dataType: "json",
+			async: false,
+			success: function(data){
+				
+				if(data.head.respCode=='0000000'){
+					window.location='<spring:url value="/sysuser/account/doEnLoginIndex" />';
+				}
+				else{
+					top.layer.alert(data.head.respContent);
+				}
+			}
+		});
+	});
+	// 忘记密码
+   function editRecord() {
+		window.location.href='<spring:url value="/sysuser/account/doEnforgetPass"/>';
+    }
+	</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+package com.prj.biz.service._impl.goodsclassification;
+
+import java.util.List;
+
+import com.prj.biz.bean.goodsclassification.GoodsClassification;
+import com.prj.biz.bean.goodsspecifications.GoodsSpecifications;
+import com.prj.biz.dao.maindb.goodsclassification.GoodsClassificationDao;
+import com.prj.biz.service._impl._base.BaseServiceImpl;
+import com.prj.biz.service.goodsclassification.GoodsClassificationService;
+import org.springframework.stereotype.Service;
+/**
+ * 
+ * 描述: 商品分类 Service 实现<br>
+ * @author Liang
+ * @date 2017-07-11
+ */
+@Service
+public class GoodsClassificationServiceImpl extends BaseServiceImpl<GoodsClassificationDao,GoodsClassification> implements GoodsClassificationService
+{
+
+	
+
+}

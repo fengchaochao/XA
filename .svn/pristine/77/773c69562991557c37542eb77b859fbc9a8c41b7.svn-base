@@ -1,0 +1,67 @@
+package com.prj.biz.bean.localuser;
+
+import com.prj.biz.bean._base.BaseEntity;
+
+/** 
+ * 描述: 锁定用户表 实体类<br>
+ * @author Liang
+ * @date 2017-07-18
+ * 
+ */
+public class LocalUser extends BaseEntity  
+{
+
+    private static final long	serialVersionUID	= 1L;
+
+    //  
+    private String id;
+    // 用户id 
+    private String userId;
+    // 商家id 
+    private String merchantId;
+    // 用户类型1-微信用户 2-支付宝用户 
+    private String userType;
+    // 用户账号 
+    private String userAccount;
+
+
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    public String getUserId() {
+        return userId;
+    }
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+
+    public String getMerchantId() {
+        return merchantId;
+    }
+    public void setMerchantId(String merchantId) {
+        this.merchantId = merchantId;
+    }
+
+
+    public String getUserType() {
+        return userType;
+    }
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+
+    public String getUserAccount() {
+        return userAccount;
+    }
+    public void setUserAccount(String userAccount) {
+        this.userAccount = userAccount;
+    }
+
+}

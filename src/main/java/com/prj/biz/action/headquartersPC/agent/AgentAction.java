@@ -1,0 +1,349 @@
+/**
+ * Copyright© 2003-2013 天尔软件, All Rights Reserved <br/>
+ * 描述: 业务文件 <br/>
+ * @author Liang
+ * @date 2017-07-10
+ * @version 1.0
+ */
+package com.prj.biz.action.headquartersPC.agent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import tutorial.redis.RedisUtil;
+
+import com.prj.biz.action._base.BaseAction;
+import com.prj.biz.bean.agent.Agent;
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.codeareas.codeAreas;
+import com.prj.biz.bean.consumers.Consumers;
+import com.prj.biz.bean.sysuser.SysUser;
+import com.prj.biz.service.agent.AgentService;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.codeareas.codeAreasService;
+import com.prj.biz.service.consumers.ConsumersService;
+import com.prj.biz.service.sysuser.SysUserService;
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+import com.prj.utils.ObjectUtil;
+import com.prj.utils.UfdmDateUtil;
+import com.prj.utils.UfdmMd5Util;
+
+/**
+ * 描述: 代理商客户信息 Action 类<br>
+ * 
+ * @author Liang
+ * @date 2017-07-10
+ */
+@RestController
+@RequestMapping("/headquarters/agent")
+public class AgentAction extends BaseAction {
+	private static final long serialVersionUID = 1L;
+
+	@Resource
+	private AgentService agentService;
+	@Resource
+	private codeAreasService codeAreasService;
+	@Resource
+	private SysUserService sysUserService;
+	@Resource
+	private BusinessInformationService businessInformationService;
+	@Resource
+	private ConsumersService consumersService;
+
+	/**
+	 * 描述: 进入列表显示页面
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-10
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnAgentList")
+	public ModelAndView doEnAgentListAction(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		return new ModelAndView("/headquarters/agent/agentList");
+	}
+
+	/**
+	 * 描述: 分页查询信息
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-10
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadAgentList")
+	@ResponseBody
+	public RespBean<RespPagination<Agent>> doReadAgentList(Agent agent)
+			throws Exception {
+		RespBean<RespPagination<Agent>> respBean = new RespBean<RespPagination<Agent>>();
+		RespPagination<Agent> respPagination = new RespPagination<Agent>();
+		agent.setOrderName("create_date");
+		agent.setOrder("DESC");
+		agent.setApplicationState("1");
+		Integer total = agentService.doGetTotal(agent);
+		List<Agent> agentList = agentService.doGetList(agent);
+		for (int i = 0; i < agentList.size(); i++) {
+			String address=agentList.get(i).getProvinces()+"省"+agentList.get(i).getCity()+agentList.get(i).getArea()+agentList.get(i).getAddress();
+			agentList.get(i).setAddress(address);
+		}
+		respPagination.setTotal(total);
+		respPagination.setRows(agentList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+
+	/**
+	 * 描述: 进入添加页面
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-10
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping("/doEnAgentAdd")
+	public ModelAndView doEnAgentAdd() throws Exception {
+		Map<String, Object> model = new HashMap<String, Object>();
+		int i = (int) (Math.random() * 900) + 100;
+		String agentCode = "HLD" + UfdmDateUtil.getCurrentDate1()
+				+ UfdmDateUtil.getCurrentSimpleTime1() + i;
+		String key = "countCodeAreas";  
+		String key1 = "codeAreas";  
+	    String key2 = "cityCodeAreas";  
+	    String key3 = "areaCodeAreas"; 
+	    List<codeAreas> countCodeAreas=new ArrayList<codeAreas>();
+	    List<codeAreas> codeAreas=new ArrayList<codeAreas>();
+		List<codeAreas> cityCodeAreas=new ArrayList<codeAreas>();
+		List<codeAreas> areaCodeAreas=new ArrayList<codeAreas>();
+		
+	    byte[] a=RedisUtil.getJedis().get(key.getBytes());
+	    if(a==null){
+	    	countCodeAreas=codeAreasService.selectCountyList();
+	    }else{
+	    	countCodeAreas = ( List<codeAreas>) ObjectUtil.bytesToObject((RedisUtil.getJedis().get(key.getBytes())));
+	    }
+	    byte[] b=RedisUtil.getJedis().get(key1.getBytes());
+		
+	    if(b==null){
+		   codeAreas=codeAreasService.selectProvinceList();
+	    }else{
+	    	codeAreas = ( List<codeAreas>) ObjectUtil.bytesToObject((RedisUtil.getJedis().get(key1.getBytes())));
+	    }
+	    
+	    byte[] c=RedisUtil.getJedis().get(key2.getBytes());
+		
+	    if(c==null){
+	    	cityCodeAreas=codeAreasService.selectCityList();
+	    }else{
+	    	cityCodeAreas = ( List<codeAreas>) ObjectUtil.bytesToObject((RedisUtil.getJedis().get(key2.getBytes())));
+	    }
+	    
+	    byte[] d=RedisUtil.getJedis().get(key3.getBytes());
+		
+	    if(d==null){
+	    	areaCodeAreas=codeAreasService.selectRegionList();
+	    }else{
+	    	areaCodeAreas = ( List<codeAreas>) ObjectUtil.bytesToObject((RedisUtil.getJedis().get(key3.getBytes())));
+	    }
+	    
+		model.put("countryList", countCodeAreas);
+		model.put("provinceList", codeAreas);
+		model.put("cityList", cityCodeAreas);
+		model.put("areaList", areaCodeAreas);
+		model.put("agentCode", agentCode);
+		return new ModelAndView("/headquarters/agent/agentAdd", model);
+	}
+
+	/**
+	 * 描述: 保存数据
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-10
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doSaveAgent")
+	public RespBean<String> doSaveAgent(Agent agent,String agentAreaId) throws Exception {
+		RespBean<String> respBean = new RespBean<String>();
+		agent.setApplicationState("1");
+		//生成对应的用户信息
+		SysUser sysUser1 = new SysUser();
+		sysUser1.setLoginName(agent.getPhone());
+		List<SysUser> sysUserList = sysUserService.doGetList(sysUser1);
+		if (sysUserList.size() < 1) {
+			agent.setConsumersNumber("100");
+			agentService.doSave(agent);
+			//代理区域
+			String[] agentAreaIds = agentAreaId.split(",");
+			for (int i = 0; i < agentAreaIds.length; i++) {
+				String string = agentAreaIds[i];
+				codeAreas codeAreas=codeAreasService.doGetById(string);
+				if(StringUtils.isEmpty(codeAreas.getAgentId())){
+					codeAreas.setAgentId(agent.getId());
+				}else{
+					codeAreas.setAgentId(codeAreas.getAgentId()+","+agent.getId());
+				}
+				/*codeAreas.setAgentState("1");*/
+				codeAreasService.doModById(codeAreas);
+			}
+			SysUser sysUser = new SysUser();
+			sysUser.setLoginName(agent.getPhone());
+			sysUser.setMobile(agent.getPhone());
+			sysUser.setLoginPass(UfdmMd5Util.MD5Encode("123456"));
+			sysUser.setTelephone(agent.getPhone());
+			sysUser.setRealName(agent.getAgentName());
+			sysUser.setMerchantsId(agent.getId());
+			sysUser.setUserStatus("0");
+			sysUser.setUserState("1");
+			sysUserService.doSave(sysUser);
+			respBean.setBody("保存成功");
+		}else{
+			respBean.setBody("该手机号对应的用户信息已存在");
+		}
+
+		return respBean;
+	}
+
+	/**
+	 * 描述: 进入编辑页面
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-10
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnAgentEdit")
+	public ModelAndView doEnAgentEdit(String agentId) throws Exception {
+		Agent agent = agentService.doGetById(agentId);
+		Map<String, Object> model = new HashMap<String, Object>();
+		
+		String[] idNoPhoto = agent.getIdNoPhoto().split(",");
+		//发展商家
+		BusinessInformation businessInformation=new BusinessInformation();
+		businessInformation.setHigherAgentId(agentId);
+		List<BusinessInformation> businessInformationList=businessInformationService.doGetList(businessInformation);
+		//发展的消费商
+		Consumers consumers=new Consumers();
+		consumers.setAgentId(agentId);
+		List<Consumers> consumersList=consumersService.doGetList(consumers);
+		
+		model.put("agent", agent);
+		model.put("countryList", codeAreasService.selectCountyList());
+		model.put("provinceList", codeAreasService.selectProvinceList());
+		model.put("cityList", codeAreasService.selectCityList());
+		model.put("areaList", codeAreasService.selectRegionList());
+		model.put("businessInformationList",businessInformationList);
+		model.put("consumersList",consumersList);
+		model.put("businessNumber",businessInformationList.size());
+		model.put("consumersNumber",consumersList.size());
+		model.put("idNoPhoto", idNoPhoto);
+		return new ModelAndView("/headquarters/agent/agentEdit", model);
+	}
+
+	/**
+	 * 描述: 修改信息
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-10
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEditAgent")
+	public RespBean<Agent> doEditAgent(Agent agent) throws Exception {
+		RespBean<Agent> respBean = new RespBean<Agent>();
+		Agent agent1 = agentService.doGetById(agent.getId());
+		agent1.setAgentName(agent.getAgentName());
+		agent1.setPhone(agent.getPhone());
+		agent1.setAddress(agent.getAddress());
+		agent1.setProvincesId(agent.getProvincesId());
+		agent1.setCityId(agent.getCityId());
+		agent1.setAreaId(agent.getAreaId());
+		agent1.setJyd(agent.getJyd());
+		agentService.doModById(agent1);
+		
+		SysUser sysUser1 = new SysUser();
+		sysUser1.setMerchantsId(agent1.getId());
+		List<SysUser> sysUserList = sysUserService.doGetList(sysUser1);
+		if (sysUserList.size() >0) {
+			sysUserList.get(0).setLoginName(agent.getPhone());
+			sysUserList.get(0).setMobile(agent.getPhone());
+			sysUserList.get(0).setRealName(agent.getAgentName());
+			sysUserService.doModById(sysUserList.get(0));
+		}
+		
+		respBean.setBody(agent1);
+		return respBean;
+	}
+	/**
+	 * 描述: 修改消费商数量上限
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-10
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEditNumber")
+	public RespBean<Agent> doEditNumber(Agent agent) throws Exception {
+		RespBean<Agent> respBean = new RespBean<Agent>();
+		Agent agent1 = agentService.doGetById(agent.getId());
+		agent1.setConsumersNumber(String.valueOf(Integer.parseInt(agent1.getConsumersNumber())+100));
+		agentService.doModById(agent1);
+		
+		respBean.setBody(agent1);
+		return respBean;
+	}
+	/**
+	 * 描述: 停用 启用
+	 * 
+	 * @auther Liang
+	 * @date 2017-07-10
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doDelAgent")
+	@ResponseBody
+	public RespBean<String> doDelAgentAction(String agentId) throws Exception {
+		RespBean<String> respBean = new RespBean<String>();
+		Agent agent = agentService.doGetById(agentId);
+		SysUser sysUser1 = new SysUser();
+		sysUser1.setMerchantsId(agentId);
+		List<SysUser> sysUserList = sysUserService.doGetList(sysUser1);
+		if (agent != null) {
+			if ("0".equals(agent.getAgentState())) {
+				agent.setAgentState("1");
+				if (sysUserList.size() > 0) {
+					sysUserList.get(0).setUserStatus("1");
+					sysUserService.doModById(sysUserList.get(0));
+				}
+				respBean.setBody("停用成功！");
+
+			} else {
+				agent.setAgentState("0");
+				if (sysUserList.size() > 0) {
+					sysUserList.get(0).setUserStatus("0");
+					sysUserService.doModById(sysUserList.get(0));
+				}
+				respBean.setBody("启用成功！");
+
+			}
+		}
+
+		agentService.doModById(agent);
+		return respBean;
+	}
+
+}

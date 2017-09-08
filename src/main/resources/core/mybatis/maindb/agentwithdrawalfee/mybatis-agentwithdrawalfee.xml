@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.agentwithdrawalfee.AgentWithdrawalFeeDao">
+
+    <resultMap id="agentwithdrawalfeeResult" type="com.prj.biz.bean.agentwithdrawalfee.AgentWithdrawalFee">
+		<result property="id" column="id" />
+		<result property="poundage" column="poundage" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,poundage
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="poundage!=null and poundage!='' ">
+		        AND poundage = #{poundage}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="agentwithdrawalfeeResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_AGENT_WITHDRAWAL_FEE 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="agentwithdrawalfeeResult" parameterType="com.prj.biz.bean.agentwithdrawalfee.AgentWithdrawalFee" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_AGENT_WITHDRAWAL_FEE 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.agentwithdrawalfee.AgentWithdrawalFee">
+		select
+		    count(ID)
+		from 
+			 XA_AGENT_WITHDRAWAL_FEE 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.agentwithdrawalfee.AgentWithdrawalFee">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_AGENT_WITHDRAWAL_FEE 
+			(id,poundage)
+		VALUES 
+			(#{id},#{poundage})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_AGENT_WITHDRAWAL_FEE 
+			(id,poundage)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{poundage})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.agentwithdrawalfee.AgentWithdrawalFee">
+     UPDATE XA_AGENT_WITHDRAWAL_FEE
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="poundage!=null and poundage!='' ">
+				poundage = #{poundage},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_AGENT_WITHDRAWAL_FEE
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="poundage!=null and poundage!='' ">
+				poundage = #{poundage},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_AGENT_WITHDRAWAL_FEE WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_AGENT_WITHDRAWAL_FEE
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

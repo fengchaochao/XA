@@ -1,0 +1,200 @@
+/**
+ * Copyright© 2003-2013 天尔软件, All Rights Reserved <br/>
+ * 描述: 业务文件 <br/>
+ * @author Liang
+ * @date 2017-08-17
+ * @version 1.0
+ */
+package com.prj.biz.api.shoppingcart;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.prj.biz.bean.order.Order;
+import com.prj.biz.bean.shippingaddress.ShippingAddress;
+import com.prj.biz.bean.shoppingcart.ShoppingCart;
+import com.prj.biz.service.order.OrderService;
+import com.prj.biz.service.shippingaddress.ShippingAddressService;
+import com.prj.biz.service.shoppingcart.ShoppingCartService;
+import com.prj.biz.action._base.BaseAction;
+
+import javax.annotation.Resource;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+
+
+
+/** 
+ * 描述: APP购物车 Action 类<br>
+ * @author Liang
+ * @date 2017-08-17
+ */
+@RestController
+@RequestMapping("/api")
+public class ShoppingCartAction extends BaseAction
+{
+	private static final long	serialVersionUID	= 1L;
+	
+	@Resource
+	private ShoppingCartService shoppingCartService;
+	@Resource
+	private ShippingAddressService shippingAddressService;
+	@Resource
+	private OrderService orderService;
+
+	/**
+	 * 描述: 分页查询信息
+	 * @auther Liang
+	 * @date 2017-08-17
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadShoppingCartList")
+	@ResponseBody
+	public RespBean<RespPagination<ShoppingCart>> doReadShoppingCartList(ShoppingCart shoppingCart) throws Exception{
+		RespBean<RespPagination<ShoppingCart>> respBean = new RespBean<RespPagination<ShoppingCart>>();
+		RespPagination<ShoppingCart> respPagination = new RespPagination<ShoppingCart>();
+		Integer total = shoppingCartService.doGetTotal(shoppingCart);
+		List<ShoppingCart> shoppingCartList = shoppingCartService.doGetList(shoppingCart);
+		respPagination.setTotal(total);
+		respPagination.setRows(shoppingCartList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 新增购物车商品
+	 * @auther Liang
+	 * @date 2017-08-17
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doAddShoppingCart")
+	public RespBean<ShoppingCart> doAddShoppingCart(ShoppingCart shoppingCart) throws Exception{
+		RespBean<ShoppingCart> respBean = new RespBean<ShoppingCart>();
+		ShoppingCart cart = new ShoppingCart();
+		cart.setBusinessId(shoppingCart.getBusinessId());
+		cart.setGoodsId(shoppingCart.getGoodsId());
+		cart.setPurchaserId(shoppingCart.getPurchaserId());
+		cart.setSpecificationsId(shoppingCart.getSpecificationsId());
+		List<ShoppingCart> list = shoppingCartService.doGetList(cart);
+		if(list.size() > 0){
+			Integer num = Integer.parseInt(list.get(0).getNumber());
+			ShoppingCart cart2 = new ShoppingCart();
+			cart2.setId(list.get(0).getId());
+			cart2.setNumber((num + 1) + "");
+			shoppingCartService.doModById(cart2);
+		}else {
+			shoppingCartService.doSave(shoppingCart);
+			respBean.setBody(shoppingCart);
+		}
+		return respBean;
+	}
+	
+	
+	/**
+	 * 描述: 修改商品数量
+	 * @auther Liang
+	 * @date 2017-08-17
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEditShoppingCart")
+	public RespBean<ShoppingCart> doEditShoppingCart(ShoppingCart shoppingCart) throws Exception{
+		RespBean<ShoppingCart> respBean = new RespBean<ShoppingCart>();
+		shoppingCartService.doModById(shoppingCart);
+		respBean.setBody(shoppingCart);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 删除
+	 * @auther Liang
+	 * @date 2017-08-17
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doDelShoppingCart")
+	@ResponseBody
+	public RespBean<String> doDelShoppingCartAction(String id) throws Exception{
+		RespBean<String> respBean = new RespBean<String>();
+		shoppingCartService.doRmByIds(id);
+		respBean.setBody("删除成功");
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 下单
+	 * @auther Liang
+	 * @date 2017-08-18
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/AppOrderUp")
+	@ResponseBody
+	public RespBean<Map<String, Object>> AppOrderUp(String ids,String userId) throws Exception{
+		RespBean<Map<String, Object>> respBean = new RespBean<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		String[] id = ids.split(",");
+		double moneyCount = 0.00;
+		//循坏获取该购物车id下的商品价钱
+		for (int i = 0; i < id.length; i++) {
+			ShoppingCart shoppingCart = shoppingCartService.doGetById(id[i]);
+			if(shoppingCart != null){
+				//获取商品购买数量
+				String number = shoppingCart.getNumber();
+				//获取商品价钱
+				String price = shoppingCart.getPrice();
+				if(price != null && !price.equals("")){
+					//商品总额
+					moneyCount += Double.parseDouble(number) * Double.parseDouble(price);
+				}
+				
+			}
+		}
+		
+		//获取支付方式
+		
+		
+		//获取默认的收货地址
+		ShippingAddress address = new ShippingAddress();
+		address.setUserId(userId);
+		ShippingAddress shippingAddress = shippingAddressService.selectByIsDefault(address);
+		if(shippingAddress == null || shippingAddress.equals("")){
+			ShippingAddress shipping = new ShippingAddress();
+			map.put("shippingAddress", shipping);
+		}else {
+			map.put("shippingAddress", shippingAddress);
+		}
+		map.put("moneyCount", moneyCount + "");
+		respBean.setBody(map);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 订单页
+	 * @auther Liang
+	 * @date 2017-08-17
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doOrderList")
+	@ResponseBody
+	public RespBean<RespPagination<Order>> doOrderList(Order order) throws Exception{
+		RespBean<RespPagination<Order>> respBean = new RespBean<RespPagination<Order>>();
+		RespPagination<Order> respPagination = new RespPagination<Order>();
+		Integer total = orderService.doGetTotal(order);
+		List<Order> orderList = orderService.doGetList(order);
+		respPagination.setTotal(total);
+		respPagination.setRows(orderList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	
+}

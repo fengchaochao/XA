@@ -1,0 +1,220 @@
+package com.prj.biz.api.homepageApi;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.prj.biz.action._base.BaseAction;
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.goods.Goods;
+import com.prj.biz.bean.historyseacher.HistorySeacher;
+import com.prj.biz.bean.shufflingfigure.ShufflingFigure;
+import com.prj.biz.service.businessinformation.BusinessInformationService;
+import com.prj.biz.service.goods.GoodsService;
+import com.prj.biz.service.historyseacher.HistorySeacherService;
+import com.prj.biz.service.shufflingfigure.ShufflingFigureService;
+import com.prj.biz.service.sysuser.SysUserService;
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+import com.prj.utils.UfdmDateUtil;
+
+/**
+ * @author: Liang
+ * @date:2017-8-17 上午8:32:12
+ * @version :0.0.1
+ * @dis:Api首页
+ */
+@SuppressWarnings("serial")
+@Controller
+@RequestMapping("/api")
+public class HomepageApiAction extends BaseAction{
+
+	@Autowired
+	SysUserService userService;
+	
+	@Autowired
+	ShufflingFigureService shufflingFigureService;
+	
+	@Autowired
+	private BusinessInformationService businessInformationService;
+	
+	@Autowired
+	private GoodsService goodsService;
+	
+	@Autowired
+	private HistorySeacherService historySeacherService;
+	
+	/**
+	 * 首页->轮播图及广告条
+	 * 
+	 * @param request
+	 * @param response
+	 * @param          
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnSlideShow")
+	@ResponseBody
+	public  RespBean<Map<String, Object>> doEnSlideShow(HttpServletRequest request,
+			HttpServletResponse response) {
+		RespBean<Map<String, Object>> respBean = new RespBean<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			//首页轮播图
+			ShufflingFigure shufflingFigure=new ShufflingFigure();
+			shufflingFigure.setTypeName("APP轮播图");
+			List<ShufflingFigure> shufflingFigureList = shufflingFigureService.doGetList(shufflingFigure);
+			//首页广告条
+			shufflingFigure.setTypeName("APP广告条");
+			List<ShufflingFigure> advertisingPhotoList = shufflingFigureService.doGetList(shufflingFigure);
+			map.put("shufflingFigureList", shufflingFigureList);
+			map.put("advertisingPhotoList", advertisingPhotoList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		respBean.setBody(map);
+		return respBean;
+	}
+	/**
+	 * 首页->热门商家
+	 * 
+	 * @param request
+	 * @param response
+	 * @param          
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnPopularMerchants")
+	@ResponseBody
+	public RespBean<RespPagination<BusinessInformation>> doEnPopularMerchants(HttpServletRequest request,HttpServletResponse response,
+			String areaId,String merchantsClassificationId,String bussinessName,String limit,String offset) {
+		
+		RespBean<RespPagination<BusinessInformation>> respBean = new RespBean<RespPagination<BusinessInformation>>();
+		RespPagination<BusinessInformation> respPagination = new RespPagination<BusinessInformation>();
+		BusinessInformation businessInformation=new BusinessInformation();
+		if(!StringUtils.isEmpty(areaId)){
+			businessInformation.setAreaId(areaId);
+		}
+		if(!StringUtils.isEmpty(merchantsClassificationId)){
+			businessInformation.setMerchantsClassificationId(merchantsClassificationId);
+		}
+		if(!StringUtils.isEmpty(bussinessName)){
+			businessInformation.setVendorName(bussinessName);
+		}
+		businessInformation.setLimit(Integer.parseInt(limit));
+		businessInformation.setOffset(Integer.parseInt(offset));
+		try {
+			List<BusinessInformation> businessInformationList = businessInformationService.doGetList(businessInformation);
+			respPagination.setRows(businessInformationList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 * 首页->热门商品
+	 * 
+	 * @param request
+	 * @param response
+	 * @param          
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnPopularGoods")
+	@ResponseBody
+	public RespBean<RespPagination<Goods>> doEnPopularGoods(HttpServletRequest request,HttpServletResponse response,
+			String areaId,String commodityTypeId,String goodsName,String keySeach,String deviceNumber,String limit,String offset) {
+		
+		RespBean<RespPagination<Goods>> respBean = new RespBean<RespPagination<Goods>>();
+		RespPagination<Goods> respPagination = new RespPagination<Goods>();
+		
+		try {
+			Goods goods=new Goods();
+			if(!StringUtils.isEmpty(areaId)){
+				goods.setAreaId(areaId);
+			}
+			if(!StringUtils.isEmpty(commodityTypeId)){
+				goods.setCommodityTypeId(commodityTypeId);
+			}
+			if(!StringUtils.isEmpty(goodsName)){
+				goods.setCommodityName(goodsName);
+			}
+			if(!StringUtils.isEmpty(keySeach)){
+				goods.setKeySeach(keySeach);
+				HistorySeacher historySeacher=new HistorySeacher();
+				historySeacher.setSeachContext(keySeach);
+				historySeacher.setDeviceNumber(deviceNumber);
+				List<HistorySeacher> historySeachers=historySeacherService.doGetList(historySeacher);
+				if(historySeachers.size()>0){
+					historySeachers.get(0).setSeachDate(UfdmDateUtil.getCurrentTime());
+					historySeacherService.doModById(historySeachers.get(0));
+				}else{
+					historySeacher.setSeachDate(UfdmDateUtil.getCurrentTime());
+					historySeacherService.doSave(historySeacher);
+				}
+			}
+			goods.setLimit(Integer.parseInt(limit));
+			goods.setOffset(Integer.parseInt(offset));
+			
+			List<Goods> goodsList = goodsService.doGetList(goods);
+			respPagination.setRows(goodsList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 * 首页->历史搜索记录
+	 * 
+	 * @param request
+	 * @param response
+	 * @param          
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/doEnSeachRecordList")
+	@ResponseBody
+	public RespBean<RespPagination<HistorySeacher>> doEnSeachRecordList(HttpServletRequest request,HttpServletResponse response,
+			String keySeach,String deviceNumber,String limit,String offset) {
+		
+		RespBean<RespPagination<HistorySeacher>> respBean = new RespBean<RespPagination<HistorySeacher>>();
+		RespPagination<HistorySeacher> respPagination = new RespPagination<HistorySeacher>();
+		
+		try {
+			
+			HistorySeacher historySeacher=new HistorySeacher();
+			if(!StringUtils.isEmpty(keySeach)){
+				historySeacher.setKeySeach(keySeach);
+			}
+			historySeacher.setDeviceNumber(deviceNumber);
+			historySeacher.setLimit(Integer.parseInt(limit));
+			historySeacher.setOffset(Integer.parseInt(offset));
+			historySeacher.setOrder("desc");
+			historySeacher.setOrderName("seach_date");
+			List<HistorySeacher> historySeacherList = historySeacherService.doGetList(historySeacher);
+			
+			respPagination.setRows(historySeacherList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+
+}

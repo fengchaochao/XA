@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.businessinformation.BusinessInformationDao">
+
+    <resultMap id="businessinformationResult" type="com.prj.biz.bean.businessinformation.BusinessInformation">
+		<result property="id" column="id" />
+		<result property="merchantNumber" column="merchant_number" />
+		<result property="merchantsClassificationId" column="merchants_classification_id" />
+		<result property="vendorName" column="vendor_name" />
+		<result property="merchantPhone" column="merchant_phone" />
+		<result property="address" column="address" />
+		<result property="diamondCard" column="diamond_card" />
+		<result property="registrationName" column="registration_name" />
+		<result property="organizationCode" column="organization_code" />
+		<result property="registrationAddress" column="registration_address" />
+		<result property="businessIcensePhoto" column="business_icense_photo" />
+		<result property="storePhotos" column="store_photos" />
+		<result property="userName" column="user_name" />
+		<result property="idNumber" column="id_number" />
+		<result property="userAddress" column="user_address" />
+		<result property="idPhoto" column="id_photo" />
+		<result property="localConsumption" column="local_consumption" />
+		<result property="drainageConsumption" column="drainage_consumption" />
+		<result property="businessState" column="business_state" />
+		<result property="higherAgentId" column="higher_agent_id" />
+		<result property="createDate" column="create_date" />
+		<result property="source" column="source" />
+		<result property="provincesId" column="provinces_id" />
+		<result property="cityId" column="city_id" />
+		<result property="areaId" column="area_id" />
+		<result property="founder" column="founder" />
+		<result property="agentName" column="agentName" />
+		<result property="localUser" column="localUser" />
+		<result property="recommendedBusiness" column="recommendedBusiness" />
+		<result property="typeName" column="typeName" />
+		<result property="provinces" column="provinces" />
+		<result property="city" column="city" />
+		<result property="area" column="area" />
+		<result property="founderName" column="founderName" />
+		<result property="effectState" column="effect_state" />
+		<result property="customerId" column="customer_id" />
+		<result property="businessType" column="business_type" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		a.id,a.merchant_number,a.merchants_classification_id,a.vendor_name,a.merchant_phone,a.address,a.diamond_card,a.registration_name,a.organization_code,a.registration_address,a.business_icense_photo,a.store_photos,a.user_name,a.id_number,a.user_address,a.id_photo,a.local_consumption,a.drainage_consumption,a.business_state,a.higher_agent_id,a.create_date,a.source,a.provinces_id,a.city_id,a.area_id,a.founder,a.`effect_state`,a.customer_id,a.business_type
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND a.ID = #{id} 
+	       </if>
+		    <if test="merchantNumber!=null and merchantNumber!='' ">
+		        AND a.merchant_number = #{merchantNumber}
+		    </if>
+		    <if test="merchantsClassificationId!=null and merchantsClassificationId!='' ">
+		        AND a.merchants_classification_id = #{merchantsClassificationId}
+		    </if>
+		    <if test="vendorName!=null and vendorName!='' ">
+		        AND a.vendor_name = #{vendorName}
+		    </if>
+		    <if test="merchantPhone!=null and merchantPhone!='' ">
+		        AND a.merchant_phone = #{merchantPhone}
+		    </if>
+		    <if test="address!=null and address!='' ">
+		        AND a.address = #{address}
+		    </if>
+		    <if test="diamondCard!=null and diamondCard!='' ">
+		        AND a.diamond_card = #{diamondCard}
+		    </if>
+		    <if test="registrationName!=null and registrationName!='' ">
+		        AND a.registration_name = #{registrationName}
+		    </if>
+		    <if test="organizationCode!=null and organizationCode!='' ">
+		        AND a.organization_code = #{organizationCode}
+		    </if>
+		    <if test="registrationAddress!=null and registrationAddress!='' ">
+		        AND a.registration_address = #{registrationAddress}
+		    </if>
+		    <if test="businessIcensePhoto!=null and businessIcensePhoto!='' ">
+		        AND a.business_icense_photo = #{businessIcensePhoto}
+		    </if>
+		    <if test="storePhotos!=null and storePhotos!='' ">
+		        AND a.store_photos = #{storePhotos}
+		    </if>
+		    <if test="userName!=null and userName!='' ">
+		        AND a.user_name = #{userName}
+		    </if>
+		    <if test="idNumber!=null and idNumber!='' ">
+		        AND a.id_number = #{idNumber}
+		    </if>
+		    <if test="userAddress!=null and userAddress!='' ">
+		        AND a.user_address = #{userAddress}
+		    </if>
+		    <if test="idPhoto!=null and idPhoto!='' ">
+		        AND a.id_photo = #{idPhoto}
+		    </if>
+		    <if test="localConsumption!=null and localConsumption!='' ">
+		        AND a.local_consumption = #{localConsumption}
+		    </if>
+		    <if test="drainageConsumption!=null and drainageConsumption!='' ">
+		        AND a.drainage_consumption = #{drainageConsumption}
+		    </if>
+		    <if test="businessState!=null and businessState!='' ">
+		        AND a.business_state = #{businessState}
+		    </if>
+		    <if test="higherAgentId!=null and higherAgentId!='' ">
+		        AND a.higher_agent_id = #{higherAgentId}
+		    </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        AND a.create_date = #{createDate}
+		    </if>
+		    <if test="source!=null and source!='' ">
+		        AND a.source = #{source}
+		    </if>
+		    <if test="provincesId!=null and provincesId!='' ">
+		        AND a.provinces_id = #{provincesId}
+		    </if>
+		    <if test="cityId!=null and cityId!='' ">
+		        AND a.city_id = #{cityId}
+		    </if>
+		    <if test="areaId!=null and areaId!='' ">
+		        AND a.area_id = #{areaId}
+		    </if>
+		    <if test="founder!=null and founder!='' ">
+		        AND a.founder = #{founder}
+		    </if>
+		    <if test="effectState!=null and effectState!='' ">
+		        AND a.`effect_state` = #{effectState}
+		    </if>
+		    <if test="customerId!=null and customerId!='' ">
+		        AND a.customer_id = #{customerId}
+		    </if>
+		    <if test="businessType!=null and businessType!='' ">
+		        AND a.business_type = #{businessType}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="businessinformationResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> ,
+			b.category_name typeName,
+			c.agent_name agentName,
+			d.area_name provinces,
+			e.area_name city,
+			f.area_name area,
+			g.REAL_NAME founderName,
+			(SELECT COUNT(g.id) FROM xa_business_information g WHERE g.founder=a.id)  recommendedBusiness
+		FROM
+			xa_business_information a
+		LEFT JOIN xa_business_classification b on a.merchants_classification_id=b.id
+		LEFT JOIN xa_agent c ON a.higher_agent_id=c.id
+		LEFT JOIN code_areas d ON a.provinces_id=d.area_id
+		LEFT JOIN code_areas e ON a.city_id=e.area_id
+		LEFT JOIN code_areas f ON a.area_id=f.area_id
+		LEFT JOIN per_sys_user g ON a.founder=g.ID
+		where 
+			a.ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="businessinformationResult" parameterType="com.prj.biz.bean.businessinformation.BusinessInformation" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_BUSINESS_INFORMATION a
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	<select id="selectAllList" resultMap="businessinformationResult" parameterType="com.prj.biz.bean.businessinformation.BusinessInformation" >
+		select
+			<include refid="Base_Column_List" />,
+			b.category_name typeName,
+			c.agent_name agentName,
+			d.area_name provinces,
+			e.area_name city,
+			f.area_name area,
+			g.REAL_NAME founderName,
+			(SELECT COUNT(g.id) FROM xa_business_information g WHERE g.founder=a.id)  recommendedBusiness
+		FROM
+			xa_business_information a
+		LEFT JOIN xa_business_classification b on a.merchants_classification_id=b.id
+		LEFT JOIN xa_agent c ON a.higher_agent_id=c.id
+		LEFT JOIN code_areas d ON a.provinces_id=d.area_id
+		LEFT JOIN code_areas e ON a.city_id=e.area_id
+		LEFT JOIN code_areas f ON a.area_id=f.area_id
+		LEFT JOIN per_sys_user g ON a.founder=g.ID
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.businessinformation.BusinessInformation">
+		select
+		    count(a.ID)
+		from 
+			 XA_BUSINESS_INFORMATION a
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.businessinformation.BusinessInformation">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_BUSINESS_INFORMATION 
+			(id,merchant_number,merchants_classification_id,vendor_name,merchant_phone,address,diamond_card,registration_name,organization_code,registration_address,business_icense_photo,store_photos,user_name,id_number,user_address,id_photo,local_consumption,drainage_consumption,business_state,higher_agent_id,create_date,source,provinces_id,city_id,area_id,founder,`effect_state`,customer_id,business_type)
+		VALUES 
+			(#{id},#{merchantNumber},#{merchantsClassificationId},#{vendorName},#{merchantPhone},#{address},#{diamondCard},#{registrationName},#{organizationCode},#{registrationAddress},#{businessIcensePhoto},#{storePhotos},#{userName},#{idNumber},#{userAddress},#{idPhoto},#{localConsumption},#{drainageConsumption},#{businessState},#{higherAgentId},#{createDate},#{source},#{provincesId},#{cityId},#{areaId},#{founder},#{effectState},#{customerId},#{businessType})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_BUSINESS_INFORMATION 
+			(id,merchant_number,merchants_classification_id,vendor_name,merchant_phone,address,diamond_card,registration_name,organization_code,registration_address,business_icense_photo,store_photos,user_name,id_number,user_address,id_photo,local_consumption,drainage_consumption,business_state,higher_agent_id,create_date,source,provinces_id,city_id,area_id,founder,`effect_state`,customer_id,business_type)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{merchantNumber},#{merchantsClassificationId},#{vendorName},#{merchantPhone},#{address},#{diamondCard},#{registrationName},#{organizationCode},#{registrationAddress},#{businessIcensePhoto},#{storePhotos},#{userName},#{idNumber},#{userAddress},#{idPhoto},#{localConsumption},#{drainageConsumption},#{businessState},#{higherAgentId},#{createDate},#{source},#{provincesId},#{cityId},#{areaId},#{founder},#{effectState},#{customerId},#{businessType})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.businessinformation.BusinessInformation">
+     UPDATE XA_BUSINESS_INFORMATION
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="merchantNumber!=null and merchantNumber!='' ">
+				merchant_number = #{merchantNumber},
+			</if>
+			<if test="merchantsClassificationId!=null and merchantsClassificationId!='' ">
+				merchants_classification_id = #{merchantsClassificationId},
+			</if>
+			<if test="vendorName!=null and vendorName!='' ">
+				vendor_name = #{vendorName},
+			</if>
+			<if test="merchantPhone!=null and merchantPhone!='' ">
+				merchant_phone = #{merchantPhone},
+			</if>
+			<if test="address!=null and address!='' ">
+				address = #{address},
+			</if>
+			<if test="diamondCard!=null and diamondCard!='' ">
+				diamond_card = #{diamondCard},
+			</if>
+			<if test="registrationName!=null and registrationName!='' ">
+				registration_name = #{registrationName},
+			</if>
+			<if test="organizationCode!=null and organizationCode!='' ">
+				organization_code = #{organizationCode},
+			</if>
+			<if test="registrationAddress!=null and registrationAddress!='' ">
+				registration_address = #{registrationAddress},
+			</if>
+			<if test="businessIcensePhoto!=null and businessIcensePhoto!='' ">
+				business_icense_photo = #{businessIcensePhoto},
+			</if>
+			<if test="storePhotos!=null and storePhotos!='' ">
+				store_photos = #{storePhotos},
+			</if>
+			<if test="userName!=null and userName!='' ">
+				user_name = #{userName},
+			</if>
+			<if test="idNumber!=null and idNumber!='' ">
+				id_number = #{idNumber},
+			</if>
+			<if test="userAddress!=null and userAddress!='' ">
+				user_address = #{userAddress},
+			</if>
+			<if test="idPhoto!=null and idPhoto!='' ">
+				id_photo = #{idPhoto},
+			</if>
+			<if test="localConsumption!=null and localConsumption!='' ">
+				local_consumption = #{localConsumption},
+			</if>
+			<if test="drainageConsumption!=null and drainageConsumption!='' ">
+				drainage_consumption = #{drainageConsumption},
+			</if>
+			<if test="businessState!=null and businessState!='' ">
+				business_state = #{businessState},
+			</if>
+			<if test="higherAgentId!=null and higherAgentId!='' ">
+				higher_agent_id = #{higherAgentId},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="source!=null and source!='' ">
+				source = #{source},
+			</if>
+			<if test="provincesId!=null and provincesId!='' ">
+				provinces_id = #{provincesId},
+			</if>
+			<if test="cityId!=null and cityId!='' ">
+				city_id = #{cityId},
+			</if>
+			<if test="areaId!=null and areaId!='' ">
+				area_id = #{areaId},
+			</if>
+			<if test="founder!=null and founder!='' ">
+				founder = #{founder},
+			</if>
+			<if test="effectState!=null and effectState!='' ">
+				`effect_state` = #{effectState},
+			</if>
+			 <if test="customerId!=null and customerId!='' ">
+		         customer_id = #{customerId},
+		    </if>
+		    <if test="businessType!=null and businessType!='' ">
+		        business_type = #{businessType},
+		    </if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_BUSINESS_INFORMATION
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="merchantNumber!=null and merchantNumber!='' ">
+				merchant_number = #{merchantNumber},
+			</if>
+			<if test="merchantsClassificationId!=null and merchantsClassificationId!='' ">
+				merchants_classification_id = #{merchantsClassificationId},
+			</if>
+			<if test="vendorName!=null and vendorName!='' ">
+				vendor_name = #{vendorName},
+			</if>
+			<if test="merchantPhone!=null and merchantPhone!='' ">
+				merchant_phone = #{merchantPhone},
+			</if>
+			<if test="address!=null and address!='' ">
+				address = #{address},
+			</if>
+			<if test="diamondCard!=null and diamondCard!='' ">
+				diamond_card = #{diamondCard},
+			</if>
+			<if test="registrationName!=null and registrationName!='' ">
+				registration_name = #{registrationName},
+			</if>
+			<if test="organizationCode!=null and organizationCode!='' ">
+				organization_code = #{organizationCode},
+			</if>
+			<if test="registrationAddress!=null and registrationAddress!='' ">
+				registration_address = #{registrationAddress},
+			</if>
+			<if test="businessIcensePhoto!=null and businessIcensePhoto!='' ">
+				business_icense_photo = #{businessIcensePhoto},
+			</if>
+			<if test="storePhotos!=null and storePhotos!='' ">
+				store_photos = #{storePhotos},
+			</if>
+			<if test="userName!=null and userName!='' ">
+				user_name = #{userName},
+			</if>
+			<if test="idNumber!=null and idNumber!='' ">
+				id_number = #{idNumber},
+			</if>
+			<if test="userAddress!=null and userAddress!='' ">
+				user_address = #{userAddress},
+			</if>
+			<if test="idPhoto!=null and idPhoto!='' ">
+				id_photo = #{idPhoto},
+			</if>
+			<if test="localConsumption!=null and localConsumption!='' ">
+				local_consumption = #{localConsumption},
+			</if>
+			<if test="drainageConsumption!=null and drainageConsumption!='' ">
+				drainage_consumption = #{drainageConsumption},
+			</if>
+			<if test="businessState!=null and businessState!='' ">
+				business_state = #{businessState},
+			</if>
+			<if test="higherAgentId!=null and higherAgentId!='' ">
+				higher_agent_id = #{higherAgentId},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="source!=null and source!='' ">
+				source = #{source},
+			</if>
+			<if test="provincesId!=null and provincesId!='' ">
+				provinces_id = #{provincesId},
+			</if>
+			<if test="cityId!=null and cityId!='' ">
+				city_id = #{cityId},
+			</if>
+			<if test="areaId!=null and areaId!='' ">
+				area_id = #{areaId},
+			</if>
+			<if test="founder!=null and founder!='' ">
+				founder = #{founder},
+			</if>
+			<if test="effectState!=null and effectState!='' ">
+				`effect_state` = #{effectState},
+			</if>
+			 <if test="customerId!=null and customerId!='' ">
+		         customer_id = #{customerId},
+		    </if>
+		    <if test="businessType!=null and businessType!='' ">
+		        business_type = #{businessType},
+		    </if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_BUSINESS_INFORMATION WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_BUSINESS_INFORMATION
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

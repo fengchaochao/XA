@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.businessclassification.BusinessClassificationDao">
+
+    <resultMap id="businessclassificationResult" type="com.prj.biz.bean.businessclassification.BusinessClassification">
+		<result property="id" column="id" />
+		<result property="categoryName" column="category_name" />
+		<result property="firstLockInto" column="first_lock_into" />
+		<result property="consumption" column="consumption" />
+		<result property="drainageConsumption" column="drainage_consumption" />
+		<result property="classificationNumber" column="classification_number" />
+		<result property="createDate" column="create_date" />
+		<result property="modifyDate" column="MODIFY_date" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id,category_name,first_lock_into,consumption,drainage_consumption,classification_number,create_date,MODIFY_date
+	</sql>
+		
+	<sql id="query_where">
+	    <where>
+	        <if test="id!=null and id!='' "> 
+	           AND ID = #{id} 
+	       </if>
+		    <if test="categoryName!=null and categoryName!='' ">
+		        AND category_name = #{categoryName}
+		    </if>
+		    <if test="firstLockInto!=null and firstLockInto!='' ">
+		        AND first_lock_into = #{firstLockInto}
+		    </if>
+		    <if test="consumption!=null and consumption!='' ">
+		        AND consumption = #{consumption}
+		    </if>
+		    <if test="drainageConsumption!=null and drainageConsumption!='' ">
+		        AND drainage_consumption = #{drainageConsumption}
+		    </if>
+		    <if test="classificationNumber!=null and classificationNumber!='' ">
+		        AND classification_number = #{classificationNumber}
+		    </if>
+		    <if test="createDate!=null and createDate!='' ">
+		        AND create_date = #{createDate}
+		    </if>
+		    <if test="modifyDate!=null and modifyDate!='' ">
+		        AND MODIFY_date = #{modifyDate}
+		    </if>
+	    </where>
+	</sql>
+	
+	
+	<select id="selectById" resultMap="businessclassificationResult" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" /> 
+		from 
+			 XA_BUSINESS_CLASSIFICATION 
+		where 
+			ID = #{id}
+	</select>
+	
+	<select id="selectList" resultMap="businessclassificationResult" parameterType="com.prj.biz.bean.businessclassification.BusinessClassification" >
+		select
+			<include refid="Base_Column_List" />
+		from 
+			 XA_BUSINESS_CLASSIFICATION 
+		<include refid="query_where" /> 
+		<include refid="maindb-pagination.mysql_page" /> 
+	</select>
+	
+	<select id="selectTotal" resultType="Integer" parameterType="com.prj.biz.bean.businessclassification.BusinessClassification">
+		select
+		    count(ID)
+		from 
+			 XA_BUSINESS_CLASSIFICATION 
+		<include refid="query_where" />  
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.businessclassification.BusinessClassification">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	INSERT INTO XA_BUSINESS_CLASSIFICATION 
+			(id,category_name,first_lock_into,consumption,drainage_consumption,classification_number,create_date,MODIFY_date)
+		VALUES 
+			(#{id},#{categoryName},#{firstLockInto},#{consumption},#{drainageConsumption},#{classificationNumber},#{createDate},#{modifyDate})
+    </insert> 
+    
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_BUSINESS_CLASSIFICATION 
+			(id,category_name,first_lock_into,consumption,drainage_consumption,classification_number,create_date,MODIFY_date)
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator="," >
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{categoryName},#{firstLockInto},#{consumption},#{drainageConsumption},#{classificationNumber},#{createDate},#{modifyDate})
+		</foreach>
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.businessclassification.BusinessClassification">
+     UPDATE XA_BUSINESS_CLASSIFICATION
+	     <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="categoryName!=null and categoryName!='' ">
+				category_name = #{categoryName},
+			</if>
+			<if test="firstLockInto!=null and firstLockInto!='' ">
+				first_lock_into = #{firstLockInto},
+			</if>
+			<if test="consumption!=null and consumption!='' ">
+				consumption = #{consumption},
+			</if>
+			<if test="drainageConsumption!=null and drainageConsumption!='' ">
+				drainage_consumption = #{drainageConsumption},
+			</if>
+			<if test="classificationNumber!=null and classificationNumber!='' ">
+				classification_number = #{classificationNumber},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="modifyDate!=null and modifyDate!='' ">
+				MODIFY_date = #{modifyDate},
+			</if>
+		</set>
+		    where 
+	            ID = #{id}
+    </update>
+
+    <update id="updateBatchById" parameterType="java.util.List">
+	    <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        UPDATE  XA_BUSINESS_CLASSIFICATION
+	    <set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="categoryName!=null and categoryName!='' ">
+				category_name = #{categoryName},
+			</if>
+			<if test="firstLockInto!=null and firstLockInto!='' ">
+				first_lock_into = #{firstLockInto},
+			</if>
+			<if test="consumption!=null and consumption!='' ">
+				consumption = #{consumption},
+			</if>
+			<if test="drainageConsumption!=null and drainageConsumption!='' ">
+				drainage_consumption = #{drainageConsumption},
+			</if>
+			<if test="classificationNumber!=null and classificationNumber!='' ">
+				classification_number = #{classificationNumber},
+			</if>
+			<if test="createDate!=null and createDate!='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="modifyDate!=null and modifyDate!='' ">
+				MODIFY_date = #{modifyDate},
+			</if>
+    	</set>
+		    where 
+			    ID = #{id}
+		</foreach>
+	</update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+         DELETE FROM XA_BUSINESS_CLASSIFICATION WHERE ID = #{id}
+    </delete>
+     
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			XA_BUSINESS_CLASSIFICATION
+		where 
+			ID IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+	
+</mapper>

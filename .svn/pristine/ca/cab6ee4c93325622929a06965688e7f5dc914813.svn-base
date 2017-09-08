@@ -1,0 +1,26 @@
+ .form-group input[type="text"],.InputSame{width:220px;padding-right:6px;display:inline-block;}
+ #sel_province4,#sel_country4,#sel_city4,#sel_area4{width:160px;padding-right:6px;}
+    
+ /*弹层   */
+ .showLawyer{position:fixed;width:100%;height:100%;background:#000;z-index:1000;opacity:0.5;}
+ .showBox{display:block;border:1px solid #666;position:fixed;z-index:100000;padding:10px;top:15%;left:25%;width: 400px;min-height: 150px;background:#fff;}
+ .showBox span{float:right;margin:5px 10px;}
+ .showBox p{margin-top:30px;line-height:20px;}
+ 
+ /*覆盖掉bootstrap中的样式  */
+ .col-sm-2{width:105px;margin-right: -15px;margin-left:-20px;}
+ .col-sm-10{width: inherit;line-height:34px;}
+ .flRight{dispaly:inline-block;float:right;}
+ .informateBox{padding:20px 0px;}
+ .informateBox .leftBox,.informateBox .rightBox{display:inline-block;width:49%;
+ vertical-align: top;}
+ 
+ /*表格   */
+ .tabBox{margin:0px 20px;}
+ .tabHealine{margin-top:50px;}
+ .tabHealine,table{width:100%;}
+ table,td,th{border:1px solid #ddd;border-left:none;border-right:none;}
+ th{background:#fafafa;}
+ td,th{line-height:30px;width:24.9%;}
+ table:last-child{margin-bottom:20px;}
+ .redColor{color:#ff701d;}

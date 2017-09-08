@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.prj.biz.dao.maindb.permission.PerDepartmentDao">
+    <resultMap id="perDepartmentRlt" type="com.prj.biz.bean.permission.PerDepartment">
+	    <result column="id" jdbcType="VARCHAR" property="id" />
+	    <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
+	    <result column="dep_name" jdbcType="VARCHAR" property="departmentName" />
+	    <result column="dep_order_num" jdbcType="VARCHAR" property="depOrderNum" />
+    </resultMap>
+   
+	<sql id="department_where">
+	    <where>
+	    	<if test="id!=null and id!='' ">
+				id = #{id} 
+			</if>
+			<if test="departmentName!=null and departmentName!='' ">
+				AND dep_name like CONCAT('%',#{departmentName},'%') 
+			</if>
+	    </where>
+	</sql>
+   
+   <select id="selectById" resultMap="perDepartmentRlt" parameterType="java.lang.String">
+		<![CDATA[
+		select 
+            id,parent_id,dep_name,dep_order_num
+        from 
+            per_department
+        where
+            id = #{id} 
+        ]]>
+   </select>
+   
+   <select id="selectList" resultMap="perDepartmentRlt" parameterType="java.util.HashMap">
+		<![CDATA[
+		select 
+            id,parent_id,dep_name,dep_order_num
+        from 
+            per_department
+        ]]>
+        <include refid="department_where" />
+        order by dep_order_num 
+	</select>
+
+	<select id="selectTotal" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+	<![CDATA[
+		select count(id) from per_department
+    ]]>
+        <include refid="department_where" />
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.permission.PerDepartment">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	insert into per_department
+		(
+		    id,
+		    parent_id,
+		    dep_name,
+		    dep_order_num
+		)
+		values 
+		(
+		    #{id},
+		    #{parentId},
+		    #{departmentName},
+		    #{depOrderNum}
+		)
+	</insert>
+	
+    <update id="updateById" parameterType="com.prj.biz.bean.permission.PerDepartment">
+         UPDATE per_department
+         <set>
+         	<if test="departmentName!=null and departmentName!='' ">
+				dep_name = #{departmentName},
+			</if>
+			<if test="depOrderNum!=null and depOrderNum!='' ">
+				dep_order_num = #{depOrderNum},
+			</if>
+         </set>
+		where id = #{id} 
+    </update>
+     
+	<delete id="deleteById" parameterType="java.lang.String">
+		delete from per_department where  id = #{id} 
+	</delete>
+	
+	<delete id="deleteByIds" parameterType="java.util.List">
+	    delete from 
+			per_department   
+		where 
+			id IN  
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+		    #{id}  
+        </foreach>  
+	</delete>
+</mapper>

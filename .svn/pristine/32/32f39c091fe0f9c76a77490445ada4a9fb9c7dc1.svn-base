@@ -1,0 +1,88 @@
+package com.prj.biz.bean.goodsevaluate;
+
+import com.prj.biz.bean._base.BaseEntity;
+import java.util.Date;
+
+/** 
+ * 描述: 商品评价 实体类<br>
+ * @author Liang
+ * @date 2017-07-27
+ * 
+ */
+public class GoodsEvaluate extends BaseEntity  
+{
+
+    private static final long	serialVersionUID	= 1L;
+
+    // id 
+    private String id;
+    // 商品id 
+    private String goodsId;
+    // 消费者id 
+    private String consumerId;
+    // 评论内容 
+    private String evaluateContent;
+    // 回复评论 
+    private String replyContent;
+    // 评论时间 
+    private Date evaluateDate;
+    // 回复时间 
+    private Date replyDate;
+
+
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    public String getGoodsId() {
+        return goodsId;
+    }
+    public void setGoodsId(String goodsId) {
+        this.goodsId = goodsId;
+    }
+
+
+    public String getConsumerId() {
+        return consumerId;
+    }
+    public void setConsumerId(String consumerId) {
+        this.consumerId = consumerId;
+    }
+
+
+    public String getEvaluateContent() {
+        return evaluateContent;
+    }
+    public void setEvaluateContent(String evaluateContent) {
+        this.evaluateContent = evaluateContent;
+    }
+
+
+    public String getReplyContent() {
+        return replyContent;
+    }
+    public void setReplyContent(String replyContent) {
+        this.replyContent = replyContent;
+    }
+
+
+    public Date getEvaluateDate() {
+        return evaluateDate;
+    }
+    public void setEvaluateDate(Date evaluateDate) {
+        this.evaluateDate = evaluateDate;
+    }
+
+
+    public Date getReplyDate() {
+        return replyDate;
+    }
+    public void setReplyDate(Date replyDate) {
+        this.replyDate = replyDate;
+    }
+
+}

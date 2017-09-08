@@ -1,0 +1,39 @@
+ .form-group input[type="text"]{width:220px;padding-right:6px;display:inline-block;}
+#sel_province4,#sel_country4,#sel_city4,#sel_area4{width:160px;padding-right:6px;}
+#sel_province1,#sel_country1,#sel_city1,#sel_area1,#sel_province2,#sel_country2,
+#sel_city2,#sel_area2,#sel_province3,#sel_country3,#sel_city3,#sel_area3{
+	width:100px;padding-right:6px;margin-right:-20px;}
+.col-sm-2{width:115px;margin-right: -15px;margin-left:-20px;}
+.col-sm-10{width: inherit;line-height:34px;}
+.flRight{dispaly:inline-block;float:right;margin-right:35px;}
+ .informateBox{padding:20px 0px;}
+.informateBox .leftBox,.informateBox .rightBox{display:inline-block;width:49%;
+vertical-align: top;}
+
+
+/*代理商选择 弹层  */
+ .areaBox p{margin: 0px;}
+ .areaBox .agencyAreaLine{margin:10px 0px 20px 0px;font-size:16px;}
+ .areaBox em,.areaBox span,.areaBox{display: inline-block;}
+ .showLawyer{position:fixed;width:100%;height:100%;background:#000;
+    z-index:1000;opacity:0.5;top:0px;left:0px;display:none;}
+ #submitForm .areaBox{display:block;position:fixed;z-index:100000;border-radius:5px;
+    padding:10px;top:0%;left:13%;width: 75%;min-height: 150px;background:#fff;
+    padding: 25px;}
+ 
+ .areaBox em{font-style: normal;width: 60px;text-align: left;vertical-align: top;margin-top: 15px;}
+ .areaBox span,.areaBox .allSelect{padding: 4px 20px; border: 1px solid #ddd;border-radius: 3px;margin:10px 5px;cursor: pointer;}
+ .areaBox .allSelect{width: 84px;text-align: center;}
+ .areaBox .selectEffect,.areaBox .yesCss{border-color: #ff972c;color: #ff972c;}
+ .prohibitChoose{pointer-events: none;cursor: default;opacity: 0.6;background: #ddd;}
+ .areaBox .footerBtn{text-align:center;margin:15px 0px;}
+ 
+/*  修改bootstrap中下拉框判断图标 */
+.form-horizontal .has-feedback .form-control-feedback{right:17px;}
+.form-control-feedback{position: absolute;
+    top: 1px; right: 3px;z-index: 2; display: block;width: 34px;height: 32px;
+    line-height: 32px; text-align: center; pointer-events: none;background: #fff;}
+    
+.chooseResult{text-align:left;width:100%;}
+.chooseResult span{margin-right:10px;}
+    

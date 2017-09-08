@@ -1,0 +1,136 @@
+@charset "utf-8";
+/* CSS Document 初始化*/
+html {font-size: 62.5%;}
+body {font-size: 1.4rem;}
+article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, dl, dt, dd, ul, ol, li, pre, fieldset, lengend, button, input, textarea,th, td, select{margin:0;padding:0;border:0 }
+body, button, input, select, textarea{color:#333;font-family: 'Microsoft Yahei';}
+address, cite, dfn, em, var,i{font-style:normal} 
+ul, ol{list-style:none}
+a{margin:0;padding:0;font-size:100%;vertical-align:baseline;background:transparent; text-decoration:none;-webkit-tap-highlight-color:rgba(0,0,0,0); }/*最后一个是去除手机上a标签点击时出现的框*/
+a:focus{outline:thin dotted;}
+a:active,a:hover{outline:0}
+fieldset, img{border:none}
+button, input, select, textarea{font-size:100%;outline:0}
+table{border-collapse:collapse;border-spacing:0}
+input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;-webkit-border-radius:0px;border-radius:0px;border:none;-webkit-appearance:none;-webkit-tap-highlight-color:rgba(0, 0, 0, 0)}
+input, select{vertical-align:middle}
+input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance: none !important;margin:0;display:none}
+em,span,i{display: inline-block;}
+select{background: none;}
+/*========================================================================================*/
+
+
+
+/*page*/
+body{background: #f5f5f5;font-size: 1.4rem;}
+header{background: #ff7124;text-align: center;color: #fff;font-size: 1.7rem; padding: 0px 15px;height: 40px;line-height: 40px;position: relative;}
+header span{color: #fff;}
+header a{width:12px;height:24px;background: url(../../img/back.png) no-repeat;background-size: 100% auto; position: absolute;left: 15px;top: 8px;}
+.topLisderImg img{width:100%;}
+.topLisderImg .swiper-pagination-bullet{opacity:1;background: #ccc;}
+.topLisderImg .swiper-pagination-bullet-active{width:7px!important;height:7px!important;background: #fff;border:1px solid #666; border-radius: 50px;}
+
+.productDetails,.productSize,.commodityEvaluation,.graphicDetails{background: #fff;padding:15px;box-sizing:border-box;margin-bottom: 10px;}
+.price{font-size: 1.7rem;color: #fd3f59;}
+.shareCommission{font-size: 1.2rem;color: #ff7124;}
+.repertory{float: right;color: #999;font-size: 1.2rem;margin-top:5px;}
+.textBox{color: #222;line-height: 21px;}
+.fromStoreName{margin-top: 10px;font-size: 12px;color: #666;}
+.fromStoreName em,.fromStoreName span{vertical-align: middle;}
+.fromStoreName em,.productDescription em{height: 17px;width: 17px;background: url(../../img/store.png) no-repeat;background-size: 100% auto;margin-right: 5px;}
+
+.productSize{}
+.specification{font-size: 1.5rem;color: #222;margin-bottom: 5px;}
+.sizeCategories{margin-right: -15px;}
+.sizeCategories span{width: 27%;height: 30px;line-height: 30px; text-align: center;border: 1px solid #ddd;border-radius: 1px;color: #222;margin: 8px 0px;margin-right: 15px;}
+.sizeCategories .chooseSize{background: url(../../img/chooseSize.png) no-repeat right bottom;background-size: 15%;border-color: #ff7124;color: #ff7124;}
+
+.commodityEvaluation{}
+.evaluationNumber{margin-top: 10px;}
+.evaluationUser{font-size: 1.2rem;color: #666;}
+.evaluationUser img{height: 20px;width: 20px;vertical-align: bottom;margin-right: 2px;}
+.evaluateTime{font-size: 1.0rem;color: #999999;padding-left: 20px;margin-top: 3px;}
+.evaluateContent{font-size: 1.3rem;color: #666666;padding:0px 10px;margin-top: 10px;line-height: 20px;}
+.anyMore{text-align: center;margin: 10px 0px;}
+.anyMore button{font-size: 1.0rem;color: #fd3f59;border:1px solid #fd3f59;border-radius: 50px;    height: 24px;background-color: #fff;width: 104px;}
+
+.buyNowBtn,.shoppingCar,.confirmPayment{width:94%;background: #fc8a0f;color: #fff;height: 35px;border-radius: 2px;margin: 10px 3%;margin-top:5px;}
+
+
+
+
+/*分享页面css*/
+.footerBox{width:94%;margin: auto;text-align: center;margin-bottom: 10px;}
+.shoppingCar{height:37px;width:45%;margin: 0px;vertical-align: middle; border: 1px solid #fc8a0f;}
+.shareBtn,.shopCarImg{width:18%;height:35px;background: #ededed url(../../img/share.png) no-repeat center center;background-size: 35% auto; border: 1px solid #ddd;border-radius: 2px;    vertical-align: middle;margin-right: 1%;}
+.shopCarImg{width:28%;height:35px;background: #ededed url(../../img/shopping_cart.png) no-repeat center center;background-size: 23% auto;}
+.shopCarImg em{height: 15px;width: 15px;background: #eb1c38;color: #fff;font-size: 0.9rem;margin-top: 3px;margin-right: -15px;border-radius: 50px;line-height: 15px;}
+
+.shareLawyer,.payLawyer{position: fixed;top: 0px;left: 0px;z-index: 1;background: #000;opacity: .3;width: 100%;height: 100%;display: none;}
+.topShareBox{position: fixed;bottom: 15%;z-index: 2;background: #fff;width: 94%;left: 3%;text-align: center;border-radius: 2px;display: none;}
+.topShareBox ul{padding: 30px 0px;}
+.topShareBox li{display: inline-block;width:32%;}
+.topShareBox li img{width:50%;margin-bottom:5px;}
+.closeShareL{background: #f5f5f5;color: #fc6e22;height: 35px;line-height: 35px;}
+
+
+/*评价详情页面*/
+.timeBox{float: right;font-size: 1.0rem; color: #999999;}
+.pageEvaluate{padding:15px 0px;}
+.pageEvaluate .evaluationNumber{padding:0px 15px;box-sizing: border-box; padding-bottom: 15px;border-bottom: 1px solid #ededed;}
+.pageEvaluate .evaluateContent{padding:0px 8px;}
+.pageEvaluate .specification{padding:0px 15px;}
+.responseEvaluation{margin-left:8px;background: #f5f5f5;padding:10px;font-size: 1.3rem;    line-height: 20px;color: #666;margin-top:20px;border-radius:2px; position: relative;}
+.responseEvaluation em{width: 0;height: 0; border-width: 0px 9px 10px;
+    border-style: solid; border-color: transparent transparent #f5f5f5;
+    position: absolute; left: 15px; top: -7px;}
+
+
+/*确认订单页面*/
+.confirmOrder{background: #fff;padding: 15px;}
+.confirmOrder img,.rightBox{vertical-align: top;}
+.confirmOrder img{width:120px;height:90px;border: 1px solid #e8e8e8;}
+.rightBox{display: inline-block;width:calc(100% - 140px);margin-left: 5px;}
+.nameAndMoney span,.productDescription span{width:65%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+
+.nameAndMoney{}
+.nameAndMoney span{font-size: 1.5rem;color: #222;}
+.nameAndMoney em{float: right;color: #fd3f59;font-size: 1.5rem;}
+.fromWhichStores,.specification{font-size: 1.3rem;color: #666;}
+.specification{font-size: 1.2rem;margin-top: 5px;}
+.amount{float: right;background: #fafafa;border: 1px solid #ececec;border-radius: 5px;margin-top: -4px;}
+.amount em,.amount i{height: 21px; line-height: 21px; text-align: center;color: #222;font-size: 1.3rem;}
+.amount em{width: 22px;font-size: 1.5rem;}
+.amount i{width:30px;border: 1px solid #ececec;border-top: none;border-bottom: none;}
+.productDescription{font-size: 1.1rem;color: #999;}
+.productDescription span{width:45%;}
+
+.consigneeHeadline{color: #666;height: 40px;line-height: 40px;padding-left: 15px;}
+.consigneeInformation,.consigneeInformation p{border-bottom: 1px solid #e8e8e8;}
+.consigneeInformation{background: #fff;padding: 0px 15px;}
+.consigneeInformation p{height: 50px;line-height: 50px;}
+.consigneeInformation p:last-child{border: none;}
+.consigneeInformation p span{font-size: 1.5rem;color: #333;width: 85px;}
+.consigneeInformation p input{font-size: 1.5rem;color: #666;margin-top: -3px;background: none;width:70%;}
+.address{background: url(../../img/right_arrow.png) no-repeat right center;background-size: 3.5% auto;}
+.addressSelect{}
+
+.confirmPayment{height:40px;background: #fc7d38;width: 90%;margin-left: 5%;margin-top:30px;font-size: 1.7rem;border-radius: 5px;}
+
+.payforBox{position: fixed;background: #fff;bottom: 0px;left: 0px;z-index: 2;width: 100%;display: none;}
+.payforBox p,.payforBox li{height: 50px;line-height: 50px;border-bottom: 1px solid #e8e8e8;color: #333;}
+.payforBox p{font-size: 1.6rem;padding: 0px 15px;}
+.payforBox span{height: 50px; float: right;width: 26px;background: url(../../img/close_payfor.png) no-repeat center right;background-size: 60% auto;}
+.payforBox ul{margin-bottom: 100px;margin-top: 10px;}
+.payforBox li{margin: 0px 15px;}
+.payforBox li:before{display: inline-block;height: 50px;width: 25px;background: url(../../img/zhifubao.png) no-repeat left center;background-size: 100% auto;content: "";vertical-align: middle;margin-right: 10px;}
+.payforBox li:nth-child(2):before{background: url(../../img/weixin_pay.png) no-repeat left center;background-size: 100% auto;}
+.payforBox .choosePayfor{background: url(../../img/payfor_img.png) no-repeat right center;background-size: 5.5% auto;}
+
+
+
+.productDescription .numRight{float:right; font-size: 1.1rem; color: #666;width: inherit;}
+.graphicText{font-size:1.3rem;color:#666;line-height:19px;word-break:break-all; width:100%;margin:10px 0px;}
+.graphicDetails img{width:100%;}
+#sel_province4,#sel_city4,#sel_area4{height:48px;margin-right:10px;}

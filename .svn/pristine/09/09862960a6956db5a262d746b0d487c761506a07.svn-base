@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.prj.biz.dao.maindb.messagedetail.MessageDetailDao">
+
+	<resultMap id="messagedetailResult" type="com.prj.biz.bean.messagedetail.MessageDetail">
+		<result property="id" column="id" />
+		<result property="userCode" column="user_code" />
+		<result property="messageCode" column="message_code" />
+		<result property="userType" column="user_type" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id,user_code,message_code,user_type
+	</sql>
+
+	<sql id="query_where">
+		<where>
+			<if test="id!=null and id!='' ">
+				AND ID = #{id}
+			</if>
+			<if test="userCode!=null and userCode!='' ">
+				AND user_code = #{userCode}
+			</if>
+			<if test="messageCode!=null and messageCode!='' ">
+				AND message_code = #{messageCode}
+			</if>
+			<if test="userType!=null and userType!='' ">
+				AND user_type = #{userType}
+			</if>
+		</where>
+	</sql>
+
+
+	<select id="selectById" resultMap="messagedetailResult"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from
+		XA_MESSAGE_DETAIL
+		where
+		ID = #{id}
+	</select>
+
+	<select id="selectList" resultMap="messagedetailResult"
+		parameterType="com.prj.biz.bean.messagedetail.MessageDetail">
+		select
+		<include refid="Base_Column_List" />
+		from
+		XA_MESSAGE_DETAIL
+		<include refid="query_where" />
+		<include refid="maindb-pagination.mysql_page" />
+	</select>
+
+	<select id="selectTotal" resultType="Integer"
+		parameterType="com.prj.biz.bean.messagedetail.MessageDetail">
+		select
+		count(ID)
+		from
+		XA_MESSAGE_DETAIL
+		<include refid="query_where" />
+	</select>
+
+	<insert id="insert" parameterType="com.prj.biz.bean.messagedetail.MessageDetail">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]>
+		</selectKey>
+		INSERT INTO XA_MESSAGE_DETAIL
+		(id,user_code,message_code,user_type)
+		VALUES
+		(#{id},#{userCode},#{messageCode},#{userType})
+	</insert>
+
+	<insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+		INSERT INTO XA_MESSAGE_DETAIL
+		(id,user_code,message_code,user_type)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{userCode},#{messageCode},#{userType})
+		</foreach>
+	</insert>
+
+	<update id="updateById" parameterType="com.prj.biz.bean.messagedetail.MessageDetail">
+		UPDATE XA_MESSAGE_DETAIL
+		<set>
+			<if test="id!=null and id!='' ">
+				id = #{id},
+			</if>
+			<if test="userCode!=null and userCode!='' ">
+				user_code = #{userCode},
+			</if>
+			<if test="messageCode!=null and messageCode!='' ">
+				message_code = #{messageCode},
+			</if>
+			<if test="userType!=null and userType!='' ">
+				user_type = #{userType},
+			</if>
+		</set>
+		where
+		ID = #{id}
+	</update>
+
+	<update id="updateBatchById" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open=""
+			close="" separator=";">
+			UPDATE XA_MESSAGE_DETAIL
+			<set>
+				<if test="id!=null and id!='' ">
+					id = #{id},
+				</if>
+				<if test="userCode!=null and userCode!='' ">
+					user_code = #{userCode},
+				</if>
+				<if test="messageCode!=null and messageCode!='' ">
+					message_code = #{messageCode},
+				</if>
+				<if test="userType!=null and userType!='' ">
+					user_type = #{userType},
+				</if>
+			</set>
+			where
+			ID = #{id}
+		</foreach>
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		XA_MESSAGE_DETAIL WHERE ID = #{id}
+	</delete>
+
+	<delete id="deleteByIds" parameterType="java.util.List">
+		delete from
+		XA_MESSAGE_DETAIL
+		where
+		ID IN
+		<foreach collection="list" item="id" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	
+	<select id="doGetMessageDetailOne" parameterType="com.prj.biz.bean.messagedetail.MessageDetail" 
+	resultType="com.prj.biz.bean.message.UserMessageEntiy">
+				SELECT 
+					a.`merchant_number` AS userCode,
+					a.`vendor_name` AS userName,
+					'2' AS userType,
+					a.`merchant_phone` AS userPhone,
+					a.`address` AS userAddress, 
+					a.`business_state` AS userState,
+					d.area_name userPrivices,
+					e.area_name userCity,
+					f.area_name userArea
+				FROM
+					xa_business_information a 
+				LEFT JOIN code_areas d ON a.provinces_id=d.area_id
+				LEFT JOIN code_areas e ON a.city_id=e.area_id
+				LEFT JOIN code_areas f ON a.area_id=f.area_id
+				WHERE a.id = #{userCode}
+	</select>
+	
+	<select id="doGetMessageDetailTwo" parameterType="com.prj.biz.bean.messagedetail.MessageDetail" 
+	resultType="com.prj.biz.bean.message.UserMessageEntiy">
+				SELECT 
+				a.`customer_number` AS userCode,
+				a.`user_name` AS userName ,
+				a.`is_XFConsumers` AS userType,
+				a.`phone` AS userPhone,
+				a.`address` AS userAddress,
+				a.`merchants_state` AS userState,
+				d.area_name userPrivices,
+				e.area_name userCity,
+				f.area_name userArea  
+				FROM
+					xa_consumers a 
+				LEFT JOIN code_areas d ON a.provinces_id=d.area_id
+				LEFT JOIN code_areas e ON a.city_id=e.area_id
+				LEFT JOIN code_areas f ON a.area_id=f.area_id
+				WHERE a.id = #{userCode}
+	</select>
+
+</mapper>

@@ -1,0 +1,44 @@
+package com.prj.biz.bean.order;
+
+import java.util.List;
+
+import com.prj.biz.bean._base.BaseEntity;
+
+/** 
+ * 描述: 订单表Api返利显示 实体类<br>
+ * @author Liang
+ * @date 2017-08-01
+ * 
+ */
+public class OrderToday extends BaseEntity  
+{
+
+    private static final long	serialVersionUID	= 1L;
+    //日期/月份
+    private String date;
+    //返利详细列表
+    private List<Order> orderList;
+    //月总返利数
+    private String bonusNum;
+    
+	public String getDate() {
+		return date;
+	}
+	public void setDate(String date) {
+		this.date = date;
+	}
+	public List<Order> getOrderList() {
+		return orderList;
+	}
+	public void setOrderList(List<Order> orderList) {
+		this.orderList = orderList;
+	}
+	public String getBonusNum() {
+		return bonusNum;
+	}
+	public void setBonusNum(String bonusNum) {
+		this.bonusNum = bonusNum;
+	}
+    
+
+}

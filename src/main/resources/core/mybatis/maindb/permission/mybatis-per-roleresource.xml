@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.prj.biz.dao.maindb.permission.PerRoleResourceDao">
+
+    <resultMap id="perRoleResourceRlt" type="com.prj.biz.bean.permission.PerRoleResource"> 
+	    <result column="ID" jdbcType="VARCHAR" property="id" />
+	    <result column="ROLE_ID" jdbcType="VARCHAR" property="roleId" />
+	    <result column="ROLE_NAME" jdbcType="VARCHAR" property="roleName" />
+	    <result column="RESOURCE_ID" jdbcType="VARCHAR" property="resourceId" />
+	    <result column="RES_NAME" jdbcType="VARCHAR" property="resourceName" />
+	    <result column="RES_URL" jdbcType="VARCHAR" property="resourceUrl" />
+    </resultMap>
+    
+   <select id="selectById" resultMap="perRoleResourceRlt" parameterType="java.lang.String">
+		<![CDATA[
+        select 
+            t1.ID,t1.ROLE_ID,t2.ROLE_NAME,t1.RESOURCE_ID,t3.RES_NAME,t3.RES_URL 
+        from 
+            PER_ROLE_RESOURCE t1,PER_ROLE t2,PER_RESOURCE t3
+        where 
+            t1.ROLE_ID = t2.ID and t1.RESOURCE_ID = t3.ID and t1.ID = #{id} 
+        ]]>
+	</select>
+	
+	<sql id="roleResource_where">
+		<if test="roleId!=null and roleId!='' ">
+			AND ROLE_ID = #{roleId}
+		</if>
+		<if test="userId!=null and userId!='' ">
+			AND t1.ROLE_ID in (
+                   select t4.ROLE_ID from PER_USER_ROLE t4 where t4.USER_ID = #{userId} 
+               )
+		</if>
+	</sql>
+   
+   <select id="selectList" resultMap="perRoleResourceRlt" parameterType="com.prj.biz.bean.permission.PerRoleResource">
+		<![CDATA[
+        select 
+            t1.ID,t1.ROLE_ID,t2.ROLE_NAME,t1.RESOURCE_ID,t3.RES_NAME,t3.RES_URL 
+        from 
+            PER_ROLE_RESOURCE t1,PER_ROLE t2,PER_RESOURCE t3
+        where 
+            t1.ROLE_ID = t2.ID and t1.RESOURCE_ID = t3.ID
+        ]]>
+        <include refid="roleResource_where" />
+	</select>
+
+	<select id="selectTotal" resultType="java.lang.Integer" parameterType="com.prj.biz.bean.permission.PerRoleResource" >
+	<![CDATA[
+		select count(ID) from PER_ROLE_RESOURCE 
+		where
+		    1=1  
+    ]]>
+        <include refid="roleResource_where" />
+	</select>
+	
+	<insert id="insert" parameterType="com.prj.biz.bean.permission.PerRoleResource">
+		<selectKey order="BEFORE" keyProperty="id" resultType="java.lang.String">
+        <![CDATA[ 
+           select upper(replace(uuid(),'-','')) from dual 
+       	]]> 
+       	</selectKey>
+       	insert into PER_ROLE_RESOURCE 
+		(
+            ID,
+            ROLE_ID,
+            RESOURCE_ID
+		)
+		values 
+		(
+		    #{id},
+		    #{roleId},
+		    #{resourceId}
+		)
+	</insert>
+	
+	<insert id="insertBatch" parameterType="java.util.List">
+	    INSERT INTO PER_ROLE_RESOURCE
+	        (ID,ROLE_ID,RESOURCE_ID)
+	    VALUES 
+	    <foreach collection="list" item="item" index="index" separator="," >
+	        (<![CDATA[ upper(replace(uuid(),'-',''))]]>,#{item.roleId},#{item.resourceId})
+	    </foreach>
+	</insert>
+	
+	<delete id="deleteRoleResource" parameterType="java.lang.String"> 
+		delete from PER_ROLE_RESOURCE where ID = #{id} 
+	</delete>
+	
+	<delete id="deleteRoleResourceByRoleId" parameterType="java.lang.String"> 
+		delete from PER_ROLE_RESOURCE where ROLE_ID = #{roleId} 
+	</delete>
+	
+	<delete id="deleteRoleResourceByResourceId" parameterType="java.lang.String"> 
+		delete from PER_ROLE_RESOURCE where RESOURCE_ID = #{resourceId} 
+	</delete>
+	
+</mapper>

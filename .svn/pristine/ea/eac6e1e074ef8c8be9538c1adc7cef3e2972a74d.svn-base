@@ -1,0 +1,421 @@
+package com.prj.biz.bean.order;
+
+import com.prj.biz.bean._base.BaseEntity;
+import com.prj.biz.bean.businessclassification.BusinessClassification;
+import com.prj.biz.bean.businessinformation.BusinessInformation;
+import com.prj.biz.bean.consumersaccount.ConsumersAccount;
+
+/** 
+ * 描述: 订单表 实体类<br>
+ * @author Liang
+ * @date 2017-08-01
+ * 
+ */
+public class Order extends BaseEntity  
+{
+
+    private static final long	serialVersionUID	= 1L;
+
+    //  
+    private String id;
+    // 订单编号 
+    private String orderNumber;
+    // 商品id (暂时用不到----)
+    private String goodsId;
+    // 购买者 （消费者id）
+    private String purchaserId;
+    // 商家id （消费商，商家）
+    private String businessId;
+    // 消费者账户 (可以是支付宝或微信账户，也可以是余额付款，则给消费者id（显示需要消费者昵称）)
+    private String consumerAccount;
+    // 交易金额 
+    private String money;
+    // 是否抽成 1:是 0：否 
+    private String isBonus;
+    // 抽成金额 
+    private String bonus;
+    
+    //平台抽成
+    private String plantBonus;
+    //代理商抽成
+    private String agentBonus;
+    //锁定者抽成
+    private String localBonus;
+    //推荐人抽成
+    private String remmBonus;
+    //其他抽成
+    private String otherBonus;
+    
+    // 交易方式 1：扫码支付 2：在线支付 
+    private String transactionMode;
+    // 订单状态 1待配送、2待收货、3已完成、4:待付款 (扫码支付的订单状态只有：已完成    在线支付的订单状态有：待配送、待收货、已完成)
+    private String status;
+    // 订单创建时间 
+    private String createtime;
+    // 配送地址id 
+    private String distributionAddressId;
+    //上级代理商id（商家或者消费商的）
+    private String agentId;
+    
+    /**
+     * 卖家编号(显示用)
+     */
+    private String storeNumber;
+    
+    /**
+     * 卖家名称 (显示用)
+     */
+    private String storeName;
+    
+    /*****查询，显示用****/
+    //开始时间（查询用）
+    private String startTime;
+    //结束时间（查询用）
+    private String endTime;
+    //省（查询用）
+    private String province;
+    //市（查询用）
+    private String city;
+    //区（查询用）
+    private String area;
+    //推荐人
+    private String remmBussines;
+    //上级代理商
+    private String higherAgent;
+    //锁定者
+    private String localBussiness;
+    
+    //商家表
+    private BusinessInformation businessInformation;
+    //商家分类
+    private BusinessClassification businessClassification;
+    //消费者账号
+    private ConsumersAccount consumersAccount;
+    
+    /*****统计，显示用****/
+    //订单数量
+    private String orderNum;
+    //消费金额
+    private String moneyNum;
+    //抽成金额
+    private String bonusNum;
+    //推荐获利
+    private String remmBonusNum;
+    //平台获利
+    private String plantBonusNum;
+    //代理商获利
+    private String agentBonusNum;
+    //锁定者获利
+    private String localBonusNum;
+    //其他获利
+    private String otherBonusNum;
+    //订单量
+    private String orderCount;
+    //销售量
+    private String salesCount;
+    //销售额
+    private String salesMoney;
+    //实收额
+    private String actualMoney;
+    //商家分类
+    private String businessType;
+    
+    
+    public String getOrderCount() {
+		return orderCount;
+	}
+	public void setOrderCount(String orderCount) {
+		this.orderCount = orderCount;
+	}
+	public String getSalesCount() {
+		return salesCount;
+	}
+	public void setSalesCount(String salesCount) {
+		this.salesCount = salesCount;
+	}
+	public String getSalesMoney() {
+		return salesMoney;
+	}
+	public void setSalesMoney(String salesMoney) {
+		this.salesMoney = salesMoney;
+	}
+	public String getActualMoney() {
+		return actualMoney;
+	}
+	public void setActualMoney(String actualMoney) {
+		this.actualMoney = actualMoney;
+	}
+	public String getAgentId() {
+		return agentId;
+	}
+	public void setAgentId(String agentId) {
+		this.agentId = agentId;
+	}
+	public String getStoreNumber() {
+		return storeNumber;
+	}
+	public void setStoreNumber(String storeNumber) {
+		this.storeNumber = storeNumber;
+	}
+	public String getStoreName() {
+		return storeName;
+	}
+	public void setStoreName(String storeName) {
+		this.storeName = storeName;
+	}
+	public String getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+	public String getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+	public String getProvince() {
+		return province;
+	}
+	public void setProvince(String province) {
+		this.province = province;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getArea() {
+		return area;
+	}
+	public void setArea(String area) {
+		this.area = area;
+	}
+	public BusinessInformation getBusinessInformation() {
+		return businessInformation;
+	}
+	public void setBusinessInformation(BusinessInformation businessInformation) {
+		this.businessInformation = businessInformation;
+	}
+	public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    public String getOrderNumber() {
+        return orderNumber;
+    }
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+
+    public String getGoodsId() {
+        return goodsId;
+    }
+    public void setGoodsId(String goodsId) {
+        this.goodsId = goodsId;
+    }
+
+
+    public String getPurchaserId() {
+        return purchaserId;
+    }
+    public void setPurchaserId(String purchaserId) {
+        this.purchaserId = purchaserId;
+    }
+
+
+    public String getBusinessId() {
+        return businessId;
+    }
+    public void setBusinessId(String businessId) {
+        this.businessId = businessId;
+    }
+
+
+    public String getConsumerAccount() {
+        return consumerAccount;
+    }
+    public void setConsumerAccount(String consumerAccount) {
+        this.consumerAccount = consumerAccount;
+    }
+
+
+    public String getMoney() {
+        return money;
+    }
+    public void setMoney(String money) {
+        this.money = money;
+    }
+
+
+    public String getIsBonus() {
+        return isBonus;
+    }
+    public void setIsBonus(String isBonus) {
+        this.isBonus = isBonus;
+    }
+
+
+    public String getBonus() {
+        return bonus;
+    }
+    public void setBonus(String bonus) {
+        this.bonus = bonus;
+    }
+
+
+    public String getTransactionMode() {
+        return transactionMode;
+    }
+    public void setTransactionMode(String transactionMode) {
+        this.transactionMode = transactionMode;
+    }
+
+
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+
+    public String getCreatetime() {
+        return createtime;
+    }
+    public void setCreatetime(String createtime) {
+        this.createtime = createtime;
+    }
+
+
+    public String getDistributionAddressId() {
+        return distributionAddressId;
+    }
+    public void setDistributionAddressId(String distributionAddressId) {
+        this.distributionAddressId = distributionAddressId;
+    }
+	public String getOrderNum() {
+		return orderNum;
+	}
+	public void setOrderNum(String orderNum) {
+		this.orderNum = orderNum;
+	}
+	public String getMoneyNum() {
+		return moneyNum;
+	}
+	public void setMoneyNum(String moneyNum) {
+		this.moneyNum = moneyNum;
+	}
+	public String getBonusNum() {
+		return bonusNum;
+	}
+	public void setBonusNum(String bonusNum) {
+		this.bonusNum = bonusNum;
+	}
+	public ConsumersAccount getConsumersAccount() {
+		return consumersAccount;
+	}
+	public void setConsumersAccount(ConsumersAccount consumersAccount) {
+		this.consumersAccount = consumersAccount;
+	}
+	
+	public String getPlantBonus() {
+		return plantBonus;
+	}
+	public void setPlantBonus(String plantBonus) {
+		this.plantBonus = plantBonus;
+	}
+	public String getAgentBonus() {
+		return agentBonus;
+	}
+	public void setAgentBonus(String agentBonus) {
+		this.agentBonus = agentBonus;
+	}
+	public String getLocalBonus() {
+		return localBonus;
+	}
+	public void setLocalBonus(String localBonus) {
+		this.localBonus = localBonus;
+	}
+	public String getRemmBonus() {
+		return remmBonus;
+	}
+	public void setRemmBonus(String remmBonus) {
+		this.remmBonus = remmBonus;
+	}
+	public String getOtherBonus() {
+		return otherBonus;
+	}
+	public void setOtherBonus(String otherBonus) {
+		this.otherBonus = otherBonus;
+	}
+	public BusinessClassification getBusinessClassification() {
+		return businessClassification;
+	}
+	public void setBusinessClassification(
+			BusinessClassification businessClassification) {
+		this.businessClassification = businessClassification;
+	}
+	public String getRemmBonusNum() {
+		return remmBonusNum;
+	}
+	public void setRemmBonusNum(String remmBonusNum) {
+		this.remmBonusNum = remmBonusNum;
+	}
+	public String getRemmBussines() {
+		return remmBussines;
+	}
+	public void setRemmBussines(String remmBussines) {
+		this.remmBussines = remmBussines;
+	}
+	public String getHigherAgent() {
+		return higherAgent;
+	}
+	public void setHigherAgent(String higherAgent) {
+		this.higherAgent = higherAgent;
+	}
+	public String getLocalBussiness() {
+		return localBussiness;
+	}
+	public void setLocalBussiness(String localBussiness) {
+		this.localBussiness = localBussiness;
+	}
+	public String getPlantBonusNum() {
+		return plantBonusNum;
+	}
+	public void setPlantBonusNum(String plantBonusNum) {
+		this.plantBonusNum = plantBonusNum;
+	}
+	public String getAgentBonusNum() {
+		return agentBonusNum;
+	}
+	public void setAgentBonusNum(String agentBonusNum) {
+		this.agentBonusNum = agentBonusNum;
+	}
+	public String getLocalBonusNum() {
+		return localBonusNum;
+	}
+	public void setLocalBonusNum(String localBonusNum) {
+		this.localBonusNum = localBonusNum;
+	}
+	public String getOtherBonusNum() {
+		return otherBonusNum;
+	}
+	public void setOtherBonusNum(String otherBonusNum) {
+		this.otherBonusNum = otherBonusNum;
+	}
+	public String getBusinessType() {
+		return businessType;
+	}
+	public void setBusinessType(String businessType) {
+		this.businessType = businessType;
+	}
+
+}

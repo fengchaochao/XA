@@ -1,0 +1,203 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>列表信息</title>
+    <%@ include file="/WEB-INF/views/common/headCommon.jsp"%>
+    <link href='<spring:url value="/css/plugin/bootstrap-table/bootstrap-table.min.1.10.1.css" />' rel="stylesheet"/>
+    <style>
+    .fixed-table-container tbody td:last-child{width:160px;}
+    </style>
+</head>
+<body class="mainContant">
+    <!--start pageHeadline -->
+    <div class="pageHeadline">
+       <span class="leftNotice">广告审核</span>
+       <p><button type="button" id="btn_sel" class="orangeBtn">广告历史记录</button></p>
+    </div>
+    <!--end pageHeadline -->
+    
+	<div class="whiteBox">
+	    <form id="formSearch" class="form-horizontal">
+			<div class="form-group" style="margin-top: 15px;margin-left: -31px;">
+				<div id="queryDiv" class="col-sm-3" style="text-align: left;padding-left: 0px;">
+					
+				</div>
+			</div>
+		</form>
+		<table id="tb_board"></table> 
+	</div>
+
+    <script type="text/javascript" src='<spring:url value="/js/plugin/bootstrap-table-1.10.1/bootstrap-table.min.1.10.1.js"/>'></script>
+    <script type="text/javascript" src='<spring:url value="/js/plugin/bootstrap-table-1.10.1/locale/bootstrap-table-zh-CN.min.js"/>'></script>
+    
+	<script type="text/javascript">
+	    var $table;
+		$(function() {
+			
+			initTable();
+			
+			// 添加
+            $('#btn_sel').click(function () {
+           		window.location.href='<spring:url value="/headquarters/advertsh/doHistoryAdvertisingList" />';
+            });
+			
+		});
+		
+		// 初始化表格
+		function initTable() {
+            $table = $('#tb_board').bootstrapTable({
+                method: 'get',
+                url : '<spring:url value="/headquarters/advertsh/doReadAdvertisingSHList" />',
+                pagination: true,
+                pageSize: 10,
+                pageList: [10, 50, 100, 200, 500],
+                sidePagination: "server", //服务端请求
+                queryParams: queryParams,
+                showRefresh : true,
+				striped : true,
+				silent : true,
+				sortable: true, 
+				sortOrder: "asc",
+                responseHandler: responseHandler,
+                columns : [ {
+                	field: 'state',
+					checkbox : true
+				}, {
+					field : 'vendorName',
+					title : '发布者'
+				}, {
+					field : 'areaName',
+					title : '发布地区'
+				},{
+					field : 'createDate',
+					title : '发布时间'
+				},{
+					field : 'headline',
+					title : '广告标题'
+				},{
+					field : 'context',
+					title : '广告内容'
+				},{
+                    title: '操作',
+                    field: 'id',
+                    align: 'center',
+                    formatter:operateFormatter
+                }],
+                onLoadSuccess:function(){
+
+                },
+                formatLoadingMessage : function() {
+									return "请稍等，正在加载中...";
+								},
+				formatNoMatches : function() { //没有匹配的结果
+					return "无符合条件的记录";
+				},
+                onLoadError: function () {
+                    alert("数据加载失败！");
+                }
+            });
+        }
+        
+		
+		// 编辑操作
+        function shOk(index) {
+        	var row=$table.bootstrapTable('getData')[index];
+        	layer.confirm('审核后不可恢复，确认审核吗？', {
+			  btn: ['确认','取消'] //按钮
+			}, function(){
+				$.ajax({
+					type: "POST",
+					url : '<spring:url value="/headquarters/advertsh/doEditAdvertisingStatus"/>',
+					data:{
+						id:row.id,
+						checkState:'3'
+					},
+					dataType: "json",
+					async: false,
+					success: function(data){
+						 $table.bootstrapTable('refresh',{silent: true});
+						 layer.msg(data.body, {icon: 6}); 
+					}
+				});
+			}, function(){
+				layer.msg('已取消', {icon: 1});
+			});
+        }
+        // 编辑操作
+        function shNo(index) {
+        	var row=$table.bootstrapTable('getData')[index];
+        	layer.confirm('审核后不可恢复，确认审核吗？', {
+			  btn: ['确认','取消'] //按钮
+			}, function(){
+				$.ajax({
+					type: "POST",
+					url : '<spring:url value="/headquarters/advertsh/doEditAdvertisingStatus"/>',
+					data:{
+						id:row.id,
+						checkState:'2'
+					},
+					dataType: "json",
+					async: false,
+					success: function(data){
+						 $table.bootstrapTable('refresh',{silent: true});
+						 layer.msg(data.body, {icon: 6});
+					}
+				});
+			}, function(){
+				layer.msg('已取消', {icon: 1});
+			});
+        }
+        
+		// 操作列格式化
+        function operateFormatter(value, row, index) {
+        	var e = '<a href="#" class="blueText" mce_href="#" onclick="shOk(\''+ index + '\')">审核通过</a>&nbsp;&nbsp;&nbsp;';
+        	var d = '<a href="#" class="redText" mce_href="#" onclick="shNo(\''+ index + '\')">审核不通过</a>';
+            return e + d;  
+        }
+        
+		// 查询参数设置  
+		function queryParams(params) {
+			var temp = {
+				//这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的    
+				limit : params.limit, //页面大小    
+				offset : params.offset, //页码   
+				order : params.order,
+				orderName : params.sort,
+				headline : $("#headline").val(),
+				createDate: $("#createdate").val()
+			};
+			return temp;
+		};
+		
+		//被子页面调用
+		function beCalled(data){
+			$('#tb_board').bootstrapTable('refresh');
+			if(data.body){
+				top.layer.msg("更新成功!",{icon:1});
+			}else{
+				top.layer.msg("更新失败！",{icon:2});
+			}
+		}
+		
+		// json 数据处理
+        function responseHandler(res) {
+			if (res.body.total > 0) {
+				return {
+					"rows" : res.body.rows,
+					"total" : res.body.total
+				}
+			} else {
+				return {
+					"rows" : [],
+					"total" : 0
+				}
+			}
+		}
+        
+	</script>
+
+</body>
+</html>

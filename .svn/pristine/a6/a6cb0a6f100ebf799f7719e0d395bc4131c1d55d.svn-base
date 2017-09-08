@@ -1,0 +1,337 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>编辑</title>
+    <%@ include file="/WEB-INF/views/common/headCommon.jsp"%>
+    <script type="text/javascript" src='<spring:url value="/js/plugin/bootstrapValidator/bootstrapValidator.min.js" />'></script>
+	<script type="text/javascript" src='<spring:url value="/js/plugin/bootstrapValidator/zh_CN.js" />'></script>
+    <link href='<spring:url value="/js/plugin/uploadifive/uploadifive.css"/>' rel="stylesheet" />
+    <link href='<spring:url value="/css/plugin/bootstrap-table/bootstrap-table.min.1.10.1.css" />' rel="stylesheet"/>
+    <link href='<spring:url value="/css/common/agentEdit.css" />' rel="stylesheet"/>
+</head>
+<body style="width: 96%;">
+	<div class="showLawyer" style="display: none"></div>
+	<div class="showBox" id ="showBox" style="display: none">
+		<span onclick="cancel()">×</span>
+		<c:forEach items="${codeAreasList}" var="var">
+			<p>${var.areaName}</p>
+		</c:forEach>
+	</div>
+	<p>代理商详情</p>
+	<form id="submitForm" class="form-horizontal">
+		<input type="hidden" id="id" value="${agent.id}"/>
+	    <div class="form-group" style="margin-top: 15px" >
+			<label class="control-label col-sm-2">代理商编号</label>
+			<div class="col-sm-2">
+			    <input type="hidden" id="agentCode" value="${agent.agentCode}" />${agent.agentCode}
+			</div>
+			<input type="button" value="修改" class="btn btn-primary col-sm-offset-1" id="update" />
+			<input type="button" value="保存" class="btn btn-primary col-sm-offset-1" id="commit" style="display: none" />
+	 	    <input type="button" value="取消" class="btn btn-primary col-sm-offset-1" id="cancel" style="display: none"/>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2">代理商名称</label>
+			<div class="col-sm-2" style="display:inline-block;">
+			    <input type="text" class="form-control" id="agentName" name="agentName" value="${agent.agentName}" disabled="disabled" />
+			</div>
+			<input type="button" value="代理区域" class="btn btn-primary col-sm-offset-1"  onclick="agencyArea();" />
+			
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2">联系电话</label>
+			<div class="col-sm-10">
+			    <input type="text" class="form-control" id="phone" name="phone" value="${agent.phone}" disabled="disabled" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2">地址</label>
+			<div class="col-sm-10">
+			    <input type="text" class="form-control" id="address" name="address" value="${agent.address}" disabled="disabled" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-sm-2">钻石卡号</label>
+			<div class="col-sm-10">
+			    ${agent.diamondCard}
+			</div>
+		</div>
+		
+			<div class="form-group">
+				<label class="control-label col-sm-2">状态</label>
+				<div class="col-sm-10">
+					<c:if test="${agent.agentState=='0' }">
+					    <input type="hidden" id="state" value="${agent.agentState}"/><label class="control-label col-sm-1">正常</label>
+					    <input type="button" value="启用" class="btn btn-primary col-sm-offset-1"  disabled="disabled"/>
+				 	  	<input type="button" value="停用" class="btn btn-primary col-sm-offset-1" onclick="delRecord();" /> 
+			 	  	</c:if>
+					<c:if test="${agent.agentState=='1' }">
+					    <input type="hidden" id="state" value="${agent.agentState}"/><label class="control-label col-sm-1">停用</label>
+					    <input type="button" value="启用" class="btn btn-primary col-sm-offset-1"  onclick="delRecord();"/>
+				 	  	<input type="button" value="停用" class="btn btn-primary col-sm-offset-1"  disabled="disabled"/> 
+			 	  	</c:if>
+				</div>
+			</div>
+		<c:if test="${agent.agentType=='1' }">
+		<div class="informateBox" id="companyAgent">
+			<div class="leftBox">
+				<div class="form-group">
+					<label class="control-label col-sm-2">公司名称</label>
+					<div class="col-sm-10">
+					   ${agent.companyName}
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-sm-2">组织机构代码</label>
+					<div class="col-sm-10">
+					   ${agent.organizationCode}
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-sm-2">地址</label>
+					<div class="col-sm-10">
+					    ${agent.companyAddress}
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-sm-2">营业执照照片</label>
+					<div class="col-sm-10">
+						<c:forEach items="${businessLicensePhoto}" var="i">
+								<img src="<spring:url value='${i}'/>" alt="" style="width: 90px;height: 90px" />
+						</c:forEach>
+					</div>
+				</div>
+			</div>
+			<div class="rightBox">
+				<div class="form-group">
+					<label class="control-label col-sm-2">姓名</label>
+					<div class="col-sm-10">
+					   ${agent.userName}
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-sm-2">身份证号</label>
+					<div class="col-sm-10">
+					  ${agent.idNo} 
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-sm-2">地址</label>
+					<div class="col-sm-10">
+					    ${agent.userAddress}
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-sm-2">身份证照片</label>
+					<div class="col-sm-10">
+	                    <c:forEach items="${idNoPhoto}" var="i">
+								<img src="<spring:url value='${i}'/>" alt="" style="width: 90px;height: 90px" />
+						</c:forEach>
+					</div>
+				</div>
+			</div>
+			</div>
+		</c:if>
+		<c:if test="${agent.userName=='2' }">
+			<div class="informateBox"  id="personAgent">
+				<div class="leftBox">
+					<div class="form-group">
+						<label class="control-label col-sm-2">姓名</label>
+						<div class="col-sm-10">
+						   ${agent.userName}
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2">身份证号</label>
+						<div class="col-sm-10">
+						    ${agent.idNo}
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2">地址</label>
+						<div class="col-sm-10">
+						    ${agent.userAddress}
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2">身份证照片</label>
+						<div class="col-sm-10">
+		                    <c:forEach items="${idNoPhoto}" var="i">
+								<img src="<spring:url value='${i}'/>" alt="" style="width: 90px;height: 90px" />
+							</c:forEach>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</c:if>
+		<div class="form-group">
+	        <div class="col-sm-12">
+			  <div class="navbar-btn">
+			 	  <input type="button" value="返回" class="btn btn-primary col-sm-offset-1" id="return" />
+			  </div>
+	        </div>
+        </div>
+	</form> 
+</body>
+<script type="text/javascript">
+$(function() {
+   //输入验证
+	$('#submitForm').bootstrapValidator({
+       message: 'This value is not valid',
+       feedbackIcons: {
+           valid: 'glyphicon glyphicon-ok',
+           invalid: 'glyphicon glyphicon-remove',
+           validating: 'glyphicon glyphicon-refresh'
+       },
+       fields: {
+       		agentName : {
+               validators: {
+                   notEmpty: {
+                       message: '不能为空'
+                   },
+               }
+           },
+            phone : {
+               validators: {
+                   notEmpty: {
+                       message: '不能为空'
+                   },regexp: {
+                       regexp: /^[0-9]+$/,
+                       message: '只能是数字!'
+                   }
+                 }
+               },
+           address : {
+               validators: {
+                   notEmpty: {
+                       message: '不能为空'
+                   }
+                 }
+             }
+       	}
+ 	});
+   	$("#return").bind("click",function(){
+		window.location.href='<spring:url value="/headquarters/agent/doEnAgentList" />';
+	});
+	//修改
+   	$("#update").bind("click",function(){
+		$('#agentName').attr("disabled",false); 
+		$('#phone').attr("disabled",false); 
+		$('#address').attr("disabled",false); 
+		$("#cancel").show();
+		$("#commit").show();
+		$("#update").hide();
+		
+	});
+	//取消
+   	$("#cancel").bind("click",function(){
+		$('#agentName').attr("disabled",true); 
+		$('#phone').attr("disabled",true); 
+		$('#address').attr("disabled",true); 
+		$("#cancel").hide();
+		$("#commit").hide();
+		$("#update").show();
+		
+	});
+	$("#commit").bind("click",function(){
+		var data={};
+	    var id=$("#id").val();
+		var bootstrapValidator = $("#submitForm").data('bootstrapValidator');
+	    bootstrapValidator.validate();
+		if(bootstrapValidator.isValid()){
+			data={
+				"id":$("#id").val(),
+				"agentName":$("#agentName").val(),
+				"phone":$("#phone").val(),
+				"address":$("#address").val()
+			}
+		$.ajax({
+			type: "POST",
+			url : '<spring:url value="/headquarters/agent/doEditAgent" />',
+			data:data,
+			dataType: "json",
+			async: false,
+			success: function(data){
+				if(data){
+					top.layer.alert("保存成功！",{icon:1});
+					window.location.href='<spring:url value="/headquarters/agent/doEnAgentEdit"/>'+'?agentId='+id;
+				}else{
+					top.layer.alert("保存失败！",{icon:2});
+				}
+			}
+		});
+	  }
+	});	
+});
+//弹层
+function agencyArea(){
+    $(".showBox").show();
+    $(".showLawyer").show();
+}
+function cancel(){
+	$(".showBox").hide();
+	$(".showLawyer").hide();
+}
+//停用
+function delRecord(){
+   	var state=$("#state").val();
+   	var id=$("#id").val();
+   	if(state=="0"){
+	 	layer.confirm('确认停用吗？', {
+  			btn: ['确认','取消'] //按钮
+		}, function(){
+			$.ajax({
+				type: "POST",
+				url : '<spring:url value="/headquarters/agent/doDelAgent"/>',
+				data:{
+					agentId:id
+				},
+				dataType: "json",
+				async: false,
+				success: function(data){
+					if("0000000"==data.head.respCode){
+						window.location.href='<spring:url value="/headquarters/agent/doEnAgentEdit"/>'+'?agentId='+id;
+						layer.msg('操作成功', {icon: 1});
+					}
+					else{
+						layer.msg('操作失败', {icon: 6});
+					}
+				}
+			});
+		}, function(){
+			layer.msg('已取消', {icon: 1});
+		});
+   	 }
+     if(state=="1"){
+      	layer.confirm('确认启用吗？', {
+	 		 btn: ['确认','取消'] //按钮
+		}, function(){
+			$.ajax({
+				type: "POST",
+				url : '<spring:url value="/headquarters/agent/doDelAgent"/>',
+				data:{
+					agentId:id
+				},
+				dataType: "json",
+				async: false,
+				success: function(data){
+					if("0000000"==data.head.respCode){
+						window.location.href='<spring:url value="/headquarters/agent/doEnAgentEdit"/>'+'?agentId='+id;
+						layer.msg('操作成功', {icon: 1});
+					}
+					else{
+						layer.msg('操作失败', {icon: 6});
+					}
+				}
+			});
+		}, function(){
+			layer.msg('已取消', {icon: 1});
+		});
+    }   
+}
+</script>
+</html>

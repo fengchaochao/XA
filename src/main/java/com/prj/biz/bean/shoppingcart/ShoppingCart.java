@@ -1,0 +1,150 @@
+package com.prj.biz.bean.shoppingcart;
+
+import com.prj.biz.bean._base.BaseEntity;
+import java.util.Date;
+
+/** 
+ * 描述: APP购物车 实体类<br>
+ * @author Liang
+ * @date 2017-08-17
+ * 
+ */
+public class ShoppingCart extends BaseEntity  
+{
+
+    private static final long	serialVersionUID	= 1L;
+
+    //  
+    private String id;
+    // 商家id 
+    private String businessId;
+    // 商品id 
+    private String goodsId;
+    // 购买数量 
+    private String number;
+    // 购买者id 
+    private String purchaserId;
+    //  
+    private String creattime;
+    //商家昵称
+    private String vendorName;
+    // 商品轮播图片 
+    private String goodsImages;
+    // 商品图片 
+    private String goodsPhotos;
+    //商品名称
+    private String goodsName;
+    //规格名称
+    private String specificationsName;
+    //价钱
+    private String price;
+    //商品分类
+    private String categoryName;
+    //规格id
+    private String specificationsId;
+    //商品状态0-未发布 1-待审核 2-未通过 3-已发布 4-已下架 5-库存为空
+    private String status;
+
+    public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getSpecificationsId() {
+		return specificationsId;
+	}
+	public void setSpecificationsId(String specificationsId) {
+		this.specificationsId = specificationsId;
+	}
+	public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    public String getBusinessId() {
+        return businessId;
+    }
+    public void setBusinessId(String businessId) {
+        this.businessId = businessId;
+    }
+
+
+    public String getGoodsId() {
+        return goodsId;
+    }
+    public void setGoodsId(String goodsId) {
+        this.goodsId = goodsId;
+    }
+
+
+    public String getNumber() {
+        return number;
+    }
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+
+    public String getPurchaserId() {
+        return purchaserId;
+    }
+    public void setPurchaserId(String purchaserId) {
+        this.purchaserId = purchaserId;
+    }
+	public String getCreattime() {
+		return creattime;
+	}
+	public void setCreattime(String creattime) {
+		this.creattime = creattime;
+	}
+	public String getVendorName() {
+		return vendorName;
+	}
+	public void setVendorName(String vendorName) {
+		this.vendorName = vendorName;
+	}
+	public String getGoodsImages() {
+		return goodsImages;
+	}
+	public void setGoodsImages(String goodsImages) {
+		this.goodsImages = goodsImages;
+	}
+	public String getGoodsPhotos() {
+		return goodsPhotos;
+	}
+	public void setGoodsPhotos(String goodsPhotos) {
+		this.goodsPhotos = goodsPhotos;
+	}
+	public String getGoodsName() {
+		return goodsName;
+	}
+	public void setGoodsName(String goodsName) {
+		this.goodsName = goodsName;
+	}
+	public String getSpecificationsName() {
+		return specificationsName;
+	}
+	public void setSpecificationsName(String specificationsName) {
+		this.specificationsName = specificationsName;
+	}
+	public String getPrice() {
+		return price;
+	}
+	public void setPrice(String price) {
+		this.price = price;
+	}
+	public String getCategoryName() {
+		return categoryName;
+	}
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
+	}
+
+
+ 
+
+}

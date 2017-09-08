@@ -1,0 +1,492 @@
+package com.prj.biz.bean.businessinformation;
+
+import com.prj.biz.bean._base.BaseEntity;
+
+/** 
+ * 描述: 商家信息 实体类<br>
+ * @author Liang
+ * @date 2017-07-12
+ * 
+ */
+public class BusinessInformation extends BaseEntity  
+{
+
+    private static final long	serialVersionUID	= 1L;
+
+    //  
+    private String id;
+    // 商家编号 
+    private String merchantNumber;
+    // 商家分类id 
+    private String merchantsClassificationId;
+    // 商家名称 
+    private String vendorName;
+    // 电话 
+    private String merchantPhone;
+    // 详细地址 
+    private String address;
+    //经纬度
+    private String jyd;
+    // 钻石卡号 
+    private String diamondCard;
+    // 工商登记名称 
+    private String registrationName;
+    // 组织机构代码 
+    private String organizationCode;
+    // 省份 
+    private String companyProvincesId;
+    // 市 
+    private String companyCityId;
+    // 区 
+    private String companyAreaId;
+    // 地址 
+    private String registrationAddress;
+    // 营业执照 
+    private String businessIcensePhoto;
+    // 店铺照片 
+    private String storePhotos;
+    // 姓名 
+    private String userName;
+    // 身份证号 
+    private String idNumber;
+    // 省份 
+    private String userProvincesId;
+    // 市 
+    private String userCityId;
+    // 区 
+    private String userAreaId;
+    // 地址 
+    private String userAddress;
+    // 身份证照片 
+    private String idPhoto;
+    // 锁定消费者消费抽成 
+    private String localConsumption;
+    // 引流消费抽成 
+    private String drainageConsumption;
+    // 商家状态 0-正常 1-停用 
+    private String businessState;
+    // 上级代理商 
+    private String higherAgentId;
+    // 注册时间 
+    private String createDate;
+    // 商家来源 0-总部预留，1-商家推荐 2-消费商推荐 3-代理商推广 4.公众号申请
+    private String source;
+    // 省份 
+    private String provincesId;
+    // 市 
+    private String cityId;
+    // 区 
+    private String areaId;
+    //推荐人(消费商为消费商ID，其他为用户id)
+    private String founder;
+    //入驻状态 0-入驻 1-未入住
+    private String effectState;
+    
+    //二维码
+    private String QrCode;
+    
+    //公众号申请状态 0-申请中 1-完成注册
+    private String applicationState;
+    
+    //店铺介绍
+    private String introduce;
+    
+    /**外键关系 查询用**/
+    
+    // 上级代理商名称 
+    private String agentName;
+    //锁定用户数
+    private int localUser;
+    // 推荐商家数 
+    private int recommendedBusiness;
+    // 商家分类名称 
+    private String typeName;
+    // 省份 
+    private String provinces;
+    // 市 
+    private String city;
+    // 区 
+    private String area;
+    // 省份 
+    private String companyProvinces;
+    // 市 
+    private String companyCity;
+    // 区 
+    private String companyArea;
+    // 省份 
+    private String userProvinces;
+    // 市 
+    private String userCity;
+    // 区 
+    private String userArea;
+    //推荐人
+    private String founderName;
+    //推荐商家编号
+    private String consumerNo;
+    //推荐人 电话
+    private String phone;
+    //起始日期（显示用）
+    private String beginDate;
+    //结束日期（显示用）
+    private String endDate;
+    
+    //历史推荐时间
+    private String remmDate;
+    //个人头像
+    private String personPhoto;
+    //销量
+    private int salesNum;
+    
+	public String getIntroduce() {
+		return introduce;
+	}
+	public void setIntroduce(String introduce) {
+		this.introduce = introduce;
+	}
+    
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getMerchantNumber() {
+		return merchantNumber;
+	}
+	public void setMerchantNumber(String merchantNumber) {
+		this.merchantNumber = merchantNumber;
+	}
+	public String getMerchantsClassificationId() {
+		return merchantsClassificationId;
+	}
+	public void setMerchantsClassificationId(String merchantsClassificationId) {
+		this.merchantsClassificationId = merchantsClassificationId;
+	}
+	public String getVendorName() {
+		return vendorName;
+	}
+	public void setVendorName(String vendorName) {
+		this.vendorName = vendorName;
+	}
+	public String getMerchantPhone() {
+		return merchantPhone;
+	}
+	public void setMerchantPhone(String merchantPhone) {
+		this.merchantPhone = merchantPhone;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getDiamondCard() {
+		return diamondCard;
+	}
+	public void setDiamondCard(String diamondCard) {
+		this.diamondCard = diamondCard;
+	}
+	public String getRegistrationName() {
+		return registrationName;
+	}
+	public void setRegistrationName(String registrationName) {
+		this.registrationName = registrationName;
+	}
+	public String getOrganizationCode() {
+		return organizationCode;
+	}
+	public void setOrganizationCode(String organizationCode) {
+		this.organizationCode = organizationCode;
+	}
+	public String getRegistrationAddress() {
+		return registrationAddress;
+	}
+	public void setRegistrationAddress(String registrationAddress) {
+		this.registrationAddress = registrationAddress;
+	}
+	public String getBusinessIcensePhoto() {
+		return businessIcensePhoto;
+	}
+	public void setBusinessIcensePhoto(String businessIcensePhoto) {
+		this.businessIcensePhoto = businessIcensePhoto;
+	}
+	public String getStorePhotos() {
+		return storePhotos;
+	}
+	public void setStorePhotos(String storePhotos) {
+		this.storePhotos = storePhotos;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public String getIdNumber() {
+		return idNumber;
+	}
+	public void setIdNumber(String idNumber) {
+		this.idNumber = idNumber;
+	}
+	public String getUserAddress() {
+		return userAddress;
+	}
+	public void setUserAddress(String userAddress) {
+		this.userAddress = userAddress;
+	}
+	public String getIdPhoto() {
+		return idPhoto;
+	}
+	public void setIdPhoto(String idPhoto) {
+		this.idPhoto = idPhoto;
+	}
+	public String getLocalConsumption() {
+		return localConsumption;
+	}
+	public void setLocalConsumption(String localConsumption) {
+		this.localConsumption = localConsumption;
+	}
+	public String getDrainageConsumption() {
+		return drainageConsumption;
+	}
+	public void setDrainageConsumption(String drainageConsumption) {
+		this.drainageConsumption = drainageConsumption;
+	}
+	public String getBusinessState() {
+		return businessState;
+	}
+	public void setBusinessState(String businessState) {
+		this.businessState = businessState;
+	}
+	public String getHigherAgentId() {
+		return higherAgentId;
+	}
+	public void setHigherAgentId(String higherAgentId) {
+		this.higherAgentId = higherAgentId;
+	}
+	public String getCreateDate() {
+		return createDate;
+	}
+	public void setCreateDate(String createDate) {
+		this.createDate = createDate;
+	}
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
+	}
+	public String getProvincesId() {
+		return provincesId;
+	}
+	public void setProvincesId(String provincesId) {
+		this.provincesId = provincesId;
+	}
+	public String getCityId() {
+		return cityId;
+	}
+	public void setCityId(String cityId) {
+		this.cityId = cityId;
+	}
+	public String getAreaId() {
+		return areaId;
+	}
+	public void setAreaId(String areaId) {
+		this.areaId = areaId;
+	}
+	public String getFounder() {
+		return founder;
+	}
+	public void setFounder(String founder) {
+		this.founder = founder;
+	}
+	public String getEffectState() {
+		return effectState;
+	}
+	public void setEffectState(String effectState) {
+		this.effectState = effectState;
+	}
+	
+	public String getQrCode() {
+		return QrCode;
+	}
+	public void setQrCode(String qrCode) {
+		QrCode = qrCode;
+	}
+	public String getAgentName() {
+		return agentName;
+	}
+	public void setAgentName(String agentName) {
+		this.agentName = agentName;
+	}
+	public int getLocalUser() {
+		return localUser;
+	}
+	public void setLocalUser(int localUser) {
+		this.localUser = localUser;
+	}
+	public int getRecommendedBusiness() {
+		return recommendedBusiness;
+	}
+	public void setRecommendedBusiness(int recommendedBusiness) {
+		this.recommendedBusiness = recommendedBusiness;
+	}
+	public String getTypeName() {
+		return typeName;
+	}
+	public void setTypeName(String typeName) {
+		this.typeName = typeName;
+	}
+	public String getProvinces() {
+		return provinces;
+	}
+	public void setProvinces(String provinces) {
+		this.provinces = provinces;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getArea() {
+		return area;
+	}
+	public void setArea(String area) {
+		this.area = area;
+	}
+	public String getFounderName() {
+		return founderName;
+	}
+	public void setFounderName(String founderName) {
+		this.founderName = founderName;
+	}
+	public String getConsumerNo() {
+		return consumerNo;
+	}
+	public void setConsumerNo(String consumerNo) {
+		this.consumerNo = consumerNo;
+	}
+	public String getBeginDate() {
+		return beginDate;
+	}
+	public void setBeginDate(String beginDate) {
+		this.beginDate = beginDate;
+	}
+	public String getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+	public String getCompanyProvincesId() {
+		return companyProvincesId;
+	}
+	public void setCompanyProvincesId(String companyProvincesId) {
+		this.companyProvincesId = companyProvincesId;
+	}
+	public String getCompanyCityId() {
+		return companyCityId;
+	}
+	public void setCompanyCityId(String companyCityId) {
+		this.companyCityId = companyCityId;
+	}
+	public String getCompanyAreaId() {
+		return companyAreaId;
+	}
+	public void setCompanyAreaId(String companyAreaId) {
+		this.companyAreaId = companyAreaId;
+	}
+	public String getUserProvincesId() {
+		return userProvincesId;
+	}
+	public void setUserProvincesId(String userProvincesId) {
+		this.userProvincesId = userProvincesId;
+	}
+	public String getUserCityId() {
+		return userCityId;
+	}
+	public void setUserCityId(String userCityId) {
+		this.userCityId = userCityId;
+	}
+	public String getUserAreaId() {
+		return userAreaId;
+	}
+	public void setUserAreaId(String userAreaId) {
+		this.userAreaId = userAreaId;
+	}
+	public String getCompanyProvinces() {
+		return companyProvinces;
+	}
+	public void setCompanyProvinces(String companyProvinces) {
+		this.companyProvinces = companyProvinces;
+	}
+	public String getCompanyCity() {
+		return companyCity;
+	}
+	public void setCompanyCity(String companyCity) {
+		this.companyCity = companyCity;
+	}
+	public String getCompanyArea() {
+		return companyArea;
+	}
+	public void setCompanyArea(String companyArea) {
+		this.companyArea = companyArea;
+	}
+	public String getUserProvinces() {
+		return userProvinces;
+	}
+	public void setUserProvinces(String userProvinces) {
+		this.userProvinces = userProvinces;
+	}
+	public String getUserCity() {
+		return userCity;
+	}
+	public void setUserCity(String userCity) {
+		this.userCity = userCity;
+	}
+	public String getUserArea() {
+		return userArea;
+	}
+	public void setUserArea(String userArea) {
+		this.userArea = userArea;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public String getJyd() {
+		return jyd;
+	}
+	public void setJyd(String jyd) {
+		this.jyd = jyd;
+	}
+	public String getApplicationState() {
+		return applicationState;
+	}
+	public void setApplicationState(String applicationState) {
+		this.applicationState = applicationState;
+	}
+	public String getRemmDate() {
+		return remmDate;
+	}
+	public void setRemmDate(String remmDate) {
+		this.remmDate = remmDate;
+	}
+	public String getPersonPhoto() {
+		return personPhoto;
+	}
+	public void setPersonPhoto(String personPhoto) {
+		this.personPhoto = personPhoto;
+	}
+	public int getSalesNum() {
+		return salesNum;
+	}
+	public void setSalesNum(int salesNum) {
+		this.salesNum = salesNum;
+	}
+	
+
+}

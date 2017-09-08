@@ -1,0 +1,396 @@
+
+  INFO 2016-07-22  15:18:12 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:18:12 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  15:18:12 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  15:18:12 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:18:12 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:18:41 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:18:41 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  15:18:41 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  15:18:41 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:18:41 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:19:13 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:19:13 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  15:19:13 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  15:19:13 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:19:13 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:20:21 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:20:21 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  15:21:38 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:21:38 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  15:27:57 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:27:57 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  15:27:57 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.MyRealm@3fcc9a3d] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException
+	at tutorial.shiro.MyRealm.doGetAuthenticationInfo(MyRealm.java:57)
+	at org.apache.shiro.realm.AuthenticatingRealm.getAuthenticationInfo(AuthenticatingRealm.java:568)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:34)
+
+  WARN 2016-07-22  15:27:57 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.AccountRealm@58cdd92e] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException
+	at tutorial.shiro.AccountRealm.getAuthenticationInfo(AccountRealm.java:39)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:34)
+
+  INFO 2016-07-22  15:31:27 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:31:27 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  15:31:27 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.MyRealm@11a23b84] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException
+	at tutorial.shiro.MyRealm.doGetAuthenticationInfo(MyRealm.java:57)
+	at org.apache.shiro.realm.AuthenticatingRealm.getAuthenticationInfo(AuthenticatingRealm.java:568)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:34)
+
+  WARN 2016-07-22  15:31:27 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.AccountRealm@326d888e] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException
+	at tutorial.shiro.AccountRealm.getAuthenticationInfo(AccountRealm.java:39)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:34)
+
+  INFO 2016-07-22  15:33:28 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:33:28 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  15:33:28 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.AccountRealm@1ec9367a] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException
+	at tutorial.shiro.AccountRealm.getAuthenticationInfo(AccountRealm.java:39)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:34)
+
+  INFO 2016-07-22  15:34:05 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:34:05 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  15:34:16 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:34:16 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  15:34:36 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:34:36 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  15:34:36 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  15:58:23 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  15:58:23 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  15:58:23 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  16:22:05 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:22:05 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  16:22:05 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  16:22:36 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:22:36 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  16:22:36 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.Account2Realm@48974631] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException
+	at tutorial.shiro.Account2Realm.getAuthenticationInfo(Account2Realm.java:39)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:34)
+
+  INFO 2016-07-22  16:22:36 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  16:25:41 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:25:41 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  16:25:41 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  16:26:11 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:26:11 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  16:26:11 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  16:26:11 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:26:11 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:31:07 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:31:07 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  16:31:07 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  16:31:07 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:31:07 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:31:20 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:31:20 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  16:31:20 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.AccountRealm@1ec9367a] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException
+	at tutorial.shiro.AccountRealm.getAuthenticationInfo(AccountRealm.java:39)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:34)
+
+  INFO 2016-07-22  16:31:20 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  16:31:20 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:31:20 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:33:55 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:33:55 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  16:33:55 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.AccountRealm@43816032] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException
+	at tutorial.shiro.AccountRealm.getAuthenticationInfo(AccountRealm.java:39)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:34)
+
+  INFO 2016-07-22  16:37:19 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:37:19 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  16:37:19 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  16:37:19 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:37:19 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:38:19 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:38:19 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  16:38:19 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.AccountRealm@48974631] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException: 密码小于8位
+	at tutorial.shiro.AccountRealm.getAuthenticationInfo(AccountRealm.java:39)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:34)
+
+  INFO 2016-07-22  16:42:57 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:42:57 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  16:42:57 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.AccountRealm@7d38e667] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException: 密码小于8位
+	at tutorial.shiro.AccountRealm.getAuthenticationInfo(AccountRealm.java:39)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:34)
+
+  INFO 2016-07-22  16:42:57 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  16:42:58 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:42:58 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:45:40 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:45:40 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  16:45:40 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.AccountRealm@7d38e667] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException: 密码小于8位
+	at tutorial.shiro.AccountRealm.getAuthenticationInfo(AccountRealm.java:39)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:34)
+
+  INFO 2016-07-22  16:45:40 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  16:45:40 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:45:40 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:46:34 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:46:34 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  16:46:34 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.AccountRealm@229eb46b] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException: 密码小于8位
+	at tutorial.shiro.AccountRealm.getAuthenticationInfo(AccountRealm.java:39)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:35)
+
+  INFO 2016-07-22  16:46:34 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  16:46:34 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:47:28 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:47:28 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  16:47:28 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.AccountRealm@7d38e667] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException: 密码小于8位
+	at tutorial.shiro.AccountRealm.getAuthenticationInfo(AccountRealm.java:39)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:35)
+
+  INFO 2016-07-22  16:47:28 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  16:47:28 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:51:17 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:51:17 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  16:51:17 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.AccountRealm@43816032] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException: 密码小于8位
+	at tutorial.shiro.AccountRealm.getAuthenticationInfo(AccountRealm.java:39)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:35)
+
+  INFO 2016-07-22  16:52:36 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:52:36 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  16:52:36 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  16:52:36 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:54:34 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:54:34 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  16:54:34 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.PermissionRealm@2d33886b] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException
+	at tutorial.shiro.PermissionRealm.doGetAuthenticationInfo(PermissionRealm.java:56)
+	at org.apache.shiro.realm.AuthenticatingRealm.getAuthenticationInfo(AuthenticatingRealm.java:568)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:37)
+
+  INFO 2016-07-22  16:55:55 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:55:55 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  16:55:55 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.PermissionRealm@2d33886b] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException: 用户名、密码错误！
+	at tutorial.shiro.PermissionRealm.doGetAuthenticationInfo(PermissionRealm.java:56)
+	at org.apache.shiro.realm.AuthenticatingRealm.getAuthenticationInfo(AuthenticatingRealm.java:568)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:37)
+
+  INFO 2016-07-22  16:56:16 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:56:16 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  16:56:16 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  16:56:16 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:56:24 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  16:56:24 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  16:56:24 ModularRealmAuthenticator-224 :$: Realm [tutorial.shiro.AccountRealm@62d2953d] threw an exception during a multi-realm authentication attempt: org.apache.shiro.authc.AccountException: 用户账号、密码不能为空，密码不能至少6位
+	at tutorial.shiro.AccountRealm.getAuthenticationInfo(AccountRealm.java:39)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doMultiRealmAuthentication(ModularRealmAuthenticator.java:219)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:269)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:37)
+
+  INFO 2016-07-22  17:01:52 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:01:52 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:01:52 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:01:52 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:04:09 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:04:09 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  WARN 2016-07-22  17:04:09 AbstractAuthenticator-216 :$: Authentication failed for token submission [org.apache.shiro.authc.UsernamePasswordToken - bruce, rememberMe=true].  Possible unexpected error? (Typical or expected login exceptions should extend from AuthenticationException). java.lang.IllegalStateException: Configuration error:  No realms have been configured!  One or more realms must be present to execute an authentication attempt.
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.assertRealmsConfigured(ModularRealmAuthenticator.java:161)
+	at org.apache.shiro.authc.pam.ModularRealmAuthenticator.doAuthenticate(ModularRealmAuthenticator.java:264)
+	at org.apache.shiro.authc.AbstractAuthenticator.authenticate(AbstractAuthenticator.java:198)
+	at org.apache.shiro.mgt.AuthenticatingSecurityManager.authenticate(AuthenticatingSecurityManager.java:106)
+	at org.apache.shiro.mgt.DefaultSecurityManager.login(DefaultSecurityManager.java:270)
+	at org.apache.shiro.subject.support.DelegatingSubject.login(DelegatingSubject.java:256)
+	at tutorial.shiro.LoginLogoutTest.main(LoginLogoutTest.java:37)
+
+  INFO 2016-07-22  17:04:40 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:04:40 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:04:40 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:04:40 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:15:47 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:15:47 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:15:47 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:15:47 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:16:01 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:16:01 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:16:01 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:16:01 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:16:38 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:16:38 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:16:38 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:16:38 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:17:12 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:17:12 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:17:12 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:17:12 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:17:12 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:20:20 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:20:20 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:20:20 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:20:20 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:20:20 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:21:26 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:21:26 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:21:26 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:21:26 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:21:26 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:21:26 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:22:18 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:22:18 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:22:18 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:22:18 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:22:18 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:22:18 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:22:32 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:22:32 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:22:32 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:22:32 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:22:32 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:22:32 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:23:36 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:23:36 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:23:36 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:23:37 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:23:37 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:23:37 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:48:07 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:48:07 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:48:07 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:48:08 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:48:08 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:48:08 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:48:14 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:48:14 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:48:14 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:48:14 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:48:14 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:48:14 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:50:57 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:50:57 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:50:58 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:50:58 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:50:58 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:50:58 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:55:23 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:55:23 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:55:23 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:55:23 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:55:23 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:55:23 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:55:35 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:55:35 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:55:35 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:55:35 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:55:35 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:55:35 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:56:00 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:56:00 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:56:00 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:56:00 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:56:00 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:56:00 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:56:08 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:56:08 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  17:56:08 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  17:56:09 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:56:09 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  17:56:09 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  18:15:41 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  18:15:41 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  18:15:41 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  18:15:41 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  18:15:41 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  18:15:41 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  18:15:56 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  18:15:56 IniSecurityManagerFactory-112 :$: Realms have been explicitly set on the SecurityManager instance - auto-setting of realms will not occur. 
+  INFO 2016-07-22  18:15:56 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-22  18:15:56 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  18:15:56 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 
+  INFO 2016-07-22  18:15:56 AuthorizingRealm-248 :$: No cache or cacheManager properties have been set.  Authorization cache cannot be obtained. 

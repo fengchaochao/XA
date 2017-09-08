@@ -1,0 +1,10 @@
+
+  INFO 2016-07-30  00:01:03 AbstractValidatingSessionManager-229 :$: Enabling session validation scheduler... 
+  INFO 2016-07-30  00:04:03 dataLogFile-100 :$: 开始登录：SysUser [id=null, loginName=admin, oldLoginPass=null, loginPass=admin123, repeatLoginPass=null, realName=null, mobile=null, telephone=null, email=null, userStatus=null, createTime=null, hxResourceList=null, hxResourceMenuList=null, hxResourceMenuListJson=null, hxRoleList=null, verifyCode=null, hxRoleIds=null, depId=null, depName=null, rememberMe=true] 
+ DEBUG 2016-07-30  00:04:03 Statement-137 :$: {conn-110010, pstmt-120001} executed. 
+SELECT ID, LOGIN_NAME, LOGIN_PASS, REAL_NAME, MOBILE
+	, TELEPHONE, EMAIL, USER_STATUS, CREATE_TIME, department_id
+	, department_name
+FROM PER_SYS_USER
+WHERE LOGIN_NAME = 'admin'
+	AND LOGIN_PASS = '0192023a7bbd73250516f069df18b500' 

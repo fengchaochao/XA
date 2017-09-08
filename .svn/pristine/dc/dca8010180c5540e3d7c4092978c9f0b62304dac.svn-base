@@ -1,0 +1,30 @@
+span,em{display:inline-block;font-style:normal;}
+body{background:#f2f3f5;}
+#mainContent{
+    width: 99%;
+    margin: 0 0 0 1%;
+    padding-top:25px;
+    padding-left:10px;
+    background:#fff;
+}
+
+/* 页面弹框中底部按钮居中*/
+.navbar-btn{text-align:center;}
+.col-sm-2{}
+
+/*页面headline  */
+.pageHeadline{height:50px;line-height: 50px;}
+.leftNotice{font-size:16px;}
+.pageHeadline p{display:inline-block;float:right;margin:0px;}
+.pageHeadline p span{height:25px;line-height:25px;padding: 0px 20px;
+    border-radius: 3px;margin-left:20px;cursor: pointer;}
+.startBtn{background: #ccc;}
+.closeBtn{background: #ff9c65;color:#fff;}
+.pageHeadline p .startBtn{margin-left:50px;}
+.pageHeadline em{margin:0px 10px;}
+
+/*页面body部分的位置  */
+.mainContant{width:98.5%;margin-left:1.5%;}
+.whiteBox{background:#fff;padding:10px 0px;margin-bottom:20px;}
+
+

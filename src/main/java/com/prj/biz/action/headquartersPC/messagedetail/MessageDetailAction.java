@@ -1,0 +1,148 @@
+/**
+ * Copyright© 2003-2013 天尔软件, All Rights Reserved <br/>
+ * 描述: 业务文件 <br/>
+ * @author Jiang
+ * @date 2017-07-25
+ * @version 1.0
+ */
+package com.prj.biz.action.headquartersPC.messagedetail;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.prj.biz.bean.message.Message;
+import com.prj.biz.bean.messagedetail.MessageDetail;
+import com.prj.biz.bean.messageobject.MessageObject;
+import com.prj.biz.bean.sysuser.SysUser;
+import com.prj.biz.service.codeareas.codeAreasService;
+import com.prj.biz.service.message.MessageService;
+import com.prj.biz.service.messagedetail.MessageDetailService;
+import com.prj.biz.service.messageobject.MessageObjectService;
+import com.prj.biz.service.sysuser.SysUserService;
+import com.prj.biz.action._base.BaseAction;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+import com.prj.utils.JPushClientUtil;
+
+
+
+/** 
+ * 描述: 消息明细 Action 类<br>
+ * @author Jiang
+ * @date 2017-07-25
+ */
+@RestController
+@RequestMapping("/headquarters/messageDetail")
+public class MessageDetailAction extends BaseAction
+{
+	private static final long	serialVersionUID	= 1L;
+	
+	@Resource
+	private MessageDetailService messageDetailService;
+	
+	@Resource
+	private MessageService messageService;
+	
+	@Resource
+	private codeAreasService codeAreasService;
+	
+	@Resource
+	private MessageObjectService messageObjectService;
+	@Resource
+	private SysUserService sysUserService;
+	JPushClientUtil jPushClientUtil;
+
+
+	/**
+	 * 描述: 进入列表显示页面
+	 * @auther Jiang
+	 * @date 2017-07-25
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doEnMessageDetailList")
+    public ModelAndView doEnMessageDetailListAction(HttpServletRequest request,HttpServletResponse response) throws Exception
+	{
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("countryList", codeAreasService.selectCountyList());
+		model.put("provinceList", codeAreasService.selectProvinceList());
+		model.put("cityList", codeAreasService.selectCityList());
+		model.put("areaList", codeAreasService.selectRegionList());
+		return new ModelAndView("/headquarters/messagedetail/messageDetailList",model);
+	}
+	
+	/**
+	 * 描述: 分页查询信息
+	 * @auther Jiang
+	 * @date 2017-07-25
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadMessageDetailList")
+	@ResponseBody
+	public RespBean<RespPagination<MessageObject>> doReadMessageDetailList(MessageObject messageObject) throws Exception{
+		RespBean<RespPagination<MessageObject>> respBean = new RespBean<RespPagination<MessageObject>>();
+		RespPagination<MessageObject> respPagination = new RespPagination<MessageObject>();
+		Integer total = messageObjectService.doGetTotal(messageObject);
+		List<MessageObject> messageObjectList = messageObjectService.doGetList(messageObject);
+		for (int i = 0; i < messageObjectList.size(); i++) {
+			String address=messageObjectList.get(i).getProvinces()+"省"+messageObjectList.get(i).getCity()+messageObjectList.get(i).getArea()+messageObjectList.get(i).getAddress();
+			messageObjectList.get(i).setAddress(address);
+		}
+		respPagination.setTotal(total);
+		respPagination.setRows(messageObjectList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 编辑保存
+	 * @auther Jiang
+	 * @date 2017-07-25
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("static-access")
+	@RequestMapping("/doEditMessageDetail")
+	public RespBean<Message> doEditMessageDetail(Message message,String Ids) throws Exception{
+		RespBean<Message> respBean = new RespBean<Message>();
+		SysUser sysUser = new SysUser();
+		String[] ids=Ids.split(",");
+		message.setMessageNumber(ids.length);
+		messageService.doSave(message);
+		for (int i = 0; i < ids.length; i++) {
+			MessageObject messageObject=messageObjectService.doGetById(ids[i]);
+			MessageDetail messageDetail=new MessageDetail();
+			messageDetail.setUserType(Integer.parseInt(messageObject.getUsertype()));
+			messageDetail.setMessageCode(message.getId());
+			messageDetail.setUserCode(messageObject.getId());
+			
+			//消息推送
+			sysUser.setMerchantsId(messageObject.getId());
+			List<SysUser> sysUserList = sysUserService.doGetList(sysUser);
+			//获取用户手机设备号，发送推送消息至手机
+			String deviceNumber = sysUserList.get(0).getDeviceNumber();
+			if(deviceNumber != null && !deviceNumber.equals("")){
+				//标题、内容、设备号
+				jPushClientUtil.pushMessage(message.getMessageTitle(), message.getMessageTest(), deviceNumber);
+				//测试全局推送
+				//jPushClientUtil.pushMessage(message.getMessageTest());
+			}
+			
+			messageDetailService.doSave(messageDetail);
+		}
+		respBean.setBody(message);
+		return respBean;
+	}
+}

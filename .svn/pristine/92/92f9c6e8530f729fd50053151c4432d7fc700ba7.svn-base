@@ -1,0 +1,124 @@
+/**
+ * Copyright© 2003-2013 天尔软件, All Rights Reserved <br/>
+ * 描述: 业务文件 <br/>
+ * @author Liang
+ * @date 2017-07-25
+ * @version 1.0
+ */
+package com.prj.biz.action.transactionrecords;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.prj.biz.bean.transactionrecords.TransactionRecords;
+import com.prj.biz.service.transactionrecords.TransactionRecordsService;
+import com.prj.biz.action._base.BaseAction;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+
+
+
+/** 
+ * 描述: 交易记录表 Action 类<br>
+ * @author Liang
+ * @date 2017-07-25
+ */
+@RestController
+@RequestMapping("/transactionRecords")
+public class TransactionRecordsAction extends BaseAction
+{
+	private static final long	serialVersionUID	= 1L;
+	
+	@Resource
+	private TransactionRecordsService transactionRecordsService;
+
+	/**
+	 * 描述: 进入列表显示页面
+	 * @auther Liang
+	 * @date 2017-07-25
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doEnTransactionRecordsList")
+    public ModelAndView doEnTransactionRecordsListAction(HttpServletRequest request,HttpServletResponse response) throws Exception
+	{
+		return new ModelAndView("/transactionrecords/transactionRecordsList");
+	}
+	
+	/**
+	 * 描述: 分页查询信息
+	 * @auther Liang
+	 * @date 2017-07-25
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadTransactionRecordsList")
+	@ResponseBody
+	public RespBean<RespPagination<TransactionRecords>> doReadTransactionRecordsList(TransactionRecords transactionRecords) throws Exception{
+		RespBean<RespPagination<TransactionRecords>> respBean = new RespBean<RespPagination<TransactionRecords>>();
+		RespPagination<TransactionRecords> respPagination = new RespPagination<TransactionRecords>();
+		Integer total = transactionRecordsService.doGetTotal(transactionRecords);
+		List<TransactionRecords> transactionRecordsList = transactionRecordsService.doGetList(transactionRecords);
+		respPagination.setTotal(total);
+		respPagination.setRows(transactionRecordsList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 进入编辑页面
+	 * @auther Liang
+	 * @date 2017-07-25
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnTransactionRecordsEdit")
+	public ModelAndView doEnTransactionRecordsEdit(String transactionRecordsId) throws Exception{
+		TransactionRecords transactionRecords = transactionRecordsService.doGetById(transactionRecordsId);
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("transactionRecords", transactionRecords);
+		return new ModelAndView("/transactionrecords/transactionRecordsEdit",model);
+	}
+	
+	/**
+	 * 描述: 编辑保存
+	 * @auther Liang
+	 * @date 2017-07-25
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEditTransactionRecords")
+	public RespBean<TransactionRecords> doEditTransactionRecords(TransactionRecords transactionRecords) throws Exception{
+		RespBean<TransactionRecords> respBean = new RespBean<TransactionRecords>();
+		transactionRecordsService.doModById(transactionRecords);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 删除
+	 * @auther Liang
+	 * @date 2017-07-25
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doDelTransactionRecords")
+	@ResponseBody
+	public RespBean<String> doDelTransactionRecordsAction(String transactionRecordsIds) throws Exception{
+		RespBean<String> respBean = new RespBean<String>();
+		transactionRecordsService.doRmByIds(transactionRecordsIds);
+		respBean.setBody("删除成功");
+		return respBean;
+	}
+	
+}

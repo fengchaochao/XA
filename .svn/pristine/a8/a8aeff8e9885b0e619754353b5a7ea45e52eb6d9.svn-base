@@ -1,0 +1,286 @@
+/**
+ * Copyright© 2003-2013 天尔软件, All Rights Reserved <br/>
+ * 描述: 业务文件 <br/>
+ * @author Liang
+ * @date 2017-08-07
+ * @version 1.0
+ */
+package com.prj.biz.action.withdrawrecord;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
+import com.prj.biz.action._base.BaseAction;
+import com.prj.biz.bean.bankwithdrawal.BankWithdrawal;
+import com.prj.biz.bean.order.Order;
+import com.prj.biz.bean.sysuser.SysUser;
+import com.prj.biz.bean.withdrawrecord.WithdrawRecord;
+import com.prj.biz.service.bankwithdrawal.BankWithdrawalService;
+import com.prj.biz.service.order.OrderService;
+import com.prj.biz.service.withdrawrecord.WithdrawRecordService;
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+import com.prj.core.constant.SysConstants;
+import com.prj.utils.SmsUtils;
+import com.prj.utils.UfdmDateUtil;
+import com.prj.utils.UfdmRandomlyGenerated;
+import com.prj.utils.ping.IdentificationExample;
+
+
+
+/** 
+ * 描述: 提现记录表 Action 类<br>
+ * @author Liang
+ * @date 2017-08-07
+ */
+@RestController
+@RequestMapping("/withdrawRecord")
+public class WithdrawRecordAction extends BaseAction
+{
+	private static final long	serialVersionUID	= 1L;
+	
+	@Resource
+	private WithdrawRecordService withdrawRecordService;
+	
+	@Resource
+	private OrderService orderService;
+	
+	@Resource
+	private BankWithdrawalService bankWithdrawalService;
+
+	/**
+	 * 描述: 进入列表显示页面
+	 * @auther Liang
+	 * @date 2017-08-07
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doEnWithdrawRecordList")
+    public ModelAndView doEnWithdrawRecordListAction(HttpServletRequest request,HttpServletResponse response) throws Exception
+	{
+		Map<String, Object> model = new HashMap<String, Object>();
+		SysUser sysUsers = (SysUser) (SecurityUtils.getSubject().getSession().getAttribute(SysConstants.SESSION_SYS_USER));
+		//总收益
+		List<Order> orders=new ArrayList<Order>();
+		float totalPrice=0;
+		Order order=new Order();
+		//代理商登录
+		if("1".equals(sysUsers.getUserState())){
+			order.setHigherAgent(sysUsers.getMerchantsId());
+			orders=orderService.doGetRemmTotal(order);
+		}
+		/*//商家登录
+		if("2".equals(sysUsers.getUserState())){
+			order.setLocalBussiness(sysUsers.getMerchantsId());
+			orders=orderService.doGetRemmTotal(order);
+			
+		}*/
+		for (int i = 0; i < orders.size(); i++) {
+			totalPrice+=Float.parseFloat(orders.get(i).getAgentBonusNum());
+		}
+		String msg = "1";
+		BankWithdrawal bankWithdrawal=new BankWithdrawal();
+		bankWithdrawal.setUserId(sysUsers.getId());
+		List<BankWithdrawal> bankWithdrawals=bankWithdrawalService.doGetList(bankWithdrawal);
+		//加上他的账户余额
+		if(!StringUtils.isEmpty(sysUsers.getAccountBalance())){
+			totalPrice+=Float.parseFloat(sysUsers.getAccountBalance());
+		}
+		
+		//我的收益=总收益-已经提现的金额
+		float myEarnings=0;
+		if(!StringUtils.isEmpty(sysUsers.getAccountBalance())){
+			myEarnings=Float.parseFloat(sysUsers.getAccountBalance());
+		}
+		if(bankWithdrawals.size()>0){
+			msg = "2";
+			bankWithdrawal=bankWithdrawals.get(0);
+			//提现成功 金额
+			WithdrawRecord withdrawRecord=new WithdrawRecord();
+			withdrawRecord.setBankId(bankWithdrawals.get(0).getId());
+			withdrawRecord.setApplyState("1");
+			withdrawRecord.setResult("0");
+			List<WithdrawRecord> withdrawRecords=withdrawRecordService.doGetList(withdrawRecord);
+			float withdrawNum=0;
+			if(withdrawRecords.size()>0){
+				for (int i = 0; i < withdrawRecords.size(); i++) {
+					withdrawNum+=withdrawRecords.get(i).getWithdrawPrice();
+					
+				}
+				myEarnings=totalPrice-withdrawNum;
+			}
+			bankWithdrawal.setTotalRevenue(String.valueOf(myEarnings));
+			bankWithdrawalService.doModById(bankWithdrawal);
+			
+		}else{
+			myEarnings=totalPrice;
+		}
+		model.put("bankWithdrawal", bankWithdrawal);
+		model.put("myEarnings", myEarnings);
+		model.put("msg", msg);
+		return new ModelAndView("/withdrawrecord/withdrawRecordList",model);
+	}
+	
+	/**
+	 * 描述: 分页查询信息
+	 * @auther Liang
+	 * @date 2017-08-07
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadWithdrawRecordList")
+	@ResponseBody
+	public RespBean<RespPagination<WithdrawRecord>> doReadWithdrawRecordList(WithdrawRecord withdrawRecord) throws Exception{
+		RespBean<RespPagination<WithdrawRecord>> respBean = new RespBean<RespPagination<WithdrawRecord>>();
+		RespPagination<WithdrawRecord> respPagination = new RespPagination<WithdrawRecord>();
+		SysUser sysUsers = (SysUser) (SecurityUtils.getSubject().getSession().getAttribute(SysConstants.SESSION_SYS_USER));
+		withdrawRecord.setUserId(sysUsers.getId());
+		List<WithdrawRecord> withdrawRecordList = withdrawRecordService.doGetAllList(withdrawRecord);
+		
+		withdrawRecord.setLimit(0);
+		withdrawRecord.setOffset(0);
+		List<WithdrawRecord> withdrawRecordList1 = withdrawRecordService.doGetAllList(withdrawRecord);
+		respPagination.setTotal(withdrawRecordList1.size());
+		respPagination.setRows(withdrawRecordList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	/**
+	 * 描述: 保存银行卡
+	 * @auther Liang
+	 * @date 2017-08-07
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doSaveBankInfo")
+	public RespBean<String> doSaveBankInfo(BankWithdrawal bankWithdrawal) throws Exception{
+		RespBean<String> respBean = new RespBean<String>();
+		SysUser sysUsers = (SysUser) (SecurityUtils.getSubject().getSession().getAttribute(SysConstants.SESSION_SYS_USER));
+		IdentificationExample eventExample = new IdentificationExample();
+		String msg=eventExample.identifyBankCard(bankWithdrawal.getBrankName(), bankWithdrawal.getBrankNumber(), bankWithdrawal.getIdCard());
+		if("1".equals(msg)){
+			respBean.setBody("银行卡信息认证失败");
+		}
+		if("0".equals(msg)){
+			bankWithdrawal.setUserId(sysUsers.getId());
+			bankWithdrawalService.doModById(bankWithdrawal);
+			respBean.setBody("保存成功");
+		}
+		return respBean;
+	}
+	/**
+	 * 描述: 进入提现页面
+	 * @auther Liang
+	 * @date 2017-08-07
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnWithdrawRecordEdit")
+	public ModelAndView doEnWithdrawRecordEdit(String bankWithdrawalId) throws Exception{
+		BankWithdrawal bankWithdrawal = bankWithdrawalService.doGetById(bankWithdrawalId);
+		float price=0;
+		SysUser sysUsers = (SysUser) (SecurityUtils.getSubject().getSession().getAttribute(SysConstants.SESSION_SYS_USER));
+		if("2".equals(sysUsers.getUserState())){
+			price=Float.parseFloat(sysUsers.getAccountBalance());
+			
+		}
+		WithdrawRecord withdrawRecord=new WithdrawRecord();
+		withdrawRecord.setBankId(bankWithdrawalId);
+		withdrawRecord.setApplyState("0");
+		List<WithdrawRecord> withdrawRecordList=withdrawRecordService.doGetList(withdrawRecord);
+		float applyPrice=0;
+		for (WithdrawRecord withdrawRecord2 : withdrawRecordList) {
+			applyPrice+=withdrawRecord2.getWithdrawPrice();
+			
+		}
+	    price=Float.parseFloat(bankWithdrawal.getTotalRevenue())-applyPrice;
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("bankWithdrawal", bankWithdrawal);
+		model.put("price", price);
+		return new ModelAndView("/withdrawrecord/withdrawRecordEdit",model);
+	}
+
+	/**
+	 * 描述: 提交提现申请
+	 * @auther Liang
+	 * @date 2017-08-07
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEditWithdrawRecord")
+	public RespBean<String> doEditWithdrawRecord(WithdrawRecord withdrawRecord,String code) throws Exception{
+		RespBean<String> respBean = new RespBean<String>();
+		Subject sub = SecurityUtils.getSubject();
+		String sessionVCode = (String) sub.getSession().getAttribute(SysConstants.SESSION_V_CODE);
+		if (StringUtils.isEmpty(sessionVCode) || !sessionVCode.equals(code)) {
+			respBean.setBody("验证码错误");
+		}else{
+			int i = (int) (Math.random() * 900) + 100;
+			String apply = "HLTX" + UfdmDateUtil.getCurrentDate1()+ UfdmDateUtil.getCurrentSimpleTime1() + i;
+			withdrawRecord.setApplyState("0");
+			withdrawRecord.setApplyNumber(apply);
+			withdrawRecordService.doSave(withdrawRecord);
+			respBean.setBody("提交成功");
+		}
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 删除
+	 * @auther Liang
+	 * @date 2017-08-07
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doDelWithdrawRecord")
+	@ResponseBody
+	public RespBean<String> doDelWithdrawRecordAction(String withdrawRecordIds) throws Exception{
+		RespBean<String> respBean = new RespBean<String>();
+		withdrawRecordService.doRmByIds(withdrawRecordIds);
+		respBean.setBody("删除成功");
+		return respBean;
+	}
+	/**
+	 * 描述: 发送验证码
+	 * @auther Liang
+	 * @date 2017-08-21
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("static-access")
+	@RequestMapping("doEnSendCode")
+	@ResponseBody
+	public RespBean<String> doEnSendCode() throws Exception
+	{
+		RespBean<String> map=new RespBean<String>();
+		SysUser sysUsers = (SysUser) (SecurityUtils.getSubject().getSession().getAttribute(SysConstants.SESSION_SYS_USER));
+		String code=UfdmRandomlyGenerated.createRandomVcode(6);
+		Subject sub = SecurityUtils.getSubject();
+		sub.getSession().setAttribute(SysConstants.SESSION_V_CODE, code);
+		//发送短信
+		SmsUtils smsUtils =new SmsUtils();
+		SendSmsResponse response = smsUtils.sendSms(sysUsers.getTelephone(),"SMS_86640140","{\"code\":\""+code+"\"}");
+		if("OK".equals(response.getMessage())){
+			map.setBody("发送成功！");
+		}else{
+			map.setBody("发送失败！");
+		}
+		return map;
+	}
+	
+}

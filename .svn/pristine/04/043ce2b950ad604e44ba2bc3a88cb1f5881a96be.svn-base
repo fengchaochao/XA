@@ -1,0 +1,147 @@
+package com.prj.biz.bean.messageobject;
+
+import com.prj.biz.bean._base.BaseEntity;
+
+/** 
+ * 描述: 消息发送对象查询视图 实体类<br>
+ * @author Liang
+ * @date 2017-07-27
+ * 
+ */
+public class MessageObject extends BaseEntity  
+{
+
+    private static final long	serialVersionUID	= 1L;
+
+    //  
+    private String id;
+    //  
+    private String userno;
+    //  
+    private String username;
+    //  
+    private String phone;
+    //  
+    private String provincesId;
+    //  
+    private String cityId;
+    //  
+    private String areaId;
+    //  
+    private String address;
+    //  
+    private String states;
+    //  
+    private String provinces;
+    //  
+    private String city;
+    //  
+    private String area;
+    //  
+    private String usertype;
+
+
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+    public String getUserno() {
+        return userno;
+    }
+    public void setUserno(String userno) {
+        this.userno = userno;
+    }
+
+
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+
+    public String getPhone() {
+        return phone;
+    }
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+
+    public String getProvincesId() {
+        return provincesId;
+    }
+    public void setProvincesId(String provincesId) {
+        this.provincesId = provincesId;
+    }
+
+
+    public String getCityId() {
+        return cityId;
+    }
+    public void setCityId(String cityId) {
+        this.cityId = cityId;
+    }
+
+
+    public String getAreaId() {
+        return areaId;
+    }
+    public void setAreaId(String areaId) {
+        this.areaId = areaId;
+    }
+
+
+    public String getAddress() {
+        return address;
+    }
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+
+    public String getStates() {
+        return states;
+    }
+    public void setStates(String states) {
+        this.states = states;
+    }
+
+
+    public String getProvinces() {
+        return provinces;
+    }
+    public void setProvinces(String provinces) {
+        this.provinces = provinces;
+    }
+
+
+    public String getCity() {
+        return city;
+    }
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+
+    public String getArea() {
+        return area;
+    }
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+
+    public String getUsertype() {
+        return usertype;
+    }
+    public void setUsertype(String usertype) {
+        this.usertype = usertype;
+    }
+
+}

@@ -1,0 +1,133 @@
+/**
+ * Copyright© 2003-2013 天尔软件, All Rights Reserved <br/>
+ * 描述: 业务文件 <br/>
+ * @author Jiang
+ * @date 2017-07-25
+ * @version 1.0
+ */
+package com.prj.biz.action.headquartersPC.messagedetail;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.prj.biz.bean.messagedetail.MessageDetail;
+import com.prj.biz.service.codeareas.codeAreasService;
+import com.prj.biz.service.messagedetail.MessageDetailService;
+import com.prj.biz.action._base.BaseAction;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.prj.core.bean.resp.RespBean;
+import com.prj.core.bean.resp.RespPagination;
+
+
+
+/** 
+ * 描述: 消息明细 Action 类<br>
+ * @author Jiang
+ * @date 2017-07-25
+ */
+@RestController
+@RequestMapping("/headquarters/messageDetail")
+public class MessageDetailAction extends BaseAction
+{
+	private static final long	serialVersionUID	= 1L;
+	
+	@Resource
+	private MessageDetailService messageDetailService;
+	
+	@Resource
+	private codeAreasService codeAreasService;
+
+	/**
+	 * 描述: 进入列表显示页面
+	 * @auther Jiang
+	 * @date 2017-07-25
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doEnMessageDetailList")
+    public ModelAndView doEnMessageDetailListAction(HttpServletRequest request,HttpServletResponse response) throws Exception
+	{
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("countryList", codeAreasService.selectCountyList());
+		model.put("provinceList", codeAreasService.selectProvinceList());
+		model.put("cityList", codeAreasService.selectCityList());
+		model.put("areaList", codeAreasService.selectRegionList());
+		return new ModelAndView("/headquarters/messagedetail/messageDetailList",model);
+	}
+	
+	/**
+	 * 描述: 分页查询信息
+	 * @auther Jiang
+	 * @date 2017-07-25
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doReadMessageDetailList")
+	@ResponseBody
+	public RespBean<RespPagination<MessageDetail>> doReadMessageDetailList(MessageDetail messageDetail) throws Exception{
+		RespBean<RespPagination<MessageDetail>> respBean = new RespBean<RespPagination<MessageDetail>>();
+		RespPagination<MessageDetail> respPagination = new RespPagination<MessageDetail>();
+		Integer total = messageDetailService.doGetTotal(messageDetail);
+		List<MessageDetail> messageDetailList = messageDetailService.doGetList(messageDetail);
+		respPagination.setTotal(total);
+		respPagination.setRows(messageDetailList);
+		respBean.setBody(respPagination);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 进入编辑页面
+	 * @auther Jiang
+	 * @date 2017-07-25
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEnMessageDetailEdit")
+	public ModelAndView doEnMessageDetailEdit(String messageDetailId) throws Exception{
+		MessageDetail messageDetail = messageDetailService.doGetById(messageDetailId);
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("messageDetail", messageDetail);
+		return new ModelAndView("/messagedetail/messageDetailEdit",model);
+	}
+	
+	/**
+	 * 描述: 编辑保存
+	 * @auther Jiang
+	 * @date 2017-07-25
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/doEditMessageDetail")
+	public RespBean<MessageDetail> doEditMessageDetail(MessageDetail messageDetail) throws Exception{
+		RespBean<MessageDetail> respBean = new RespBean<MessageDetail>();
+		messageDetailService.doModById(messageDetail);
+		return respBean;
+	}
+	
+	/**
+	 * 描述: 删除
+	 * @auther Jiang
+	 * @date 2017-07-25
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/doDelMessageDetail")
+	@ResponseBody
+	public RespBean<String> doDelMessageDetailAction(String messageDetailIds) throws Exception{
+		RespBean<String> respBean = new RespBean<String>();
+		messageDetailService.doRmByIds(messageDetailIds);
+		respBean.setBody("删除成功");
+		return respBean;
+	}
+	
+}

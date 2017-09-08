@@ -1,0 +1,65 @@
+ .form-group input[type="text"]{width:220px;padding-right:6px;display:inline-block;}
+#sel_province4,#sel_country4,#sel_city4,#sel_area4{width:160px;padding-right:6px;}
+#sel_province1,#sel_country1,#sel_city1,#sel_area1,#sel_province2,#sel_country2,
+#sel_city2,#sel_area2,#sel_province3,#sel_country3,#sel_city3,#sel_area3{
+	width:100px;padding-right:6px;margin-right:-20px;}
+.col-sm-2{width:120px;margin-right: -15px;margin-left:-20px;}
+.col-sm-10{width: inherit;line-height:34px;}
+.imgLongRow{width:83%;}
+.flRight{dispaly:inline-block;float:right;margin-right:35px;}
+ .informateBox{padding:20px 0px;}
+.informateBox .leftBox,.informateBox .rightBox{display:inline-block;width:49%;
+vertical-align: top;}
+
+
+/*代理商选择 弹层  */
+.showLawyer{position: fixed;width: 100%;height: 100%;background: #000;z-index: 9999;
+    opacity: 0.3;top: 0px;left: 0px;display: none;}
+ .areaBox p{margin: 0px;}
+ .areaBox .agencyAreaLine{margin:10px 0px 20px 0px;font-size:18px;margin-left:-10px;}
+ .areaBox em,.areaBox span,.areaBox{display: inline-block;}
+
+ #submitForm .areaBox{display:block;position:fixed;z-index:100000!important;border-radius:5px;
+    padding:10px;top:2%;left:7%;width: 88%;min-height: 150px;background:#fff;
+    padding: 25px;}
+ 
+ .areaBox em{font-style: normal;width: 60px;text-align: left;vertical-align: top;margin-top: 15px;}
+ .areaBox span,.areaBox .scopeOfAgent{padding:0px 20px; border: 1px solid #ddd;border-radius: 3px;
+    margin:10px 5px;cursor: pointer;min-width: 103px;text-align: center;height:32px;
+    line-height:32px;}
+    
+ .areaBox .scopeOfAgent{border:none;background: url("../../img/login/choose_img.png") no-repeat;
+    background-size:100% auto;color:#ff7223;}
+/*  .prohibitChoose{pointer-events: none;cursor: default;opacity: 0.6;background: #ddd;} */
+ .areaBox .footerBtn{text-align:center;margin:15px 0px;}
+ .cityBox,.regionBox{display:none;}
+ .chooseProBox,.chooseCityBox,.chooseRegionBox{margin-top:10px;}
+ .chooseProBox .proChooseCss,.chooseCityBox .proChooseCss,.chooseRegionBox .proChooseCss{ 
+    border-color:#ff7223;color:#ff7223;}
+ .resultProBox span{border-radius: 50px; background: #f5f5f5;border: none; 
+    min-width: 85px;height: 28px;line-height: 28px;    cursor: default;}
+ .resultCityBox,.resultRegionBox,.addCityAndRegion{background: #f5f5f5;border-radius: 5px;
+     padding: 15px; box-sizing: border-box;}
+ .resultCityBox p,.resultRegionBox p{color:#c1c1c1;}
+ .resultCityBox .addCity span{min-width: 75px;padding: 0px 10px;border:none;
+     margin:5px;cursor: default;}
+ .resultCityBox{display:none;}
+ .resultCityBox .proCityAdd,.resultRegionBox .prolist{margin:10px 0px;}
+ .resultRegionBox{display:none;max-height:320px;overflow-y:auto;}
+ .selectProvin{display: inline-block;width: 160px;margin: 10px; height: 32px;}
+ .addCityAndRegion{border-radius: 0px;padding:0px 15px;    margin: 10px 0px;}
+ .cityCont,.regionCont{display: inline-block;vertical-align: top;}
+ .cityCont{margin: 0px 10px;color:#666;width:6%;margin-top:5px;}
+ .regionCont{width:91%;}
+ .regionCont span{padding: 0px; min-width: 70px;border: none;margin:0px;cursor: default;}
+ 
+/*  修改bootstrap中下拉框判断图标 */
+.form-horizontal .has-feedback .form-control-feedback{right:17px;}
+.form-control-feedback{position: absolute;
+    top: 1px; right: 3px;z-index: 2; display: block;width: 34px;height: 32px;
+    line-height: 32px; text-align: center; pointer-events: none;background: #fff;}
+    
+.chooseResult{text-align:center;width:130px;height:30px;line-height:30px;border: 1px solid #ff7223;
+    color:#ff7223;border-radius: 50px;margin-left:20px;cursor: pointer;margin:3px 0px -7px 0px;}
+.chooseResult span{margin-right:10px;}
+    
