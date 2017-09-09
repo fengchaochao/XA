@@ -81,11 +81,9 @@ public class RebateCalculationServiceImpl implements RebateCalculationService{
 	@Override
 	public void transferRecord(Order order) throws Exception{
 		System.out.println("转账金额--------------------"+order.getMoney());
-		System.out.println("转账金额--------------------"+order.getBonus());
 		if(StringUtils.isEmpty(order.getBonus())){
 			order.setBonus("0");
 		}
-		
 		// 开始转账到商户
 		double moneys=Double.parseDouble(order.getMoney())-Double.parseDouble(order.getBonus());
 		TransferRecord transferRecord=new TransferRecord();
@@ -110,6 +108,7 @@ public class RebateCalculationServiceImpl implements RebateCalculationService{
 				Transfer transfer=TransferExample.getTranfer("alipay", "b2c", moneys*100, "您收到转账"+moneys+"元", bankWithdrawals.get(0).getBrankName(),bankWithdrawals.get(0).getBrankNumber(),order.getOrderNumber());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				System.out.println("====转账失败原因---->"+e.getMessage());
 				transferRecord.setStatus("0");
 				transferRecord.setAccountNumber(bankWithdrawals.get(0).getId());
 				

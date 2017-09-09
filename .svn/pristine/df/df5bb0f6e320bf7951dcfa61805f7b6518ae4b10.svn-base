@@ -11,7 +11,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.apache.poi.ss.formula.udf.UDFFinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -103,12 +102,15 @@ public class QRcodeAction {
 				if(bankWithdrawals.size()>0){
 					msg="1";
 				}
+				
 				mv.addObject("personPhoto", sysUsers.get(0).getPersonPhoto());
 				mv.addObject("msg", msg);
 			}
+
 		}
 		if ("X".equals(flag)) {
-			Consumers consumers = consumersService.doGetById(storeId.substring(0, storeId.indexOf("-")));
+			Consumers consumers = consumersService.doGetById(storeId.substring(
+					0, storeId.indexOf("-")));
 			mv.addObject("storeName", "易聚客平台-" + consumers.getNickName());
 			sysUser.setMerchantsId(consumers.getId());
 			List<SysUser> sysUsers = sysUserService.doGetList(sysUser);
@@ -190,8 +192,7 @@ public class QRcodeAction {
 		System.out.println("====amount==->" + amount);
 		System.out.println("======点击微信支付按钮之后======");
 		BigDecimal b = new BigDecimal(Double.parseDouble(amount) * 100);
-		
-		PayRecord payRecord = new PayRecord();
+
 		/*
 		 * 点击微信支付按钮
 		 */
@@ -199,28 +200,16 @@ public class QRcodeAction {
 		/**
 		 * 使用jsapi集成参数
 		 */
-		Date date = new Date();
-		String outTradeNo = "WX" + String.valueOf(date.getTime());
-		
-		
-		/**
-		 * 细化锁定初始状态
-		 */
-		String type = storeId.substring(storeId.length() - 1, storeId.length());
-		storeId = storeId.substring(0, storeId.length() - 2);
-		if (type.equals("X")) {
-			payRecord.setBusinessType("0");
-		} else {
-			payRecord.setBusinessType("1");
-		}
-		payRecord.setOrderno(outTradeNo);
-		payRecord.setBusinessid(storeId);
-		recordService.doSave(payRecord);
+		String outTradeNo = "WX" + String.valueOf(new Date().getTime());
 		// 生成微信js授权
 		mv = JsapiTicketUtil.getWxStr(request, code, storeId, b.toString(),
 				outTradeNo, mv);
 		System.out.println("======微信已经返回action 准备请求页面控件吊起微信支付=====");
-
+		// 通过截取state获得店铺信息
+		/*
+		 * mv.addObject("storeName", "易聚客平台-张三"); mv.addObject("storeId",
+		 * state); mv.addObject("code", code);
+		 */
 		return mv;
 	}
 
@@ -345,7 +334,6 @@ public class QRcodeAction {
 			HttpServletResponse response, String amount) throws Exception {
 		ModelAndView mv = new ModelAndView("/QRcodePay/wxTransferRes");
 		mv.addObject("amount",amount);
-		mv.addObject("nowDate",UfdmDateUtil.getCurrentTime());
 		return mv;
 	}
 	

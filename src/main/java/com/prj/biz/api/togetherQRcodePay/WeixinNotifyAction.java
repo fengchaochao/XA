@@ -59,7 +59,7 @@ public class WeixinNotifyAction {
 		httpclient = (DefaultHttpClient) HttpClientConnectionManager
 				.getSSLInstance(httpclient);
 	}
-	
+
 	@Autowired
 	ConsumersAccountService accountService;
 
@@ -71,24 +71,25 @@ public class WeixinNotifyAction {
 
 	@Autowired
 	RebateCalculationService calculationService;
-	
+
 	@Autowired
 	ConsumersService consumersService;
-	 
+
 	@Autowired
 	BusinessInformationService businessInformationService;
-	
+
 	@Autowired
 	SysUserService sysUserService;
-	
+
 	@Autowired
 	BankWithdrawalService bankWithdrawalService;
-	
+
 	@Autowired
 	TransferRecordService transferRecordService;
 
 	/**
 	 * 微信获取OPENID
+	 * 
 	 * @param code
 	 * @param statue
 	 * @param request
@@ -98,9 +99,9 @@ public class WeixinNotifyAction {
 	@RequestMapping(value = { "/getWeixinOpenid" })
 	public ModelAndView getWeixinOpenid(String code, String statue,
 			HttpServletRequest request, HttpServletResponse response) {
-		
+
 		Map<String, Object> model = new HashMap<String, Object>();
-		
+
 		String jsonStr = "";
 		String openid = "";
 		HttpPost httpost = HttpClientConnectionManager
@@ -129,16 +130,16 @@ public class WeixinNotifyAction {
 		}
 
 		model.put("openid", openid);
-		return new ModelAndView("/openId/weixinshowopenid",model);
+		return new ModelAndView("/openId/weixinshowopenid", model);
 	}
 
 	@RequestMapping(value = { "/wxpayNotify" }, method = { RequestMethod.POST })
 	@ResponseBody
 	public String notify(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		
-		Map<String,String> return_data = new HashMap<String,String>();  
-		
+		System.out.println("=========进入微信扫码回调========");
+		Map<String, String> return_data = new HashMap<String, String>();
+
 		InputStream inStream = request.getInputStream();
 		ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
 		byte[] buffer = new byte[1024];
@@ -149,43 +150,47 @@ public class WeixinNotifyAction {
 		String resultXml = new String(outSteam.toByteArray(), "utf-8");
 		@SuppressWarnings("unchecked")
 		Map<String, String> params = PayCommonUtil.doXMLParse(resultXml);
+
+		for (String key : params.keySet()) {
+			System.out.println("key = " + key + "; value = " + params.get(key));
+		}
+
 		outSteam.close();
 		inStream.close();
-		
-		
+
 		String out_trade_no = params.get("out_trade_no").toString();
 		if (PayCommonUtil.isTenpaySign(params)
 				&& "SUCCESS".equals(params.get("return_code"))
 				&& "SUCCESS".equals(params.get("result_code"))) {
 			/**
-			 * 校验支付宝回调校验订单号
+			 * 校验微信掃碼回调校验订单号
 			 */
-			
+
 			PayRecord payRecord = new PayRecord();
 			payRecord.setOrderno(out_trade_no);
-			List<PayRecord> payRecords = recordService
-					.doGetList(payRecord);
+			List<PayRecord> payRecords = recordService.doGetList(payRecord);
 
 			if (payRecords.size() != 0) {
 				PayRecord payRecord1 = payRecords.get(0);
-				String alinum = params.get("buyer_id").toString();
-				String money = params.get("total_amount")
-						.toString();
+				String alinum = params.get("openid").toString();
+				int money = Integer.valueOf(params.get("total_fee"))*10;
 				payRecord1.setAccount(alinum);
 				recordService.doModById(payRecord1);
 				Order order = new Order();
 				order.setOrderNumber(out_trade_no);
 				order.setBusinessId(payRecords.get(0).getBusinessid());
-				Consumers consumers=consumersService.doGetById(payRecords.get(0).getBusinessid());
-				if(consumers!=null){
+				Consumers consumers = consumersService.doGetById(payRecords
+						.get(0).getBusinessid());
+				if (consumers != null) {
 					order.setAgentId(consumers.getAgentId());
-				}else{
-					BusinessInformation businessInformation=businessInformationService.doGetById(payRecords.get(0).getBusinessid());
-					if(businessInformation!=null){
+				} else {
+					BusinessInformation businessInformation = businessInformationService
+							.doGetById(payRecords.get(0).getBusinessid());
+					if (businessInformation != null) {
 						order.setAgentId(businessInformation.getHigherAgentId());
 					}
 				}
-				order.setMoney(money);
+				order.setMoney(String.valueOf(money));
 				order.setStatus("3");
 				order.setTransactionMode("1");
 				order.setCreatetime(UfdmDateUtil.getCurrentTime());
@@ -194,32 +199,27 @@ public class WeixinNotifyAction {
 				 */
 				ConsumersAccount account = new ConsumersAccount();
 				account.setUserAccount(alinum);
-				List<ConsumersAccount> cas = accountService
-						.doGetList(account);
+				List<ConsumersAccount> cas = accountService.doGetList(account);
 
 				if (cas.size() != 0) {
 					System.out.println("===被锁定==");
 					// 查询订单号
-					order.setPurchaserId(cas.get(0)
-							.getConsumersId());
+					order.setPurchaserId(cas.get(0).getConsumersId());
 					order.setConsumerAccount(cas.get(0).getId());
 					orderService.doSave(order);
 
 					// 【已经被锁定】插入对应的订单记录表，并分成
 					if ("0".equals(cas.get(0).getIsLocalState())) {
-						System.out
-								.println("===被锁定==IsLocalState()=0");
-						calculationService.lockedDraw(
-								order.getId(), alinum, payRecords
-										.get(0).getBusinessid(),
-								cas.get(0).getConsumersId(), "2");
+						System.out.println("===被锁定==IsLocalState()=0");
+						calculationService.lockedDraw(order.getId(), alinum,
+								payRecords.get(0).getBusinessid(), cas.get(0)
+										.getConsumersId(), "2");
 					}
 					if ("1".equals(cas.get(0).getIsLocalState())) {
-						System.out
-								.println("===被锁定==IsLocalState()=1");
-						calculationService.pumpingCalculation(
-								order.getId(), cas.get(0).getId(),
-								payRecords.get(0).getBusinessid());
+						System.out.println("===被锁定==IsLocalState()=1");
+						calculationService.pumpingCalculation(order.getId(),
+								cas.get(0).getId(), payRecords.get(0)
+										.getBusinessid());
 					}
 
 				} else {
@@ -228,26 +228,26 @@ public class WeixinNotifyAction {
 
 					orderService.doSave(order);
 
-					calculationService.lockedDraw(order.getId(),alinum, payRecords.get(0)
-									.getBusinessid(), "", "2");
+					calculationService.lockedDraw(order.getId(), alinum,
+							payRecords.get(0).getBusinessid(), "", "2");
 
-				}							
+				}
 				calculationService.transferRecord(order);
 			} else {
 				/**
 				 * 交易失败 不处理
 				 */
-			}	
-			
-			 System.out.print("success");
-			 return_data.put("return_code", "SUCCESS");  
-             return_data.put("return_msg", "OK");  
-             return WXRequestUtil.GetMapToXML(return_data);  
+			}
+
+			System.out.print("success");
+			return_data.put("return_code", "SUCCESS");
+			return_data.put("return_msg", "OK");
+			return WXRequestUtil.GetMapToXML(return_data);
 		} else {
 			// 支付失败
-			 return_data.put("return_code", "FAIL");  
-             return_data.put("return_msg", "签名错误");  
-             return WXRequestUtil.GetMapToXML(return_data);  
+			return_data.put("return_code", "FAIL");
+			return_data.put("return_msg", "签名错误");
+			return WXRequestUtil.GetMapToXML(return_data);
 		}
 	}
 }

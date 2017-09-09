@@ -102,6 +102,7 @@ public class PropKit {
 		//selectAll();
 		//addFriend("123","18629426339");
 		//disconnectIMUser("18066633913");
-		getUserByName("17858627414");
+		//getUserByName("17858627414");
+		changePassword("13486171969", "123456");
 	}
 }

@@ -330,7 +330,7 @@ public class TransferExample {
 		Transfer transfer=new Transfer();
 		String str=null;
 		 try {
-		  transfer=	getTranfer("alipay", "b2c", 10.0, "测", "梁建芳", "18220682639", "SSS1");
+		  transfer=	getTranfer("alipay", "b2c", 100.0, "测", "冯超", "15249231633", "SSS1");
 
 		 } catch (AuthenticationException | InvalidRequestException
 				| APIConnectionException | APIException | ChannelException

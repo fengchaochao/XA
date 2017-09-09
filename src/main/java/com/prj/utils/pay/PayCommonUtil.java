@@ -22,7 +22,6 @@ import java.util.*;
  */
 public class PayCommonUtil {
 	
-	 public static String API_KEY = "xxxxxxxxxxxxxx";
 	/**
 	 * 验证回调签名
 	 * @throws Exception 
@@ -57,7 +56,7 @@ public class PayCommonUtil {
 				sb.append(k + "=" + v + "&");
 			}
 		}
-		sb.append("key=" + API_KEY);
+		sb.append("key=" + WxpayConfig.PARTNERKEY);
 		// 算出签名
 		String resultSign = "";
 		String tobesign = sb.toString();
@@ -67,7 +66,9 @@ public class PayCommonUtil {
 			resultSign = MD5.md5Encode(tobesign, charset).toUpperCase();
 		}
 		String tenpaySign = ((String) packageParams.get("sign")).toUpperCase();
-		return tenpaySign.equals(resultSign);
+		boolean  b= tenpaySign.equals(resultSign);
+		System.out.println("====微信扫码回调签名校验->>>>"+ b);
+		return b;
 	}
 
 	// xml解析
